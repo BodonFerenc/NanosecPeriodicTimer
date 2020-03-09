@@ -5,7 +5,7 @@
 
 using namespace std;
 
-CSVLoggerTask::CSVLoggerTask(unsigned long triggerNr, string fname) : filename(fname) {
+CSVLoggerTask::CSVLoggerTask(unsigned long triggerNr, const char* argv[]) : filename(argv[0]) {
     expectedTriggerTimes.reserve(triggerNr);
     realTriggerTimes.reserve(triggerNr);
     cout << "Nr of expected ticks\t\t" << triggerNr << endl;
@@ -19,7 +19,7 @@ bool CSVLoggerTask::run(const TIME& expected, const TIME& real) {
 
 CSVLoggerTask::~CSVLoggerTask() {
     if (expectedTriggerTimes.empty()) return;
-    
+
     cout << "Writing results to file " << filename << endl;  
     ofstream file;
     file.open(filename);

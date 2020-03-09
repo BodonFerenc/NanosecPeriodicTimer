@@ -26,7 +26,7 @@ int main(int argc, const char* argv[])
 
     const unsigned long MAXRUN = DUR * FREQ;
 
-    CSVLoggerTask task(MAXRUN, argv[4]);
+    CSVLoggerTask task(MAXRUN, argv + 4);
     string timertype(argv[1]);
 
 

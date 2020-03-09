@@ -27,7 +27,7 @@ class CSVLoggerTask: public Task {
         string filename;
 
     public: 
-        CSVLoggerTask(unsigned long, string);
+        CSVLoggerTask(unsigned long, const char* argv[]);
         bool run(const TIME&, const TIME&);
         ~CSVLoggerTask();
 };
