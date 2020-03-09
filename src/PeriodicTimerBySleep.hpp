@@ -32,13 +32,13 @@ void PeriodicTimerBySleep<T>::run(chrono::nanoseconds wait, unsigned long nr) {
     cout << "Starting the timer" << endl;   
     unsigned long runs=0;   
     bool ok = true;
-    auto timenow = chrono::steady_clock::now();
+    auto timenow = chrono::system_clock::now();
     TIME nextSendTime;
 
     while (ok && runs++ < nr) {        
         setNextTriggerTime(timenow, nextSendTime, wait);
         this_thread::sleep_until(nextSendTime);
-        timenow = chrono::steady_clock::now();
+        timenow = chrono::system_clock::now();
         ok = this->task.run(nextSendTime, timenow);
     } 
     cout << "Timer finished" << endl;

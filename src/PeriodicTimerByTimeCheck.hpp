@@ -52,13 +52,13 @@ void PeriodicTimerByTimeCheck<T>::run(chrono::nanoseconds wait, unsigned long nr
     cout << "Starting the timer" << endl;          
     unsigned long runs=0;        
     bool ok = true;
-    auto nextSendTime = chrono::steady_clock::now();
-    auto timenow = chrono::steady_clock::now();
+    auto nextSendTime = chrono::system_clock::now();
+    auto timenow = chrono::system_clock::now();
 
     setNextTriggerTime(timenow, nextSendTime, wait);
 
     while (ok && runs < nr) {  
-        timenow = chrono::steady_clock::now();
+        timenow = chrono::system_clock::now();
         if (timenow >= nextSendTime) {
           ok = this->task.run(nextSendTime, timenow);
           setNextTriggerTime(timenow, nextSendTime, wait);

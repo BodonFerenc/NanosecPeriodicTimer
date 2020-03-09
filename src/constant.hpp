@@ -4,7 +4,7 @@
 #include <chrono>
 
 constexpr auto BILLION=1000000000l;
-using TIME = std::chrono::time_point<std::chrono::steady_clock>;
+using TIME = std::chrono::time_point<std::chrono::system_clock>;
 
 template <typename... Args>
 auto DURNANO(Args&&... args) -> unsigned long {

@@ -22,9 +22,10 @@
 
 class CSVLoggerTask: public Task {
     private:  
+        string filename;
+    protected:
         vector<TIME> expectedTriggerTimes;
         vector<TIME> realTriggerTimes;
-        string filename;
 
     public: 
         CSVLoggerTask(unsigned long, const char* argv[]);
