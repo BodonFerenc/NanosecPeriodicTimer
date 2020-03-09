@@ -1,6 +1,7 @@
 #ifndef PERIODICTIMER_H
 #define PERIODICTIMER_H
 
+#include <chrono>
 
 template<class T>
 class PeriodicTimer {
@@ -9,7 +10,7 @@ class PeriodicTimer {
     public: 
         PeriodicTimer(T& t) : task{t} {}
 
-        virtual void run(unsigned long wait, unsigned long nr) = 0; 
+        virtual void run(chrono::nanoseconds wait, unsigned long nr) = 0; 
         virtual ~PeriodicTimer() {};
 };
 

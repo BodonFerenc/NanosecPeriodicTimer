@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <stdlib.h> 
+#include <chrono>
 
 #include "constant.hpp"
 #include "CSVLoggerTask.hpp"
@@ -19,8 +20,8 @@ int main(int argc, const char* argv[])
     }
 
     const unsigned long FREQ = atol(argv[2]);          // frequency
-    const unsigned long WAIT = BILLION / FREQ;         // wait time between ticks
-    cout << "Wait time is set to\t\t"<< WAIT << " nanosec" << endl;
+    chrono::nanoseconds WAIT(BILLION / FREQ);          // wait time between ticks
+    cout << "Wait time is set to\t\t" << WAIT.count() << " nanosec" << endl;
     const unsigned int DUR = atoi(argv[3]);            // duration is second
 
     const unsigned long MAXRUN = DUR * FREQ;
@@ -39,7 +40,8 @@ int main(int argc, const char* argv[])
         PeriodicTimerByTimeCheckJumpForward<CSVLoggerTask> timer(task); 
         timer.run(WAIT, MAXRUN); 
     } else {
-        cerr << "Invalid timer type " << timertype << endl;
+        cerr << "Invalid timer type " << timertype << 
+            ".\nAvailable options: bysleep, bytimerstrict, bytimerjumpforward" << endl;
         return 1;
     }     
 

@@ -19,17 +19,16 @@
 #include <vector>
 #include "Task.hpp"
 
-using namespace std;
 
 class CSVLoggerTask: public Task {
     private:  
-        vector<struct timespec> expectedTriggerTimes;
-        vector<struct timespec> realTriggerTimes;
+        vector<TIME> expectedTriggerTimes;
+        vector<TIME> realTriggerTimes;
         string filename;
 
     public: 
         CSVLoggerTask(unsigned long, string);
-        bool run(const struct timespec&, const struct timespec&);
+        bool run(const TIME&, const TIME&);
         ~CSVLoggerTask();
 };
 

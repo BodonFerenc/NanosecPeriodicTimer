@@ -11,34 +11,33 @@ CSVLoggerTask::CSVLoggerTask(unsigned long triggerNr, string fname) : filename(f
     cout << "Nr of expected ticks\t\t" << triggerNr << endl;
 }
 
-bool CSVLoggerTask::run(const struct timespec& expected, const struct timespec& real) {
+bool CSVLoggerTask::run(const TIME& expected, const TIME& real) {
     expectedTriggerTimes.push_back(expected);
     realTriggerTimes.push_back(real);
     return true;
 }
 
 CSVLoggerTask::~CSVLoggerTask() {
+    if (expectedTriggerTimes.empty()) return;
+    
     cout << "Writing results to file " << filename << endl;  
     ofstream file;
     file.open(filename);
 
     file << "planned,real,latency" << endl;
-    struct timespec sumwait = {0, 0};
+    std::chrono::nanoseconds sumwait(0);
     for (unsigned long i=0; i < expectedTriggerTimes.size(); ++i) {
-      file << timespecToNano(expectedTriggerTimes[i]) << "," << timespecToNano(realTriggerTimes[i]) 
-        << "," << BILLION * (realTriggerTimes[i].tv_sec - expectedTriggerTimes[i].tv_sec) + realTriggerTimes[i].tv_nsec - expectedTriggerTimes[i].tv_nsec << "\n";
-      sumwait.tv_sec += realTriggerTimes[i].tv_sec - expectedTriggerTimes[i].tv_sec;
-      sumwait.tv_nsec += realTriggerTimes[i].tv_nsec - expectedTriggerTimes[i].tv_nsec;
+      file << DURNANO(expectedTriggerTimes[i].time_since_epoch()) << "," 
+           << DURNANO(realTriggerTimes[i].time_since_epoch()) << "," 
+           << DURNANO(realTriggerTimes[i] - expectedTriggerTimes[i]) << "\n";
+      sumwait += realTriggerTimes[i] - expectedTriggerTimes[i];
     }
     file.close();
 
-    sumwait.tv_sec += sumwait.tv_sec / BILLION;
-    sumwait.tv_nsec = sumwait.tv_nsec % BILLION;
 
-    cout << "Average wait time latency\t" << timespecToNano(sumwait) / expectedTriggerTimes.size() << " nanosec" << endl;
+    cout << "Average wait time latency\t" << DURNANO(sumwait) / expectedTriggerTimes.size() << " nanosec" << endl;
 
-    const float realdur = realTriggerTimes.back().tv_sec - expectedTriggerTimes.front().tv_sec + 
-        (float) (realTriggerTimes.back().tv_nsec - expectedTriggerTimes.front().tv_nsec) / BILLION;    
+    const float realdur = (float) DURNANO(realTriggerTimes.back() - expectedTriggerTimes.front()) / BILLION;    
     cout << "Real duration was\t\t" << realdur << " sec" << endl;
     cout << "Real frequency was\t\t" << (long) (expectedTriggerTimes.size() / realdur) << endl;
 

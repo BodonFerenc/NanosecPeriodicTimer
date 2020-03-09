@@ -1,7 +1,6 @@
 #ifndef PERIODICTIMERBYTIMECHECK_H
 #define PERIODICTIMERBYTIMECHECK_H
 
-#include <time.h>
 #include "constant.hpp"
 #include "PeriodicTimer.hpp"
 
@@ -9,25 +8,21 @@
 template <class T>
 class PeriodicTimerByTimeCheck: public PeriodicTimer<T> {
     private:
-        virtual void setNextTriggerTime(const struct timespec& input, struct timespec& nextTriggerTime, long nanosec) = 0;
+        virtual void setNextTriggerTime(const TIME& input, 
+            TIME& nextTriggerTime, const chrono::nanoseconds& wait);
 
     public:
         PeriodicTimerByTimeCheck<T>(T& t): PeriodicTimer<T>(t) {}
-        bool isafter(const struct timespec& t1, const struct timespec& t2);
-        void run(unsigned long wait, unsigned long nr);       
+        void run(chrono::nanoseconds wait, unsigned long nr);       
 };
 
 
 template <class T>
 class PeriodicTimerByTimeCheckStrict: public PeriodicTimerByTimeCheck<T> {
      private:
-        void setNextTriggerTime(const struct timespec& input, struct timespec& nextTriggerTime, long nanosec) {
-            // we ignore current time
-            nextTriggerTime.tv_nsec += nanosec; 
-            if (nextTriggerTime.tv_nsec >= BILLION) {
-                ++(nextTriggerTime.tv_sec);
-                nextTriggerTime.tv_nsec -= BILLION;
-            } 
+        inline void setNextTriggerTime(const TIME& input, 
+            TIME& nextTriggerTime, const chrono::nanoseconds& wait) {
+            nextTriggerTime = input + wait;
     }
     public:
         PeriodicTimerByTimeCheckStrict<T>(T& t): PeriodicTimerByTimeCheck<T>(t) {
@@ -38,15 +33,10 @@ class PeriodicTimerByTimeCheckStrict: public PeriodicTimerByTimeCheck<T> {
 template <class T>
 class PeriodicTimerByTimeCheckJumpForward: public PeriodicTimerByTimeCheck<T> {
      private:
-        void setNextTriggerTime(const struct timespec& input, struct timespec& nextTriggerTime, long nanosec) {
-            nextTriggerTime.tv_nsec = input.tv_nsec + nanosec - input.tv_nsec % nanosec;
-
-            if (nextTriggerTime.tv_nsec >= BILLION) {
-                nextTriggerTime.tv_sec = input.tv_sec + 1;
-                nextTriggerTime.tv_nsec -= BILLION;        
-            } else {
-                nextTriggerTime.tv_sec = input.tv_sec;
-            }
+        inline void setNextTriggerTime(const TIME& input, 
+            TIME& nextTriggerTime, const chrono::nanoseconds& wait) {
+            nextTriggerTime = input + wait -
+                chrono::nanoseconds(DURNANO((input + wait).time_since_epoch()) % wait.count()); 
     }
 
     public:
@@ -55,31 +45,21 @@ class PeriodicTimerByTimeCheckJumpForward: public PeriodicTimerByTimeCheck<T> {
         };
 };
 
-/** returns true if the first time is at or after the second time
-*/
-template <class T>
-bool PeriodicTimerByTimeCheck<T>::isafter(const struct timespec& t1, const struct timespec& t2) {
-    return t1.tv_sec > t2.tv_sec || 
-        (t1.tv_sec == t2.tv_sec && t1.tv_nsec >= t2.tv_nsec);
-}
 
 template <class T>
-void PeriodicTimerByTimeCheck<T>::run(unsigned long wait, unsigned long nr) {
+void PeriodicTimerByTimeCheck<T>::run(chrono::nanoseconds wait, unsigned long nr) {
 
     cout << "Starting the timer" << endl;          
     unsigned long runs=0;        
     bool ok = true;
-    struct timespec nextSendTime;
-    clock_gettime(CLOCK_MONOTONIC,&nextSendTime);
-
-    struct timespec timenow;    
-    clock_gettime(CLOCK_MONOTONIC,&timenow);
+    auto nextSendTime = chrono::steady_clock::now();
+    auto timenow = chrono::steady_clock::now();
 
     setNextTriggerTime(timenow, nextSendTime, wait);
 
     while (ok && runs < nr) {  
-        clock_gettime(CLOCK_MONOTONIC, &timenow);
-        if (isafter(timenow, nextSendTime)) {
+        timenow = chrono::steady_clock::now();
+        if (timenow >= nextSendTime) {
           ok = this->task.run(nextSendTime, timenow);
           setNextTriggerTime(timenow, nextSendTime, wait);
           ++runs;
