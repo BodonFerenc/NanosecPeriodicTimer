@@ -1,5 +1,4 @@
-#ifndef TASK_H
-#define TASK_H
+#pragma once
 
 using namespace std;
 
@@ -8,5 +7,3 @@ class Task {
         virtual bool run(const TIME&, const TIME&) = 0; 
         virtual ~Task() {};
 };
-
-#endif

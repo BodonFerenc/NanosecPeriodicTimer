@@ -1,5 +1,4 @@
-#ifndef PERIODICTIMERBYSLEEP_H
-#define PERIODICTIMERBYSLEEP_H
+#pragma once
 
 #include <thread>
 
@@ -43,5 +42,3 @@ void PeriodicTimerBySleep<T>::run(chrono::nanoseconds wait, unsigned long nr) {
     } 
     cout << "Timer finished" << endl;
 }
-
-#endif

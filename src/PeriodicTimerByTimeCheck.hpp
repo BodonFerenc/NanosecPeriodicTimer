@@ -1,5 +1,4 @@
-#ifndef PERIODICTIMERBYTIMECHECK_H
-#define PERIODICTIMERBYTIMECHECK_H
+#pragma once
 
 #include "constant.hpp"
 #include "PeriodicTimer.hpp"
@@ -67,5 +66,3 @@ void PeriodicTimerByTimeCheck<T>::run(chrono::nanoseconds wait, unsigned long nr
     }
     cout << "Timer finished" << endl;
 }
-
-#endif

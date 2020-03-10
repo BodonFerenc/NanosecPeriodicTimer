@@ -1,5 +1,4 @@
-#ifndef CONSTANT_H
-#define CONSTANT_H
+#pragma once
 
 #include <chrono>
 
@@ -13,4 +12,3 @@ auto DURNANO(Args&&... args) -> unsigned long {
   return std::chrono::duration_cast<std::chrono::nanoseconds>(std::forward<Args>(args)...).count();
 }
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef PERIODICTIMER_H
-#define PERIODICTIMER_H
+#pragma once
 
 #include <chrono>
 
@@ -14,5 +13,4 @@ class PeriodicTimer {
         virtual ~PeriodicTimer() {};
 };
 
-#endif
 

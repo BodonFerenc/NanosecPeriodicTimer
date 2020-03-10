@@ -12,8 +12,7 @@
  *
  */
 
-#ifndef CSVLOGGERTASK_H
-#define CSVLOGGERTASK_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -33,4 +32,3 @@ class CSVLoggerTask: public Task {
         ~CSVLoggerTask();
 };
 
-#endif
