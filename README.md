@@ -51,3 +51,22 @@ $ taskset -c 0 ...
 The program is using clock CLOCK_MONOTONIC and you get similar results with CLOCK_REALTIME.
 
 Read this [excellent article](http://btorpey.github.io/blog/2014/02/18/clock-sources-in-linux/) for more details on clock support by the Linux kernel.
+
+## kdb+ trade table publisher
+Class PeriodicKDBPublisher is provided to demonstrate how to create a task that sends update to a kdb+ process. [kdb+ needs to be installed](https://code.kx.com/q/learn/).
+To run do the following after command `make`
+
+```
+# In Terminal 1:
+$ cd q
+$ q rdb_light.q -p 5003
+
+q) trade
+sym time price size stop ex
+---------------------------
+
+# In Terminal 2:
+./bin/PeriodicKDBPublisher 10000 20 localhost 5003
+```
+
+Now switch back to `Terminal 1` and check the content of table trade or see how its size grows by executing command `count trade` in the q interpreter.
