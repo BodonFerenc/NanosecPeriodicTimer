@@ -42,7 +42,7 @@ You can display clock support this via Linux command
 $ cat /proc/cpuinfo | grep -i tsc
 flags : ... tsc  rdtscp constant_tsc nonstop_tsc ...
 ```
-If you CPU does not support constant TSC (that keeps all TSC’s synchronized across all cores) then you need to bind the application to a CPU by
+If you CPU does not support constant TSC (that keeps all TSC’s synchronized across all cores) then you need to bind the application to a CPU by `taskset` or `numactl`
 
 ```
 $ taskset -c 0 ...
