@@ -18,7 +18,8 @@ KDBTradePublisher::KDBTradePublisher(unsigned long triggerNr, const char* argv[]
         /* problem connecting */
         cerr << "Problem connecting to kdb. Error code "<< socket << endl;
         exit(1);
-    } 
+    }
+    cout << "Connection to " << argv[0] << ":" << argv[1] << " was successful" << endl; 
 
     stockUniverse.resize(STOCKNR);
     unsigned int i=0;
