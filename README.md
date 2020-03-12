@@ -42,7 +42,7 @@ You can display clock support this via Linux command
 $ cat /proc/cpuinfo | grep -i tsc
 flags : ... tsc  rdtscp constant_tsc nonstop_tsc ...
 ```
-If you CPU does not support constant TSC (that keeps all TSC’s synchronized across all cores) then you need to bind the application to a CPU by
+If you CPU does not support constant TSC (that keeps all TSC’s synchronized across all cores) then you need to bind the application to a CPU by `taskset` or `numactl`
 
 ```
 $ taskset -c 0 ...
@@ -51,3 +51,22 @@ $ taskset -c 0 ...
 The program is using clock CLOCK_MONOTONIC and you get similar results with CLOCK_REALTIME.
 
 Read this [excellent article](http://btorpey.github.io/blog/2014/02/18/clock-sources-in-linux/) for more details on clock support by the Linux kernel.
+
+## kdb+ trade table publisher
+Class [KDBTradePublisher](https://github.com/BodonFerenc/NanosecPeriodicTimer/blob/master/src/KDBTradePublisher.cpp) sends single row updates of table [trade](https://github.com/BodonFerenc/NanosecPeriodicTimer/blob/master/q/schema.q) to a [kdb+ process](https://github.com/BodonFerenc/NanosecPeriodicTimer/blob/master/q/rdb_light.q) when the timer triggers. [kdb+ needs to be installed](https://code.kx.com/q/learn/).
+To run do the following after command `make`
+
+```
+# In Terminal 1:
+$ cd q
+$ q rdb_light.q -p 5003
+
+q) trade
+sym time price size stop ex
+---------------------------
+
+# In Terminal 2:
+./bin/PeriodicKDBPublisher 10000 20 localhost 5003
+```
+
+Now switch back to `Terminal 1` and check the content of table trade or see how its size grows by executing command `count trade` in the q interpreter.
