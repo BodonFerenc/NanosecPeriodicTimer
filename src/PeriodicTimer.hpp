@@ -10,7 +10,7 @@ class PeriodicTimer {
         PeriodicTimer(T& t) : task{t} {}
 
         virtual void run(chrono::nanoseconds wait, unsigned long nr) = 0; 
-        virtual ~PeriodicTimer() {};
+        virtual ~PeriodicTimer() = default;
 };
 
 
