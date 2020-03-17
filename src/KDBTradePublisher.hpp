@@ -6,7 +6,8 @@
  *
  * During the construction it initializes a connection to a kdb+ process
  * The symbol column is pregenerated to demostrate how to improve performance by pregenerating data.
- * Some fields are generated when the timer triggers.
+ * This better represent real-life feed handlers.
+ * Some fields are generated when the timer triggers. This might be useful for e.g kdb+ plant testing.
  *
  * \author Ferenc Bodon
  *

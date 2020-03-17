@@ -21,7 +21,7 @@ class PeriodicTimerByTimeCheckStrict: public PeriodicTimerByTimeCheck<T> {
      private:
         inline void setNextTriggerTime(const TIME& input, 
             TIME& nextTriggerTime, const chrono::nanoseconds& wait) {
-            nextTriggerTime = input + wait;
+            nextTriggerTime += wait;
     }
     public:
         PeriodicTimerByTimeCheckStrict<T>(T& t): PeriodicTimerByTimeCheck<T>(t) {

@@ -2,11 +2,11 @@
 
 #include <chrono>
 
-// what you really want here is HH's date::days or C++20 std::days: let the compiler do the job:
-constexpr std::days kdb_start{ 10957 }; // 2000.01.01 - 1970.01.01
+constexpr auto BILLION=1000000000l;
+constexpr unsigned long NUM_NANOSECS_BETWEEN_1970_2000 = 946684800 * BILLION;     // useful for KDB time conversion
 
 // what you really want here is monotonic clock
-using TIME = std::chrono::time_point<std::chrono::steady_clock>;
+using TIME = std::chrono::time_point<std::chrono::system_clock>;
 
 // you don't really want it: keep type safety
 template <typename... Args>
