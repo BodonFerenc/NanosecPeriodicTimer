@@ -17,18 +17,16 @@
 
 #include <vector>
 #include <array>
-#include "Task.hpp"
+#include "KDBPublisher.hpp"
 
 
-class KDBTradePublisher: public Task {
+class KDBTradePublisher: public KDBPublisher {
     private:  
-        int socket;
         unsigned long counter;
-        vector<array<char, 5>> stockUniverse;
-        vector<char*> stockToSend;        
+        std::vector<std::array<char, 5>> stockUniverse;
+        std::vector<char*> stockToSend;        
 
     public: 
         KDBTradePublisher(unsigned long, const char* argv[]);
         bool run(const TIME&, const TIME&);
-        ~KDBTradePublisher();
 };

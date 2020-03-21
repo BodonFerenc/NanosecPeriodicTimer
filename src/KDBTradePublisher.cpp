@@ -6,21 +6,10 @@
 #include "KDBTradePublisher.hpp"
 #include "k.h"
 
-using namespace std;
-
 constexpr auto STOCKNR = 26 * 26 * 26 * 26;
 
-KDBTradePublisher::KDBTradePublisher(unsigned long triggerNr, const char* argv[]) : counter(0) {  
-
-    socket = khpu(S(argv[0]), atoi(argv[1]), S("Administrator:password")); 
-    if (socket < 0)
-    {
-        /* problem connecting */
-        cerr << "Problem connecting to kdb. Error code "<< socket << endl;
-        exit(1);
-    }
-    cout << "Connection to " << argv[0] << ":" << argv[1] << " was successful" << endl; 
-
+KDBTradePublisher::KDBTradePublisher(unsigned long triggerNr, const char* argv[]) : 
+    KDBPublisher(triggerNr, argv), counter(0) {  
     stockUniverse.resize(STOCKNR);
     unsigned int i=0;
     for (char a = 'A'; a <= 'Z'; ++a) {
@@ -37,7 +26,7 @@ KDBTradePublisher::KDBTradePublisher(unsigned long triggerNr, const char* argv[]
             }
         }
     }
-    std::srand(std::time(nullptr));
+    srand(time(nullptr));
     stockToSend.reserve(triggerNr);
     for (i = 0; i< triggerNr; ++i) {
         stockToSend.push_back(stockUniverse[rand() % STOCKNR].data());
@@ -54,17 +43,13 @@ bool inline KDBTradePublisher::run(const TIME& expected, const TIME& real) {
         kf(price), ki(rand()), kb(rand() % 2), kc('e'));
 
     K r = k(-socket, (char *) ".u.upd", ks((S) "trade"), row, (K)0);
+    ++counter;
          
     /* if network error, async call will return 0 */
     if (!r)
     {
-       printf("Network Error populating table\n");
+       std::cout << "Network Error populating table" << std::endl;
        return(false);
     }
-    ++counter;
     return true;
-}
-
-KDBTradePublisher::~KDBTradePublisher() {
-    kclose(socket);    
 }

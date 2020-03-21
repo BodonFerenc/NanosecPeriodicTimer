@@ -1,7 +1,7 @@
 #pragma once
 
-// never using namespace in header
-using namespace std;
+#include "constant.hpp"
+
 
 class Task {    
     public:

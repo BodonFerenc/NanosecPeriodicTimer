@@ -21,10 +21,10 @@
 
 class CSVLoggerTask: public Task {
     private:  
-        string filename;
+        std::string filename;
     protected:
-        vector<TIME> expectedTriggerTimes;
-        vector<TIME> realTriggerTimes;
+        std::vector<TIME> expectedTriggerTimes;
+        std::vector<TIME> realTriggerTimes;
 
     public: 
         CSVLoggerTask(unsigned long, const char* argv[]);
