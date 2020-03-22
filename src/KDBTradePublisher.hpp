@@ -22,9 +22,9 @@
 
 class KDBTradePublisher: public KDBPublisher {
     private:  
-        unsigned long counter;
         std::vector<std::array<char, 5>> stockUniverse;
         std::vector<char*> stockToSend;        
+        std::vector<char*>::iterator stock_it;
 
     public: 
         KDBTradePublisher(unsigned long, const char* argv[]);

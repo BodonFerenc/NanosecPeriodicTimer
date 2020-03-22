@@ -9,7 +9,7 @@
 constexpr auto STOCKNR = 26 * 26 * 26 * 26;
 
 KDBTradePublisher::KDBTradePublisher(unsigned long triggerNr, const char* argv[]) : 
-    KDBPublisher(triggerNr, argv), counter(0) {  
+    KDBPublisher(triggerNr, argv) {  
     stockUniverse.resize(STOCKNR);
     unsigned int i=0;
     for (char a = 'A'; a <= 'Z'; ++a) {
@@ -31,20 +31,19 @@ KDBTradePublisher::KDBTradePublisher(unsigned long triggerNr, const char* argv[]
     for (i = 0; i< triggerNr; ++i) {
         stockToSend.push_back(stockUniverse[rand() % STOCKNR].data());
     }
-
+    stock_it = stockToSend.begin();
 }
 
 bool inline KDBTradePublisher::run(const TIME& expected, const TIME& real) {
     static K tableName = ks((S) "tradeTP");
-    char* const stock = stockToSend[counter];
     // price between 100 and 120
     float price = 100.0 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/(120-100)));
 
-    K row = knk(6, ks(stock), ktj(-KP, DURNANO((real - kdb_start).time_since_epoch())),
+    K row = knk(6, ks(*stock_it), ktj(-KP, DURNANO((real - kdb_start).time_since_epoch())),
         kf(price), ki(rand()), kb(rand() % 2), kc('e'));
 
     K r = k(-socket, (char *) ".u.upd", r1(tableName), row, (K)0);
-    ++counter;
+    ++stock_it;
          
     /* if network error, async call will return 0 */
     if (!r)
