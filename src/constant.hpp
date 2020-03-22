@@ -3,7 +3,6 @@
 #include <chrono>
 
 constexpr auto BILLION=1000000000l;
-constexpr unsigned long NUM_NANOSECS_BETWEEN_1970_2000 = 946684800 * BILLION;     // useful for KDB time conversion
 
 // what you really want here is monotonic clock
 using TIME = std::chrono::time_point<std::chrono::system_clock>;

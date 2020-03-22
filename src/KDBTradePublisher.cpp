@@ -39,7 +39,7 @@ bool inline KDBTradePublisher::run(const TIME& expected, const TIME& real) {
     // price between 100 and 120
     float price = 100.0 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/(120-100)));
 
-    K row = knk(6, ks(stock), ktj(-KP, DURNANO(real.time_since_epoch()) - NUM_NANOSECS_BETWEEN_1970_2000),
+    K row = knk(6, ks(stock), ktj(-KP, DURNANO((real - kdb_start).time_since_epoch())),
         kf(price), ki(rand()), kb(rand() % 2), kc('e'));
 
     K r = k(-socket, (char *) ".u.upd", ks((S) "trade"), row, (K)0);
