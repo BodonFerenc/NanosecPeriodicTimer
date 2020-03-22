@@ -35,6 +35,7 @@ KDBTradePublisher::KDBTradePublisher(unsigned long triggerNr, const char* argv[]
 }
 
 bool inline KDBTradePublisher::run(const TIME& expected, const TIME& real) {
+    static K tableName = ks((S) "tradeTP");
     char* const stock = stockToSend[counter];
     // price between 100 and 120
     float price = 100.0 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/(120-100)));
@@ -42,7 +43,7 @@ bool inline KDBTradePublisher::run(const TIME& expected, const TIME& real) {
     K row = knk(6, ks(stock), ktj(-KP, DURNANO((real - kdb_start).time_since_epoch())),
         kf(price), ki(rand()), kb(rand() % 2), kc('e'));
 
-    K r = k(-socket, (char *) ".u.upd", ks((S) "trade"), row, (K)0);
+    K r = k(-socket, (char *) ".u.upd", r1(tableName), row, (K)0);
     ++counter;
          
     /* if network error, async call will return 0 */
