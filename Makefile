@@ -18,7 +18,7 @@ c.o:
 	wget -P $(OBJDIR) https://github.com/KxSystems/kdb/raw/master/l64/c.o
 
 k.h:
-	wget -P $(SOURCES) https://raw.githubusercontent.com/kxcontrib/capi/master/k.h
+	wget -P $(SRCDIR) https://raw.githubusercontent.com/kxcontrib/capi/master/k.h
 
 $(TARGETS): $(BINDIR)/%: $(OBJECTS) $(OBJDIR)/%.o
 	mkdir -p $(@D)
