@@ -58,7 +58,7 @@ To run do the following after command `make`
 
 ```
 # In Terminal 1:
-$ cd q
+$ cd script
 $ q rdb_light.q -p 5003
 
 q) tradeTP
