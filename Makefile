@@ -6,7 +6,7 @@ SRCDIR  :=src
 BINDIR  :=bin
 OBJDIR  :=obj
 
-TARGETS  := $(BINDIR)/PeriodicTimerDemo $(BINDIR)/PeriodicKDBPublisher
+TARGETS  := $(BINDIR)/PeriodicTimerDemo $(BINDIR)/PeriodicKDBPublisher $(BINDIR)/KDBPublishLatencyTester
 MAINS	 := $(TARGETS:$(BINDIR)/%=$(OBJDIR)/%.o)
 SOURCES  := $(wildcard $(SRCDIR)/*.cpp)
 INCLUDES := $(wildcard $(SRCDIR)/*.hpp)
