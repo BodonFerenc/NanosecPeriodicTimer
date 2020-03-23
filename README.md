@@ -33,6 +33,12 @@ latency| nr      rate
 ...
 ```
 
+The q script `generatePublisherLatencyStats.q` also generates some useful statistics (like median of the latencies) in a comma separated format. You can redirect the output to any file
+
+```
+$ q script/generatePublisherLatencyStats.q timer.csv > timerStatistics.csv
+```
+
 ## Clock aspects
 It is recommended to have a CPU with constant, invariant TSC (time-stamp counter) tha also support from RDTSCP instructions. This allows fast retrievel of the time. The Linux server I worked on, function [chrono::steady_clock::now](https://en.cppreference.com/w/cpp/chrono/steady_clock/now) executes in 26 nanosec. Run binary `bin/gettimeMeter` to measure execution time of getting the time.
 
