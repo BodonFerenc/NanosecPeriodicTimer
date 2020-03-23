@@ -9,15 +9,15 @@ $ make
 
 To run the executables:
 ```
-$ ./bin/PeriodicTimerDemo bytimerjumpforward 200000 30 res.csv
+$ ./bin/PeriodicTimerDemo bytimerjumpforward 200000 30 timer.csv
 ```
-which will run a time check based periodic timer for 30 seconds. The frequency of triggers is 20000, i.e. 20000 events per second and the planned and actual trigger times are saved in file `res.csv`. Pass `bysleep` as first parameter for a sleep based timer.
+which will run a time check based periodic timer for 30 seconds. The frequency of triggers is 20000, i.e. 20000 events per second and the planned and actual trigger times are saved in file `timer.csv`. Pass `bysleep` as first parameter for a sleep based timer.
 
 The program will output a few useful information, e.g the planned delays between triggers and the average of actual and planned delays. You can get a full distribution of the delays, .e.g by a simple q process:
 
 ```
 $ q
-q) t: ("JJJ";enlist",") 0:hsym `res.csv
+q) t: ("JJJ";enlist",") 0:hsym `timer.csv
 q)select median_latency: med latency, avg_latency: avg latency, max_latency: max latency from t
 median_latency avg_latency max_latency
 --------------------------------------
@@ -70,3 +70,21 @@ sym time price size stop ex
 ```
 
 Now switch back to `Terminal 1` and check the content of table trade or see how its size grows by executing command `count tradeTP` in the q interpreter.
+
+## measuring kdb+ latency
+The script can also be used to measure how long it takes from a trigger event, through a trade data publish till it arrives into a kdb+ process that inserts the data into its local table. 
+
+```
+# In Terminal 1:
+$ cd script
+$ q rdb_latency.q -output statistics.csv -p 5003
+
+q) trade
+sym time price size stop ex
+---------------------------
+
+# In Terminal 2:
+./bin/KDBPublishLatencyTester 10000 20 timer.csv localhost 5003
+```
+
+You can observe the latency statistics in file statistics.csv. 
