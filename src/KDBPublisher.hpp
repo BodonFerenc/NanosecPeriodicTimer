@@ -14,6 +14,7 @@
 #pragma once
 
 #include <chrono>
+#include "k.h"
 
 namespace detail {
         template <typename R1, typename R2>
@@ -27,9 +28,24 @@ constexpr std::chrono::duration<int, detail::ratio_multiply<std::ratio<24>, std:
 class KDBPublisher: public Task {
     protected:  
         int socket;
+        K tableName;
 
     public: 
         KDBPublisher(unsigned long, const char* argv[]);
-        bool run(const TIME&, const TIME&) = 0;
+
+        bool sendUpdate(K row);
+
         ~KDBPublisher();
 };
+
+inline bool KDBPublisher::sendUpdate(K row) {
+    K r = k(-socket, (char *) ".u.upd", r1(tableName), row, (K)0);
+    // k(-soc4ket, (char *) "[]", (K)0);
+         
+    /* if network error, async call will return 0 */
+    if (!r) {
+       std::cout << "Network Error populating table" << std::endl;
+       return(false);
+    }
+    return true;
+}

@@ -1,6 +1,5 @@
 #include <iostream>
 #include "KDBPublisher.hpp"
-#include "k.h"
 
 using namespace std;
 
