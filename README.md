@@ -87,4 +87,12 @@ sym time price size stop ex
 ./bin/KDBPublishLatencyTester 10000 20 timer.csv localhost 5003
 ```
 
+If the publisher and the kdb+ process are on the same machine then you can unix sockets. All you need to do is changing the host parameter to `0.0.0.0`. This will result in lower data transfer latencies.
+
+```
+# In Terminal 2:
+./bin/KDBPublishLatencyTester 10000 20 timer.csv 0.0.0.0 5003
+```
+
+
 You can observe the latency statistics in file statistics.csv. 
