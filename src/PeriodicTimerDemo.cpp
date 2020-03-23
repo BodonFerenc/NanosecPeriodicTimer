@@ -4,6 +4,7 @@
 #include <chrono>
 
 #include "constant.hpp"
+#include "PeriodicTimer.hpp"
 #include "CSVLoggerTask.hpp"
 #include "PeriodicTimerBySleep.hpp"
 #include "PeriodicTimerByTimeCheck.hpp"
@@ -30,20 +31,20 @@ int main(int argc, const char* argv[])
     string timertype(argv[1]);
 
 
+    PeriodicTimer<CSVLoggerTask> *timer;
     if(0 == timertype.compare("bysleep")) {
-        PeriodicTimerBySleep<CSVLoggerTask> timer(task);
-        timer.run(WAIT, MAXRUN);
+        timer = new PeriodicTimerBySleep<CSVLoggerTask>(task);
     } else if(0 == timertype.compare("bytimerstrict")) {
-        PeriodicTimerByTimeCheckStrict<CSVLoggerTask> timer(task);
-        timer.run(WAIT, MAXRUN);
+        timer = new PeriodicTimerByTimeCheckStrict<CSVLoggerTask>(task);
     } else if(0 == timertype.compare("bytimerjumpforward")) {
-        PeriodicTimerByTimeCheckJumpForward<CSVLoggerTask> timer(task); 
-        timer.run(WAIT, MAXRUN); 
+        timer = new PeriodicTimerByTimeCheckJumpForward<CSVLoggerTask>(task); 
     } else {
         cerr << "Invalid timer type " << timertype << 
             ".\nAvailable options: bysleep, bytimerstrict, bytimerjumpforward" << endl;
         return 1;
     }     
+
+    timer->run(WAIT, MAXRUN);
 
     return 0;
 }
