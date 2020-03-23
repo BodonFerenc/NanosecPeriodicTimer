@@ -18,13 +18,12 @@
 #include <vector>
 #include <array>
 #include "KDBPublisher.hpp"
+#include "KDBSymGenerator.hpp"
 
 
 class KDBTradePublisher: public KDBPublisher {
     private:  
-        std::vector<std::array<char, 5>> stockUniverse;
-        std::vector<char*> stockToSend;        
-        std::vector<char*>::iterator stock_it;
+        KDBSymGenerator symGenerator;
 
     public: 
         KDBTradePublisher(unsigned long, const char* argv[]);
