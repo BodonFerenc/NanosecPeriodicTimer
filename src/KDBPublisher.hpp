@@ -14,7 +14,9 @@
 #pragma once
 
 #include <chrono>
+#include <iostream>
 #include "k.h"
+#include "Task.hpp"
 
 namespace detail {
         template <typename R1, typename R2>
@@ -22,7 +24,6 @@ namespace detail {
     }
 constexpr std::chrono::duration<int, detail::ratio_multiply<std::ratio<24>, std::chrono::hours::period>> kdb_start(10957);   // number of days between 2000.01.01 and 1970.01.01
 
-#include "Task.hpp"
 
 
 class KDBPublisher: public Task {
@@ -32,15 +33,17 @@ class KDBPublisher: public Task {
 
     public: 
         KDBPublisher(unsigned long, const char* argv[]);
-
+        
+        template<bool FLUSH>
         bool sendUpdate(K row);
 
         ~KDBPublisher();
 };
 
+template<bool FLUSH>
 inline bool KDBPublisher::sendUpdate(K row) {
     K r = k(-socket, (char *) ".u.upd", r1(tableName), row, (K)0);
-    // k(-soc4ket, (char *) "[]", (K)0);
+    if (FLUSH) k(-socket, (char *) "[]", (K)0);
          
     /* if network error, async call will return 0 */
     if (!r) {

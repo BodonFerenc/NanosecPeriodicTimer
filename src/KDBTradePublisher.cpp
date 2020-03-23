@@ -44,5 +44,5 @@ bool inline KDBTradePublisher::run(const TIME& expected, const TIME& real) {
         kf(price), ki(rand()), kb(rand() % 2), kc('e'));
 
     ++stock_it;
-    return KDBPublisher::sendUpdate(row);
+    return KDBPublisher::sendUpdate<false>(row);
 }
