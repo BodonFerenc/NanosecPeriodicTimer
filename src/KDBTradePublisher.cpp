@@ -17,5 +17,5 @@ bool inline KDBTradePublisher::run(const TIME& expected, const TIME& real) {
         kf(price), ki(rand()), kb(rand() % 2), kc('e'));
 
     ++symGenerator.sym_it;
-    return KDBPublisher::sendUpdate<false>(row);
+    return KDBPublisher::sendUpdate(row);
 }

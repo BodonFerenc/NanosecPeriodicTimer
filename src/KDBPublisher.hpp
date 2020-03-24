@@ -34,7 +34,7 @@ class KDBPublisher: public Task {
     public: 
         KDBPublisher(unsigned long, const char* argv[]);
         
-        template<bool FLUSH>
+        template<bool FLUSH=false>
         bool sendUpdate(K row);
 
         ~KDBPublisher();
