@@ -106,3 +106,11 @@ You can observe the latency statistics in file statistics.csv. If you would like
 ```
 paste -d, timerStatistics.csv ../statistics.csv
 ```
+
+If you dont want to do all these manually then you can use bash script `measureKdbLatency.sh`. It starts RDB and publisher for you and even measures RDB CPU usage rate.
+
+```
+./measureKdbLatency.sh --freq 10000 --dur 20 --output ../statistics.csv --tcp
+```
+
+Use `--tcp` if you would like to use TCP/IP connection.
