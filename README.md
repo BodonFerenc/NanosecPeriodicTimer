@@ -114,3 +114,11 @@ If you dont want to do all these manually then you can use bash script `measureK
 ```
 
 Use `--tcp` if you would like to use TCP/IP connection.
+
+You might want to figure out the maximal frequency of updates your kdb+ process can ingest. You can manually run `measureKdbLatency.sh` with various parameters or use `./measureMultipleKdbLatency.sh` that does this for you and create a summary table.
+
+```
+./measureMultipleKdbLatency.sh --freq 10000,50000,100000 --dur 60,180 --outputdir ../out
+```
+
+The file that collects all statistics will be placed at `../out/summary.csv`. 
