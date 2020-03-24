@@ -48,7 +48,7 @@ inline bool KDBPublisher::sendUpdate(K row) {
     /* if network error, async call will return 0 */
     if (!r) {
        std::cout << "Network Error populating table" << std::endl;
-       return(false);
+       return false;
     }
     return true;
 }
