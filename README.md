@@ -33,10 +33,10 @@ latency| nr      rate
 ...
 ```
 
-The q script `generatePublisherLatencyStats.q` also generates some useful statistics (like median of the latencies) in a comma separated format. You can redirect the output to any file
+The q script `generatePublisherLatencyStats.q` also generates some useful statistics (like median of the latencies) in a CSV file specified by its second parameter.
 
 ```
-$ q script/generatePublisherLatencyStats.q timer.csv > timerStatistics.csv
+$ q script/generatePublisherLatencyStats.q timer.csv timerStatistics.csv
 ```
 
 ## Clock aspects
@@ -83,7 +83,7 @@ The script can also be used to measure how long it takes from a trigger event, t
 ```
 # In Terminal 1:
 $ cd script
-$ q rdb_latency.q -output statistics.csv -p 5003
+$ q rdb_latency.q -output ../statistics.csv -p 5003
 
 q) trade
 sym time price size stop ex
@@ -101,4 +101,8 @@ If the publisher and the kdb+ process are on the same machine then you can unix 
 ```
 
 
-You can observe the latency statistics in file statistics.csv. 
+You can observe the latency statistics in file statistics.csv. If you would like to see all statistics in a single view then you can simply merge publisher's and RDB's output by Linux command [paste](https://en.wikipedia.org/wiki/Paste_(Unix))
+
+```
+paste -d, timerStatistics.csv ../statistics.csv
+```
