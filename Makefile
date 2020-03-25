@@ -1,5 +1,5 @@
 CC		:=g++
-CFLAGS	:=-DKXVER=3 -Wall -Wpedantic -O3 -march=native -I. -D_POSIX_C_SOURCE=199309L -c
+CFLAGS	:=-DKXVER=3 -std=c++11 -Wall -Wpedantic -O3 -march=native -I. -c
 LDFLAGS	:=-O3 -flto -lpthread -static-libstdc++ -static-libgcc
 
 SRCDIR  :=src

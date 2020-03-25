@@ -16,10 +16,10 @@
 
 #include <string>
 #include <vector>
-#include "Task.hpp"
+#include "constant.hpp"
 
 
-class CSVLoggerTask: public Task {
+class CSVLoggerTask {
     private:  
         std::string filename;
     protected:

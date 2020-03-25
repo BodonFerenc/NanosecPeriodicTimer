@@ -11,7 +11,7 @@ CSVLoggerTask::CSVLoggerTask(unsigned long triggerNr, const char* argv[]) : file
     cout << "Nr of expected ticks\t\t" << triggerNr << endl;
 }
 
-bool inline CSVLoggerTask::run(const TIME& expected, const TIME& real) {
+bool CSVLoggerTask::run(const TIME& expected, const TIME& real) {
     expectedTriggerTimes.push_back(expected);
     realTriggerTimes.push_back(real);
     return true;
