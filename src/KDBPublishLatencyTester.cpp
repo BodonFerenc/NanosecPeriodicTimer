@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdlib.h> 
 #include <chrono>
+#include <sstream>
 
 #include "constant.hpp"
 #include "KDBPublisherCSVLoggerTask.hpp"
@@ -11,8 +12,8 @@ using namespace std;
 
 int main(int argc, const char* argv[])
 {
-    if (argc < 5) {
-        cerr << "Usage: " << argv[0] << "[freq] [dur] [outputfile] [host] [port]" << endl;
+    if (argc < 6) {
+        cerr << "Usage: " << argv[0] << "[freq] [dur] [outputfile] [host] [port] [flush]" << endl;
         return 1;
     }
 
@@ -23,10 +24,16 @@ int main(int argc, const char* argv[])
 
     const unsigned long MAXRUN = DUR * FREQ;
 
-    KDBPublisherCSVLoggerTask task(MAXRUN, argv + 3);
-
-    PeriodicTimerByTimeCheck<KDBPublisherCSVLoggerTask, Strict> timer(task); 
-    timer.run(WAIT, MAXRUN);    
-
+    if (atoi(argv[6])) {
+        cout << "flushing is enabled" << endl;
+        KDBPublisherCSVLoggerTask<true> task(MAXRUN, argv + 3);
+        PeriodicTimerByTimeCheck<KDBPublisherCSVLoggerTask<true>, Strict> timer(task); 
+        timer.run(WAIT, MAXRUN);    
+    }
+    else {
+        KDBPublisherCSVLoggerTask<false> task(MAXRUN, argv + 3);
+        PeriodicTimerByTimeCheck<KDBPublisherCSVLoggerTask<false>, Strict> timer(task); 
+        timer.run(WAIT, MAXRUN);    
+    }
     return 0;
 }

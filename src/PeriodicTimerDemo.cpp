@@ -32,13 +32,13 @@ int main(int argc, const char* argv[])
 
 
     PeriodicTimer<CSVLoggerTask> *timer;
-    if(0 == timertype.compare("bysleep")) {
+    if(0 == timertype.compare("bysleep"))
         timer = new PeriodicTimerBySleep<CSVLoggerTask>(task);
-    } else if(0 == timertype.compare("bytimerstrict")) {
+    else if(0 == timertype.compare("bytimerstrict"))
         timer = new PeriodicTimerByTimeCheck<CSVLoggerTask, Strict>(task);
-    } else if(0 == timertype.compare("bytimerjumpforward")) {
+    else if(0 == timertype.compare("bytimerjumpforward"))
         timer = new PeriodicTimerByTimeCheck<CSVLoggerTask, JumpForward>(task); 
-    } else {
+    else {
         cerr << "Invalid timer type " << timertype << 
             ".\nAvailable options: bysleep, bytimerstrict, bytimerjumpforward" << endl;
         return 1;

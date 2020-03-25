@@ -1,6 +1,10 @@
 \l schema.q
 
 cmd: .Q.opt .z.x
+if [not `output in key cmd; 
+  show "Please provide an output file name by command line parameter -output";
+  exit 1];
+
 output: first `$cmd[`output];
 
 timesAfterInsert: ();

@@ -22,6 +22,7 @@
 
 constexpr auto STOCKNR = 26 * 26 * 26 * 26;
 
+template<bool FLUSH>
 class KDBPublisherCSVLoggerTask: public CSVLoggerTask, public KDBPublisher {
     protected:  
         std::vector<std::array<char, 5>> stockUniverse;
@@ -32,7 +33,8 @@ class KDBPublisherCSVLoggerTask: public CSVLoggerTask, public KDBPublisher {
         bool run(const TIME&, const TIME&);
 };
 
-KDBPublisherCSVLoggerTask::KDBPublisherCSVLoggerTask(unsigned long triggerNr, const char* argv[]) 
+template<bool FLUSH>
+KDBPublisherCSVLoggerTask<FLUSH>::KDBPublisherCSVLoggerTask(unsigned long triggerNr, const char* argv[]) 
     : CSVLoggerTask(triggerNr, argv), KDBPublisher(triggerNr, argv+1) {  
     tableName = (ks((S) "trade"));
 
@@ -62,7 +64,8 @@ KDBPublisherCSVLoggerTask::KDBPublisherCSVLoggerTask(unsigned long triggerNr, co
 
 }
 
-bool inline KDBPublisherCSVLoggerTask::run(const TIME& expected, const TIME& real) {
+template<bool FLUSH>
+bool inline KDBPublisherCSVLoggerTask<FLUSH>::run(const TIME& expected, const TIME& real) {
     static char stop = 'i';            /* charactor example */
     static int size = 444;            /* long example */
     static double price = 12.12;       /* double example */
@@ -74,7 +77,7 @@ bool inline KDBPublisherCSVLoggerTask::run(const TIME& expected, const TIME& rea
     K row = knk(7, ks(stock), kj(sq), kc(stop), ki(size), kf(price), kc(condition), 
         ktj(-KP, DURNANO((std::chrono::system_clock::now() - kdb_start).time_since_epoch())));
 
-    bool res = KDBPublisher::sendUpdate<false>(row);
+    bool res = KDBPublisher::sendUpdate<FLUSH>(row);
 
     CSVLoggerTask::run(expected, real);
     return res;
