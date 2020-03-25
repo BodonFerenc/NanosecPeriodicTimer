@@ -1,10 +1,19 @@
-CC		:=g++
-CFLAGS	:=-DKXVER=3 -std=c++14 -Wall -Wpedantic -O3 -march=native -I. -c
-LDFLAGS	:=-O3 -flto -lpthread -static-libstdc++ -static-libgcc
+ifeq ($(shell uname),Darwin)
+PLATFORM=m64
+else ifeq ($(shell uname),Linux)
+PLATFORM=l64
+endif
 
 SRCDIR  :=src
 BINDIR  :=bin
 OBJDIR  :=obj
+LIBDIR  :=lib
+
+
+CC		:=g++
+CFLAGS	:=-DKXVER=3 -std=c++14 -Wall -Wpedantic -O3 -march=native -I $(LIBDIR) -c
+LDFLAGS	:=-O3 -flto -lpthread
+
 
 TARGETS  := $(BINDIR)/PeriodicTimerDemo $(BINDIR)/PeriodicKDBPublisher $(BINDIR)/KDBPublishLatencyTester
 MAINS	 := $(TARGETS:$(BINDIR)/%=$(OBJDIR)/%.o)
@@ -14,19 +23,21 @@ OBJECTS  := $(filter-out $(MAINS),$(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o))
 
 all: $(TARGETS)
 
-c.o:
-	wget -P $(OBJDIR) https://github.com/KxSystems/kdb/raw/master/l64/c.o
+$(LIBDIR)/c.o:
+	@mkdir -p $(@D)
+	wget -P $(LIBDIR) https://github.com/KxSystems/kdb/raw/master/$(PLATFORM)/c.o
 
-k.h:
-	wget -P $(SRCDIR) https://raw.githubusercontent.com/kxcontrib/capi/master/k.h
+$(LIBDIR)/k.h:
+	@mkdir -p $(@D)
+	wget -P $(LIBDIR) https://raw.githubusercontent.com/kxcontrib/capi/master/k.h
 
-$(TARGETS): $(BINDIR)/%: $(OBJECTS) $(OBJDIR)/%.o
-	mkdir -p $(@D)
-	$(CC) $(LDFLAGS) $^ $(OBJDIR)/c.o -o $@
+$(TARGETS): $(BINDIR)/%: $(OBJECTS) $(OBJDIR)/%.o $(LIBDIR)/c.o
+	@mkdir -p $(@D)
+	$(CC) $(LDFLAGS) $^ -o $@
 	@echo "Linking complete!"	
 
-$(OBJECTS) $(MAINS): $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	mkdir -p $(@D)
+$(OBJECTS) $(MAINS): $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(LIBDIR)/k.h
+	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -o $@ $<
 	@echo "Compiled "$<" successfully!"
 
