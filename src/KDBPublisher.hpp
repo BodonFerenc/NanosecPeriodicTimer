@@ -16,7 +16,7 @@
 #include <chrono>
 #include <iostream>
 #include "k.h"
-#include "Task.hpp"
+#include "constant.hpp"
 
 namespace detail {
         template <typename R1, typename R2>
@@ -26,7 +26,7 @@ constexpr std::chrono::duration<int, detail::ratio_multiply<std::ratio<24>, std:
 
 
 
-class KDBPublisher: public Task {
+class KDBPublisher {
     protected:  
         int socket;
         K tableName;

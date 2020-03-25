@@ -9,7 +9,7 @@ KDBTradePublisher::KDBTradePublisher(unsigned long triggerNr, const char* argv[]
     tableName = (ks((S) "tradeTP"));
 }
 
-bool inline KDBTradePublisher::run(const TIME& expected, const TIME& real) {
+bool KDBTradePublisher::run(const TIME& expected, const TIME& real) {
     // price between 100 and 120
     float price = 100.0 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/(120-100)));
 
