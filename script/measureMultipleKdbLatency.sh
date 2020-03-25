@@ -55,7 +55,7 @@ for FREQ in $(echo $FREQS); do
 	done
 done
 
-echo "generating summary file..."
+echo "generating summary file ${OUTPUTDIR}/summary.csv"
 cat ${OUTPUTDIR}/statistics_*.csv | sort -n | uniq > ${OUTPUTDIR}/summary.csv
 
 if [[ $NOCLEAN -ne 1 ]]; then
