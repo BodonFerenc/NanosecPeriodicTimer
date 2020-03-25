@@ -7,7 +7,7 @@ class PeriodicTimer {
     protected:    
         T& task;    
     public: 
-        PeriodicTimer(T& t) : task{t} {}
+        PeriodicTimer(T& t) : task(t) {}
 
         virtual void run(std::chrono::nanoseconds wait, unsigned long nr) = 0; 
         virtual ~PeriodicTimer() = default;
