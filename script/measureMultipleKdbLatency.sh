@@ -55,11 +55,11 @@ for FREQ in $(echo $FREQS); do
 	done
 done
 
-echo "generating summary file ${OUTPUTDIR}/summary.csv"
+echo "Generating summary file ${OUTPUTDIR}/summary.csv"
 cat ${OUTPUTDIR}/statistics_*.csv | sort -n | uniq > ${OUTPUTDIR}/summary.csv
 
 if [[ $NOCLEAN -ne 1 ]]; then
-    echo "cleaning up temporal files..."
+    echo "Cleaning up temporal files..."
     rm ${OUTPUTDIR}/statistics_*.csv
 fi
 
