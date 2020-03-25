@@ -32,8 +32,8 @@ void PeriodicTimerByTimeCheck<T, P>::run(std::chrono::nanoseconds wait, unsigned
     std::cout << "Starting the timer" << std::endl;          
     unsigned long runs=0;        
     bool ok = true;
-    auto nextSendTime = std::chrono::system_clock::now();
-    auto timenow = std::chrono::system_clock::now();
+    TIME nextSendTime = std::chrono::system_clock::now();
+    TIME timenow = std::chrono::system_clock::now();
 
     P::setNextTriggerTime(timenow, nextSendTime, wait);
 
