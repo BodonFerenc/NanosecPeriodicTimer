@@ -1,7 +1,8 @@
 ifeq ($(shell uname),Darwin)
-PLATFORM=m64
+	PLATFORM=m64
 else ifeq ($(shell uname),Linux)
-PLATFORM=l64
+	PLATFORM=l64
+	LDFLAGSEXTRA := -static-libstdc++ -static-libgcc
 endif
 
 SRCDIR  :=src
@@ -12,7 +13,7 @@ LIBDIR  :=lib
 
 CC		:=g++
 CFLAGS	:=-DKXVER=3 -std=c++14 -Wall -Wpedantic -O3 -march=native -I $(LIBDIR) -c
-LDFLAGS	:=-O3 -flto -lpthread
+LDFLAGS	:=-O3 -flto -lpthread $(LDFLAGSEXTRA)
 
 
 TARGETS  := $(BINDIR)/PeriodicTimerDemo $(BINDIR)/PeriodicKDBPublisher $(BINDIR)/KDBPublishLatencyTester
