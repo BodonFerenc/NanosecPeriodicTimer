@@ -25,7 +25,7 @@ int main(int argc, const char* argv[])
 
     KDBTradePublisher task(MAXRUN, argv + 3);
 
-    PeriodicTimerByTimeCheckJumpForward<KDBTradePublisher> timer(task); 
+    PeriodicTimerByTimeCheck<KDBTradePublisher, JumpForward> timer(task); 
     timer.run(WAIT, MAXRUN);    
 
     return 0;

@@ -25,7 +25,7 @@ int main(int argc, const char* argv[])
 
     KDBPublisherCSVLoggerTask task(MAXRUN, argv + 3);
 
-    PeriodicTimerByTimeCheckStrict<KDBPublisherCSVLoggerTask> timer(task); 
+    PeriodicTimerByTimeCheck<KDBPublisherCSVLoggerTask, Strict> timer(task); 
     timer.run(WAIT, MAXRUN);    
 
     return 0;
