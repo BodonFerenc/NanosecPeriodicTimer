@@ -8,11 +8,12 @@ DURATION=10
 PUBLISHEROUTPUT=/tmp/timer.csv
 OUTPUT=stat.csv
 KDBHOST=0.0.0.0
+FLUSH=0
 RDBOUTPUTFILENAME=/tmp/rdb.csv
 
 function args()
 {
-    options=$(getopt -o q --long tcp --long freq: --long dur: --long output: -- "$@")
+    options=$(getopt -o q --long tcp --long flush --long freq: --long dur: --long output: -- "$@")
     [ $? -eq 0 ] || {
         echo "Incorrect option provided"
         exit 1
@@ -26,16 +27,19 @@ function args()
         --tcp)
             KDBHOST=localhost
             ;;            
+        --flush)
+            FLUSH=1
+            ;;
         --freq)
-            shift; # The arg is next in position args
+            shift;
             FREQ=$1
             ;;
         --dur)
-            shift; # The arg is next in position args
+            shift;
             DURATION=$1
             ;;
         --output)
-            shift; # The arg is next in position args
+            shift;
             OUTPUT=$1
            ;;
         --)
@@ -72,7 +76,7 @@ sleep 1
 log
 
 log "Starting publisher with frequency $FREQ for duration $DURATION"
-numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION $PUBLISHEROUTPUT $KDBHOST 5001 > ${LOGDIR}/publisher.txt
+numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION $PUBLISHEROUTPUT $KDBHOST 5001 $FLUSH > ${LOGDIR}/publisher.txt
 
 tempOutputFileName=/tmp/stat.csv
 log
