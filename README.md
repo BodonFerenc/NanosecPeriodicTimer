@@ -77,7 +77,7 @@ sym time price size stop ex
 
 Now switch back to `Terminal 1` and check the content of table trade or see how its size grows by executing command `count tradeTP` in the q interpreter.
 
-## measuring kdb+ latency
+## measuring kdb+ ingest latency
 The script can also be used to measure how long it takes from a trigger event, through a trade data publish till it arrives into a kdb+ process that inserts the data into its local table. 
 
 ```
@@ -90,14 +90,14 @@ sym time price size stop ex
 ---------------------------
 
 # In Terminal 2:
-./bin/KDBPublishLatencyTester 10000 20 timer.csv localhost 5003
+./bin/KDBPublishLatencyTester 10000 20 timer.csv localhost 5003 0
 ```
 
 If the publisher and the kdb+ process are on the same machine then you can unix sockets. All you need to do is changing the host parameter to `0.0.0.0`. This will result in lower data transfer latencies.
 
 ```
 # In Terminal 2:
-./bin/KDBPublishLatencyTester 10000 20 timer.csv 0.0.0.0 5003
+./bin/KDBPublishLatencyTester 10000 20 timer.csv 0.0.0.0 5003 0
 ```
 
 
@@ -113,7 +113,7 @@ If you dont want to do all these manually then you can use bash script `measureK
 ./measureKdbLatency.sh --freq 10000 --dur 20 --output ../statistics.csv --tcp
 ```
 
-Use `--tcp` if you would like to use TCP/IP connection.
+Use `--tcp` if you would like to use TCP/IP connection and `--flush` to flush output buffer after each send message..
 
 You might want to figure out the maximal frequency of updates your kdb+ process can ingest. You can manually run `measureKdbLatency.sh` with various parameters or use `./measureMultipleKdbLatency.sh` that does this for you and create a summary table.
 
