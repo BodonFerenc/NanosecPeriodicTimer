@@ -9,10 +9,11 @@ OUTPUTDIR=../out
 FREQS='10000 30000 60000 100000 150000'
 DURS='30 60'
 BATCHSIZES=0
+BATCHTYPE=cache
 
 function args()
 {
-    options=$(getopt --long noclean --long tcp --long flush --long freq: --long dur: --long outputdir: --long batchsize: -- "$@")
+    options=$(getopt --long noclean --long tcp --long flush --long freq: --long dur: --long outputdir: --long batchsize: --long batchtype: -- "$@")
     [ $? -eq 0 ] || {
         echo "Incorrect option provided"
         exit 1
@@ -44,7 +45,11 @@ function args()
         --batchsize)
             shift;
             BATCHSIZES=$(echo $1 | tr "," " ")
-           ;;           
+           ;;       
+       --batchtype)
+            shift;
+            BATCHTYPE=$1
+           ;;                
         --)
             shift
             break
@@ -66,7 +71,7 @@ for FREQ in $(echo $FREQS); do
         for BATCHSIZE in $(echo $BATCHSIZES); do
             echo "Running test with batch size $BATCHSIZE ..."
             OUTPUT=${OUTPUTDIR}/statistics_${FREQ}_${DUR}_${BATCHSIZE}.csv
-		    ./measureKdbLatency.sh $FLUSH $TCP --freq $FREQ --dur $DUR --output ${OUTPUT} --batchsize $BATCHSIZE
+		    ./measureKdbLatency.sh $FLUSH $TCP --freq $FREQ --dur $DUR --output ${OUTPUT} --batchsize $BATCHSIZE --batchtype $BATCHTYPE
             tail -n 1 ${OUTPUT} >> ${OUTPUTDIR}/summary.csv
         done
 	done

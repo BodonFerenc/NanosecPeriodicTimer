@@ -11,10 +11,11 @@ KDBHOST=0.0.0.0
 FLUSH=0
 RDBOUTPUTFILENAME=/tmp/rdb.csv
 BATCHSIZE=0
+BATCHTYPE=cache
 
 function args()
 {
-    options=$(getopt -o q --long tcp --long flush --long freq: --long dur: --long output: --long batchsize: -- "$@")
+    options=$(getopt -o q --long tcp --long flush --long freq: --long dur: --long output: --long batchsize: --long batchtype: -- "$@")
     [ $? -eq 0 ] || {
         echo "Incorrect option provided"
         exit 1
@@ -47,6 +48,10 @@ function args()
             shift;
             BATCHSIZE=$1
            ;;           
+       --batchtype)
+            shift;
+            BATCHTYPE=$1
+           ;;               
         --)
             shift
             break
@@ -81,7 +86,7 @@ sleep 1
 log
 
 log "Starting publisher with frequency $FREQ for duration $DURATION"
-numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION $PUBLISHEROUTPUT $KDBHOST 5001 $FLUSH $BATCHSIZE > ${LOGDIR}/publisher.txt
+numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION $PUBLISHEROUTPUT $KDBHOST 5001 $FLUSH $BATCHSIZE $BATCHTYPE> ${LOGDIR}/publisher.txt
 
 tempOutputFileName=/tmp/stat.csv
 log

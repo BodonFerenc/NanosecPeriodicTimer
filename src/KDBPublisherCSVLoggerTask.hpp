@@ -2,7 +2,7 @@
  * \class KDBPublisherCSVLoggerTask
  *
  *
- * \brief Task that stores trigger times and writes them to a CSV file
+ * \brief Task that sends single row updates to Kdb+.
  *
  * This class memorizes all expected and real trigger times
  * and writes to a CSV file upon destruction.
