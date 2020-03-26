@@ -40,7 +40,7 @@ int main(int argc, const char* argv[])
             timer.run(WAIT, MAXRUN);    
         }
     } else {
-        cout << "batching is enabled with batch size "<< batchsize << endl;
+        cout << "Batch size\t\t\t"<< batchsize << endl;
         if (flush) {
             cout << "flushing is enabled" << endl;
             KDBBatchPublisherCSVLoggerTask<true> task(MAXRUN, argv + 3);
