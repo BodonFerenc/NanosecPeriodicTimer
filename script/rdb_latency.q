@@ -21,7 +21,7 @@ timesAfterInsert: ();
   update adaptertime: first time by sq from `trade;  
   update latency: timesAfterInsert[sq] - adaptertime from `trade;    
 
-  show "saving statistics of latency";
+  show "saving latency statistics of table of size ",  string count trade;
   output 0:","0:select 
     medKobjCreation: med kobjcreation,
     maxLatency: `long$max latency, 
