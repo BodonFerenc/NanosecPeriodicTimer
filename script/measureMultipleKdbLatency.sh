@@ -8,7 +8,7 @@ FLUSH=''
 OUTPUTDIR=../out
 FREQS='10000 30000 60000 100000 150000'
 DURS='30 60'
-BATCHSIZE=0
+BATCHSIZES=0
 
 function args()
 {
@@ -43,7 +43,7 @@ function args()
             ;;
         --batchsize)
             shift;
-            BATCHSIZE=$1
+            BATCHSIZES=$(echo $1 | tr "," " ")
            ;;           
         --)
             shift
@@ -63,8 +63,11 @@ for FREQ in $(echo $FREQS); do
 	echo "Running test with frequency $FREQ ..."
 	for DUR in $(echo $DURS); do
 		echo "Running test with duration $DUR ..."
-		./measureKdbLatency.sh $FLUSH $TCP --freq $FREQ --dur $DUR --output ${OUTPUTDIR}/statistics_${FREQ}_${DUR}.csv --batchsize $BATCHSIZE
-        tail -n 1 ${OUTPUTDIR}/statistics_${FREQ}_${DUR}.csv >> ${OUTPUTDIR}/summary.csv
+        for BATCHSIZE in $(echo $BATCHSIZES); do
+            echo "Running test with batch size $BATCHSIZE ..."
+		    ./measureKdbLatency.sh $FLUSH $TCP --freq $FREQ --dur $DUR --output ${OUTPUTDIR}/statistics_${FREQ}_${DUR}.csv --batchsize $BATCHSIZE
+            tail -n 1 ${OUTPUTDIR}/statistics_${FREQ}_${DUR}.csv >> ${OUTPUTDIR}/summary.csv
+        done
 	done
 done
 
