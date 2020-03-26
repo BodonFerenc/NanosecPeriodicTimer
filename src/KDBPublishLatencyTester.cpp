@@ -69,8 +69,10 @@ int main(int argc, const char* argv[])
                 timer.run(WAIT, MAXRUN);    
             }
         }
-        else cerr << "Unknown batch type (should be 'cache' or 'batch'): " << argv[8] << endl;
-        return 1;
+        else {
+            cerr << "Unknown batch type (should be 'cache' or 'batch'): " << argv[8] << endl;
+            return 1;
+        }
     }
     return 0;
 }
