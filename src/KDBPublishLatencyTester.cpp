@@ -27,7 +27,7 @@ int main(int argc, const char* argv[])
     const unsigned long MAXRUN = DUR * FREQ;
     unsigned int flush = atoi(argv[6]);
 
-    if (argc < 6 || atoi(argv[7]) == 0) {
+    if (argc < 6 || atoi(argv[7]) < 2) {
         cout << "No batching" << endl;        
         if (flush) {
             cout << "flushing is enabled" << endl;
