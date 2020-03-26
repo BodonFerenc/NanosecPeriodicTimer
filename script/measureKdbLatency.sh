@@ -10,10 +10,11 @@ OUTPUT=stat.csv
 KDBHOST=0.0.0.0
 FLUSH=0
 RDBOUTPUTFILENAME=/tmp/rdb.csv
+BATCHSIZE=0
 
 function args()
 {
-    options=$(getopt -o q --long tcp --long flush --long freq: --long dur: --long output: -- "$@")
+    options=$(getopt -o q --long tcp --long flush --long freq: --long dur: --long output: --long batchsize: -- "$@")
     [ $? -eq 0 ] || {
         echo "Incorrect option provided"
         exit 1
@@ -42,6 +43,10 @@ function args()
             shift;
             OUTPUT=$1
            ;;
+        --batchsize)
+            shift;
+            BATCHSIZE=$1
+           ;;           
         --)
             shift
             break
@@ -76,7 +81,7 @@ sleep 1
 log
 
 log "Starting publisher with frequency $FREQ for duration $DURATION"
-numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION $PUBLISHEROUTPUT $KDBHOST 5001 $FLUSH > ${LOGDIR}/publisher.txt
+numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION $PUBLISHEROUTPUT $KDBHOST 5001 $FLUSH $BATCHSIZE > ${LOGDIR}/publisher.txt
 
 tempOutputFileName=/tmp/stat.csv
 log
@@ -92,8 +97,8 @@ log "RDB CPU usage ${RDBCPUUSAGE[5]}"
 METAFILE=/tmp/rdbperfmeta.csv
 
 log "Creating csv for the meta data..."
-echo "frequency,duration,RDB CPU Usage" > $METAFILE
-echo "$FREQ,$DURATION,${RDBCPUUSAGE[5]}" >> $METAFILE
+echo "frequency,duration,batchsize,RDB CPU Usage" > $METAFILE
+echo "$FREQ,$DURATION,$BATCHSIZE,${RDBCPUUSAGE[5]}" >> $METAFILE
 
 log "Merging meta data with publisher and RDB statistics into $OUTPUT"
 paste -d, $METAFILE $tempOutputFileName $RDBOUTPUTFILENAME > $OUTPUT
