@@ -65,8 +65,9 @@ for FREQ in $(echo $FREQS); do
 		echo "Running test with duration $DUR ..."
         for BATCHSIZE in $(echo $BATCHSIZES); do
             echo "Running test with batch size $BATCHSIZE ..."
-		    ./measureKdbLatency.sh $FLUSH $TCP --freq $FREQ --dur $DUR --output ${OUTPUTDIR}/statistics_${FREQ}_${DUR}.csv --batchsize $BATCHSIZE
-            tail -n 1 ${OUTPUTDIR}/statistics_${FREQ}_${DUR}.csv >> ${OUTPUTDIR}/summary.csv
+            OUTPUT=${OUTPUTDIR}/statistics_${FREQ}_${DUR}_${BATCHSIZE}.csv
+		    ./measureKdbLatency.sh $FLUSH $TCP --freq $FREQ --dur $DUR --output ${OUTPUT} --batchsize $BATCHSIZE
+            tail -n 1 ${OUTPUT} >> ${OUTPUTDIR}/summary.csv
         done
 	done
 done
