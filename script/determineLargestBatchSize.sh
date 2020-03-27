@@ -51,7 +51,6 @@ args $0 "$@"
 
 OUTPUTDIR=../res
 mkdir -p $OUTPUTDIR
-rm -rf $OUTPUTDIR/*
 
 DUR=60
 
