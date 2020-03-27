@@ -78,15 +78,15 @@ log "Starting RDB script in the background..."
 nohup numactl --physcpubind=0 q rdb_latency.q -output $RDBOUTPUTFILENAME -p 5001 2>&1 > ${LOGDIR}/rdb.txt 2>&1 &
 RDB_PID=$!
 
-nohup perf stat -x " " -p $RDB_PID -e task-clock --log-fd 1 > ${LOGDIR}/perf.txt 2>&1 &
-PERF_PID=$!
-
 sleep 1
 
 log
 
 log "Starting publisher with frequency $FREQ for duration $DURATION"
 numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION $PUBLISHEROUTPUT $KDBHOST 5001 $FLUSH $BATCHSIZE $BATCHTYPE> ${LOGDIR}/publisher.txt
+
+nohup perf stat -x " " -p $RDB_PID -e task-clock --log-fd 1 > ${LOGDIR}/perf.txt 2>&1 &
+PERF_PID=$!
 
 tempOutputFileName=/tmp/stat.csv
 log
