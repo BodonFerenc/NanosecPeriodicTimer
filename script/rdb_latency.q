@@ -27,7 +27,7 @@ timesAfterInsert: ();
     maxLatency: `long$max latency, 
     minLatency: `long$min latency, 
     avgLatency: avg latency,
-    medLatency: med latency from trade;
+    medLatency: "j"$med latency from trade;
 
   show "exitting...";
   exit 0
