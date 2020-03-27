@@ -4,12 +4,16 @@ set -eu -o pipefail
 
 IFS=','     # to process csv files
 
+NOCLEAN=0
 FLUSH=''
 TCP=''
 
+declare -i STARTFREQ=60000
+declare -i STARTBATCH=1
+
 function args()
 {
-    options=$(getopt --long tcp -- "$@")
+    options=$(getopt --long tcp --long startfreq: --long startbatchsize: -- "$@")
     [ $? -eq 0 ] || {
         echo "Incorrect option provided"
         exit 1
@@ -17,12 +21,23 @@ function args()
     eval set -- "$options"
     while true; do
         case "$1" in
+        --noclean)
+            NOCLEAN=1
+            ;;
         --tcp)
             TCP='--tcp'
             ;;     
         --flush)
             FLUSH='--flush'
             ;;       
+        --startfreq)
+            shift;
+            STARTFREQ=$1
+            ;;    
+        --startbatchsize)
+            shift;
+            STARTBATCH=$1
+            ;;                        
         --)
             shift
             break
@@ -40,20 +55,18 @@ rm -rf $OUTPUTDIR/*
 
 DUR=60
 
-declare -i STARTFREQ=60000
 declare -i ENDFREQ=5000000
 declare -i STEPFREQ=10000
 
-declare -i STARTBATCH=1
 declare -i MAXBATCHSIZE=8000
 
 declare -i STARTMEDPUBLATLIMIT=14
 declare -i MEDPUBLIMITOFFSET=300000
-declare -i MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT
 
 declare -i BATCHSIZE=STARTBATCH
 declare -i FREQ=STARTFREQ
 
+(( MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
 
 while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 	echo "running test with batchsize $BATCHSIZE ..."
@@ -71,15 +84,16 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 	if (( MEDPUBLAT > MEDPUBLATLIMIT  || RDBCPUUSAGE > 95 )); then
         declare -i BATCHINC
         if ((BATCHSIZE > 20)); then
-            BATCHINC=${$(echo "l($BATCHSIZE)-1" | bc -l)%%.*}
+            BATCHINCFLOAT=$(echo "l($BATCHSIZE)-1" | bc -l)
+            BATCHINC=${BATCHINCFLOAT%%.*}
         else
             BATCHINC=1
         fi
-		((BATCHSIZE+=BATCHINC))
-		((MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET))
+		(( BATCHSIZE+=BATCHINC ))
+		(( MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
 		echo "increasing batch by $BATCHINC"
 	else
-		((FREQ+=STEPFREQ))
+		(( FREQ+=STEPFREQ ))
 		echo "increasing frequency"
 	fi
 done
@@ -87,7 +101,10 @@ done
 echo "generating summary file..."
 cat $OUTPUTDIR/stat_*.csv | csvgrep -c 1 -m "frequency" -i > $OUTPUTDIR/summary.csv
 
-echo "cleaning up temporal stat files..."
-# rm res/stat*
+if [[ $NOCLEAN -ne 1 ]]; then
+    echo "Cleaning up temporal files..."
+    rm ${OUTPUTDIR}/statistics_*.csv
+fi
+
 
 exit 0

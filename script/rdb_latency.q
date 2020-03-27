@@ -24,10 +24,10 @@ timesAfterInsert: ();
   show "saving latency statistics of table of size ",  string count trade;
   output 0:","0:select 
     medKobjCreation: med kobjcreation,
-    maxLatency: `long$max latency, 
+    maxLatency: `long$max latency,
     minLatency: `long$min latency, 
     avgLatency: avg latency,
-    medLatency: "j"$med latency from trade;
+    medLatency: "j"$med latency from trade;     // force to long for easier post-processing
 
   show "exitting...";
   exit 0
