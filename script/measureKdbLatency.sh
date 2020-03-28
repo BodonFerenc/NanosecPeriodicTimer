@@ -78,7 +78,7 @@ log "Starting RDB script in the background..."
 nohup numactl --physcpubind=0 q rdb_latency.q -output $RDBOUTPUTFILENAME -p 5001 2>&1 > ${LOGDIR}/rdb.txt 2>&1 &
 RDB_PID=$!
 
-sleep 1
+sleep 1   # wait a sec till RDB comes up. TODO: implement more robust solution
 
 log
 
@@ -93,17 +93,24 @@ log
 log "Processing output $PUBLISHEROUTPUT"
 q generatePublisherLatencyStats.q $PUBLISHEROUTPUT $tempOutputFileName -q
 
-log "Waiting for perf stat (PID: $PERF_PID) and RDB (PID: $RDB_PID) to finish"
-wait $PERF_PID
+wait $RDB_PID
 
-RDBCPUUSAGE=($(cat ${LOGDIR}/perf.txt))
-log "RDB CPU usage ${RDBCPUUSAGE[5]}"
+log "Waiting for perf stat (PID: $PERF_PID) and to finish"
+if wait $PERF_PID; then
+    RDBCPUUSAGESTAT=($(cat ${LOGDIR}/perf.txt))
+    RDBCPUUSAGE=${RDBCPUUSAGESTAT[5]}
+    log "RDB CPU usage $RDBCPUUSAGE"
+else
+    # TODO: invetigate perf stat errors
+    log "Error measuring RDB CPU usage, command perf failed."
+    RDBCPUUSAGE=''
+fi
 
 METAFILE=/tmp/rdbperfmeta.csv
 
 log "Creating csv for the meta data..."
 echo "frequency,duration,batchsize,RDB CPU Usage" > $METAFILE
-echo "$FREQ,$DURATION,$BATCHSIZE,${RDBCPUUSAGE[5]}" >> $METAFILE
+echo "$FREQ,$DURATION,$BATCHSIZE,$RDBCPUUSAGE" >> $METAFILE
 
 log "Merging meta data with publisher and RDB statistics into $OUTPUT"
 paste -d, $METAFILE $tempOutputFileName $RDBOUTPUTFILENAME > $OUTPUT

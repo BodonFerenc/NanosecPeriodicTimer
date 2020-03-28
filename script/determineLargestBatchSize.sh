@@ -75,7 +75,7 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
     ./measureKdbLatency.sh $FLUSH $TCP --freq $FREQ --dur $DUR --output ${statFilename} --batchsize $BATCHSIZE --batchtype cache
 
 	stat=($(tail -n 1 $statFilename))
-	declare -i RDBCPUUSAGE=$(echo "100 * ${stat[3]} / 1" | bc)
+	declare -i RDBCPUUSAGE=$(echo "100 * ${stat[3]:-0} / 1" | bc)
 	declare -i MEDPUBLAT=${stat[7]}
 	echo "Median of publication latency was $MEDPUBLAT"
     echo "Current limit for the median of publication latency is $MEDPUBLATLIMIT"
