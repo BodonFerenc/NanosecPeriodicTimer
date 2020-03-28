@@ -56,6 +56,7 @@ DUR=60
 
 declare -i ENDFREQ=5000000
 declare -i STEPFREQ=10000
+declare -i INCFREQ=500000   # increase increment
 
 declare -i MAXBATCHSIZE=8000
 
@@ -92,6 +93,7 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 		(( MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
 		echo "increasing batch by $BATCHINC"
 	else
+        ((FREQ += STEPFREQ * (1 + FREQ / INCFREQ) ))
 		(( FREQ+=STEPFREQ ))
 		echo "increasing frequency"
 	fi
