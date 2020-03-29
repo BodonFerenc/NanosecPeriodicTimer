@@ -19,13 +19,13 @@ int main(int argc, const char* argv[])
         return 1;
     }
 
-    const unsigned long FREQ = atol(argv[1]);          // frequency
-    chrono::nanoseconds WAIT(BILLION / FREQ);          // wait time between ticks
+    const auto FREQ = atol(argv[1]);          // frequency
+    const chrono::nanoseconds WAIT(BILLION / FREQ);          // wait time between ticks
     cout << "Wait time is set to\t\t" << WAIT.count() << " nanosec" << endl;
-    const unsigned int DUR = atoi(argv[2]);            // duration is second
+    const auto DUR = atoi(argv[2]);            // duration is second
 
-    const unsigned long MAXRUN = DUR * FREQ;
-    unsigned int flush = atoi(argv[6]);
+    const auto MAXRUN = DUR * FREQ;
+    const auto flush = atoi(argv[6]);
 
     if (argc < 6 || atoi(argv[7]) < 2) {
         cout << "No batching" << endl;        
