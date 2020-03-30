@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdlib.h> 
 #include <chrono>
+#include <functional>
 
 #include "constant.hpp"
 #include "KDBTradePublisher.hpp"
