@@ -55,7 +55,7 @@ bool inline KDBCacheAndSendBatchPublisherCSVLoggerTask<FLUSH>::run(const TIME& e
     ++batchCounter;
 
     if (batchCounter == batchSize) {
-        KDBPublisher::sendUpdate(row);
+        KDBPublisher::sendUpdate<FLUSH>(row);
         
         initRow();
         batchCounter = 0;
