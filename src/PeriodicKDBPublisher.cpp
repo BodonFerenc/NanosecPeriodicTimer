@@ -5,7 +5,7 @@
 
 #include "constant.hpp"
 #include "KDBTradePublisher.hpp"
-#include "PeriodicTimerByTimeCheck.hpp"
+#include "Timers.hpp"
 
 using namespace std;
 
@@ -25,8 +25,9 @@ int main(int argc, const char* argv[])
 
     KDBTradePublisher task(MAXRUN, argv + 3);
 
-    PeriodicTimerByTimeCheck<KDBTradePublisher, JumpForward> timer(task); 
-    timer.run(WAIT, MAXRUN);    
+    auto timer = std::bind(bytimecheck<KDBTradePublisher>, strict, 
+                std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+    timer(task, WAIT, MAXRUN);    
 
     return 0;
 }

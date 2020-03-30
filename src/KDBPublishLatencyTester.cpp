@@ -6,7 +6,7 @@
 
 #include "constant.hpp"
 #include "KDBPublisherCSVLoggerTask.hpp"
-#include "PeriodicTimerByTimeCheck.hpp"
+#include "Timers.hpp"
 #include "KDBBatchPublisherCSVLoggerTask.hpp"
 #include "KDBCacheAndSendBatchPublisherCSVLoggerTask.hpp"
 
@@ -32,13 +32,15 @@ int main(int argc, const char* argv[])
         if (flush) {
             cout << "flushing is enabled" << endl;
             KDBPublisherCSVLoggerTask<true> task(MAXRUN, argv + 3);
-            PeriodicTimerByTimeCheck<KDBPublisherCSVLoggerTask<true>, Strict> timer(task); 
-            timer.run(WAIT, MAXRUN);    
+            auto timer = std::bind(bytimecheck<KDBPublisherCSVLoggerTask<true>>, strict, 
+                std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+            timer(task, WAIT, MAXRUN);    
         }
         else {
             KDBPublisherCSVLoggerTask<false> task(MAXRUN, argv + 3);
-            PeriodicTimerByTimeCheck<KDBPublisherCSVLoggerTask<false>, Strict> timer(task); 
-            timer.run(WAIT, MAXRUN);    
+            auto timer = std::bind(bytimecheck<KDBPublisherCSVLoggerTask<false>>, strict, 
+                std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+            timer(task, WAIT, MAXRUN);    
         }
     } else {
         cout << "Batch size\t\t\t"<< atoi(argv[7]) << endl;
@@ -47,26 +49,30 @@ int main(int argc, const char* argv[])
             if (flush) {
                 cout << "flushing is enabled" << endl;
                 KDBCacheAndSendBatchPublisherCSVLoggerTask<true> task(MAXRUN, argv + 3);
-                PeriodicTimerByTimeCheck<KDBCacheAndSendBatchPublisherCSVLoggerTask<true>, Strict> timer(task); 
-                timer.run(WAIT, MAXRUN);    
+                auto timer = std::bind(bytimecheck<KDBCacheAndSendBatchPublisherCSVLoggerTask<true>>, strict, 
+                    std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+                timer(task, WAIT, MAXRUN);    
             }
             else {
                 KDBCacheAndSendBatchPublisherCSVLoggerTask<false> task(MAXRUN, argv + 3);
-                PeriodicTimerByTimeCheck<KDBCacheAndSendBatchPublisherCSVLoggerTask<false>, Strict> timer(task); 
-                timer.run(WAIT, MAXRUN);    
+                auto timer = std::bind(bytimecheck<KDBCacheAndSendBatchPublisherCSVLoggerTask<false>>, strict, 
+                    std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+                timer(task, WAIT, MAXRUN);    
             }            
         } else if (0 == string(argv[8]).compare("batch")) {
             cout << "Batch publisher is created" << endl;
             if (flush) {
                 cout << "flushing is enabled" << endl;
                 KDBBatchPublisherCSVLoggerTask<true> task(MAXRUN, argv + 3);
-                PeriodicTimerByTimeCheck<KDBBatchPublisherCSVLoggerTask<true>, Strict> timer(task); 
-                timer.run(WAIT, MAXRUN);    
+                auto timer = std::bind(bytimecheck<KDBBatchPublisherCSVLoggerTask<true>>, strict, 
+                    std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+                timer(task, WAIT, MAXRUN);    
             }
             else {
                 KDBBatchPublisherCSVLoggerTask<false> task(MAXRUN, argv + 3);
-                PeriodicTimerByTimeCheck<KDBBatchPublisherCSVLoggerTask<false>, Strict> timer(task); 
-                timer.run(WAIT, MAXRUN);    
+                auto timer = std::bind(bytimecheck<KDBBatchPublisherCSVLoggerTask<false>>, strict, 
+                    std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+                timer(task, WAIT, MAXRUN);    
             }
         }
         else {
