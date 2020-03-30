@@ -77,13 +77,15 @@ log
 log "Starting publisher with frequency $FREQ for duration $DURATION"
 numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION $PUBLISHEROUTPUT $KDBHOST 5001 $FLUSH $BATCHSIZE $BATCHTYPE> ${LOGDIR}/publisher.txt
 
+afterStartWork
+
 nohup perf stat -x " " -p $RDB_PID -e task-clock --log-fd 1 > ${LOGDIR}/perf.txt 2>&1 &
 PERF_PID=$!
 
-tempOutputFileName=/tmp/stat.csv
+TIMERSTATFILE=/tmp/stat.csv
 log
 log "Processing output $PUBLISHEROUTPUT"
-q generatePublisherLatencyStats.q $PUBLISHEROUTPUT $tempOutputFileName -q
+q generatePublisherLatencyStats.q $PUBLISHEROUTPUT $TIMERSTATFILE -q
 
 wait $RDB_PID
 
