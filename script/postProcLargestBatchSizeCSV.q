@@ -2,7 +2,6 @@ input: `$first .z.x;
 output: `$last .z.x; 
 
 t: `frequency`batchsize xasc ("JJJFJJFJJJJFJ";enlist",") 0:hsym input;
-update largestBatchSize: max batchsize by frequency from `t;
 bestMedLatency: select 
     largestBatchSize: last batchsize, 
     medLatencyAtLargestBatchSize: last medLatency by frequency 
