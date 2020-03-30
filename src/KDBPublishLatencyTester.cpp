@@ -3,6 +3,7 @@
 #include <stdlib.h> 
 #include <chrono>
 #include <sstream>
+#include <functional>
 
 #include "constant.hpp"
 #include "KDBPublisherCSVLoggerTask.hpp"
