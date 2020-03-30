@@ -5,8 +5,9 @@ set -eu -o pipefail
 RDBOUTPUTFILE=/tmp/rdb.csv
 RDBSCRIPT="rdb_latency.q -output $RDBOUTPUTFILE"
 
-function afterStartWork {
+function afterStartWork() {
     # do nothing
+    :
 }
 
 source startPublisherAndRDB.sh
