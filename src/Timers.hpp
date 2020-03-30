@@ -5,7 +5,7 @@
 template <class T>    
 void bysleep(T& task, std::chrono::nanoseconds wait, unsigned long nr) {
 
-    std::cout << "Starting bysleep timer" << std::endl;   
+    std::cout << "Starting sleep-based timer" << std::endl;   
     unsigned long runs=0;   
     bool ok = true;
     auto timenow = std::chrono::system_clock::now();
@@ -35,7 +35,7 @@ template <class T>
 void bytimecheck(std::function<void(const TIME&, TIME&, const std::chrono::nanoseconds&)> nexttimeSetter, 
     T& task, std::chrono::nanoseconds wait, unsigned long nr) {
 
-    std::cout << "Starting the timer" << std::endl;          
+    std::cout << "Starting timecheck-based timer" << std::endl;          
     unsigned long runs=0;        
     bool ok = true;
     TIME nextTriggerTime = std::chrono::system_clock::now();
