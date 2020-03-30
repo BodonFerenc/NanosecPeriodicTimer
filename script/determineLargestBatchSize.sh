@@ -78,7 +78,7 @@ declare -i STARTMEDPUBLATLIMIT=$(q <<< 'exec `long$1+med latency from ("JJJ";enl
 
 
 TEMPRESFILE=/tmp/tempres.csv
-touch $TEMPRESFILE
+:> $TEMPRESFILE    # clear content
 
 
 while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
