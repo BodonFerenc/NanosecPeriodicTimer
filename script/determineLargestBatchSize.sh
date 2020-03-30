@@ -71,7 +71,7 @@ declare -i FREQ=STARTFREQ
 
 echo "Determining median of timer latency on current hardware"
 echo "Running a timer with a simple task..."
-./bin/PeriodicTimerDemo bytimerstrict 5000 5 /tmp/raw.csv
+../bin/PeriodicTimerDemo bytimerstrict 5000 5 /tmp/raw.csv
 declare -i STARTMEDPUBLATLIMIT=$(q <<< 'exec `long$1+med latency from ("JJJ";enlist",") 0:hsym `$"/tmp/raw.csv"')
 
 (( MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
