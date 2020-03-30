@@ -58,17 +58,21 @@ OUTPUTDIR=../res
 mkdir -p $OUTPUTDIR
 
 
-declare -i ENDFREQ=5000000
+declare -i ENDFREQ=6000000
 declare -i STEPFREQ=10000
 declare -i INCFREQ=500000   # increase increment
 
 declare -i MAXBATCHSIZE=8000
 
-declare -i STARTMEDPUBLATLIMIT=14
 declare -i MEDPUBLIMITOFFSET=300000
 
 declare -i BATCHSIZE=STARTBATCH
 declare -i FREQ=STARTFREQ
+
+echo "Determining median of timer latency on current hardware"
+echo "Running a timer with a simple task..."
+./bin/PeriodicTimerDemo bytimerstrict 5000 5 /tmp/raw.csv
+declare -i STARTMEDPUBLATLIMIT=$(q <<< 'exec `long$1+med latency from ("JJJ";enlist",") 0:hsym `$"/tmp/raw.csv"')
 
 (( MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
 
