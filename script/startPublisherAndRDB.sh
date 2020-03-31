@@ -84,7 +84,7 @@ nohup perf stat -x " " -p $RDB_PID -e task-clock --log-fd 1 > ${LOGDIR}/perf.txt
 PERF_PID=$!
 
 wait $PUB_PID
-TIMERSTATFILE=/tmp/stat.csv
+TIMERSTATFILE=/tmp/timerstat.csv
 log
 log "Processing output $PUBLISHEROUTPUT"
 q generatePublisherLatencyStats.q $PUBLISHEROUTPUT $TIMERSTATFILE -q
