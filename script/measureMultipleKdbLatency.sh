@@ -64,6 +64,8 @@ args $0 "$@"
 mkdir -p ${OUTPUTDIR}
 rm -f ${OUTPUTDIR}/statistics_*.csv
 
+SINGLEMEASURESCRIPT=${SINGLEMEASURESCRIPT:-"./measureKdbLatency.sh"}
+
 for FREQ in $(echo $FREQS); do
 	echo "Running test with frequency $FREQ ..."
 	for DUR in $(echo $DURS); do
@@ -71,7 +73,7 @@ for FREQ in $(echo $FREQS); do
         for BATCHSIZE in $(echo $BATCHSIZES); do
             echo "Running test with batch size $BATCHSIZE ..."
             OUTPUT=${OUTPUTDIR}/statistics_${FREQ}_${DUR}_${BATCHSIZE}.csv
-		    ./measureKdbLatency.sh $FLUSH $TCP --freq $FREQ --dur $DUR --output ${OUTPUT} --batchsize $BATCHSIZE --batchtype $BATCHTYPE
+		    $SINGLEMEASURESCRIPT $FLUSH $TCP --freq $FREQ --dur $DUR --output ${OUTPUT} --batchsize $BATCHSIZE --batchtype $BATCHTYPE
             tail -n 1 ${OUTPUT} >> ${OUTPUTDIR}/summary.csv
         done
 	done
