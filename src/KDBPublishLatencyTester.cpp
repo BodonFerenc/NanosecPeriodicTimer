@@ -15,8 +15,8 @@ using namespace std;
 
 int main(int argc, const char* argv[])
 {
-    if (argc < 6) {
-        cerr << "Usage: " << argv[0] << "[freq] [dur] [outputfile] [host] [port] [flush] [batchsize] [type]" << endl;
+    if (argc < 7) {
+        cerr << "Usage: " << argv[0] << "freq dur outputfile host port flush [batchsize] [type]" << endl;
         return 1;
     }
 
@@ -28,7 +28,7 @@ int main(int argc, const char* argv[])
     const auto MAXRUN = DUR * FREQ;
     const auto flush = atoi(argv[6]);
 
-    if (argc < 6 || atoi(argv[7]) < 2) {
+    if (argc < 8 || atoi(argv[7]) < 2) {
         cout << "No batching" << endl;        
         if (flush) {
             cout << "flushing is enabled" << endl;
@@ -45,7 +45,7 @@ int main(int argc, const char* argv[])
         }
     } else {
         cout << "Batch size\t\t\t"<< atoi(argv[7]) << endl;
-        if (argc < 7 || 0 == string(argv[8]).compare("cache")) {
+        if (argc < 9 || 0 == string(argv[8]).compare("cache")) {
             cout << "Cache N' Batch publisher is created" << endl;            
             if (flush) {
                 cout << "flushing is enabled" << endl;
