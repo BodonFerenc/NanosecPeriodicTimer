@@ -17,9 +17,9 @@ timesAfterInsert: ();
   if[0=x; :()];
 
   // extra complexity is required for batch updates
-  update kobjcreation: last[time] - first time by sq from `trade;
-  update adaptertime: first time by sq from `trade;  
-  update latency: timesAfterInsert[sq] - adaptertime from `trade;    
+  update kobjcreation: last[time] - first time by batchnr from `trade;
+  update adaptertime: first time by batchnr from `trade;  
+  update latency: timesAfterInsert[batchnr] - adaptertime from `trade;    
 
   show "saving latency statistics of table of size ",  string count trade;
   output 0:","0:select 

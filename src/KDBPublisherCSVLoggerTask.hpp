@@ -30,7 +30,6 @@ class KDBPublisherCSVLoggerTask: public CSVLoggerTask, public KDBPublisher {
         char stop = 'i';            /* charactor example */
         int size = 444;             /* long example */
         double price = 12.12;       /* double example */
-        char condition = 'c';      
 
     public: 
         KDBPublisherCSVLoggerTask(unsigned long, const char* argv[]);
@@ -47,7 +46,7 @@ template<bool FLUSH>
 bool inline KDBPublisherCSVLoggerTask<FLUSH>::run(const TIME& expected, const TIME& real) {
     unsigned long sq = expectedTriggerTimes.size();
 
-    K row = knk(7, ks(*symGenerator.sym_it), kj(sq), kc(stop), ki(size), kf(price), kc(condition), 
+    K row = knk(7, ks(*symGenerator.sym_it), kj(sq), kc(stop), ki(size), kf(price), kj(sq), 
         ktj(-KP, DURNANO((std::chrono::system_clock::now() - kdb_start).time_since_epoch())));
 
     bool res = sendUpdate<FLUSH>(row);

@@ -20,6 +20,6 @@ trade: ([]
 	stop:`char$();
 	size:`int$();
 	price:`float$();
-	condition:`char$();
+	batchnr:`long$();
 	time:`timestamp$()
 	);  

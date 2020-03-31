@@ -35,13 +35,13 @@ class KDBPublisher {
         KDBPublisher(unsigned long, const char* argv[]);
         
         template<bool FLUSH=false>
-        bool sendUpdate(K row);
+        bool sendUpdate(K row) const;
 
         ~KDBPublisher();
 };
 
 template<bool FLUSH>
-inline bool KDBPublisher::sendUpdate(K row) {
+inline bool KDBPublisher::sendUpdate(K row) const {
     K r = k(-socket, (char *) ".u.upd", r1(tableName), row, (K)0);
     if (FLUSH) k(-socket, (char *) "[]", (K)0);
          
