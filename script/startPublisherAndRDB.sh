@@ -75,7 +75,8 @@ sleep 1   # wait a sec till RDB comes up. TODO: implement more robust solution
 log
 
 log "Starting publisher with frequency $FREQ for duration $DURATION"
-nohup numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION $PUBLISHEROUTPUT $KDBHOST 5001 $FLUSH $BATCHSIZE $BATCHTYPE> ${LOGDIR}/publisher.txt  2>&1 &
+nohup numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION \
+    $PUBLISHEROUTPUT $KDBHOST 5001 $FLUSH $BATCHSIZE $BATCHTYPE > ${LOGDIR}/publisher.txt 2>&1 &
 PUB_PID=$!
 
 afterStartWork
