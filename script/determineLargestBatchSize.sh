@@ -77,10 +77,6 @@ declare -i STARTMEDPUBLATLIMIT=$(q <<< 'exec `long$1+med latency from ("JJJ";enl
 (( MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
 
 
-TEMPRESFILE=/tmp/tempres.csv
-:> $TEMPRESFILE    # clear content
-
-
 while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 	echo "running test with batchsize $BATCHSIZE ..."
 	echo "running test with frequency $FREQ ..."
@@ -112,13 +108,13 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 	fi
 done
 
-echo "generating summary file..."
-sort -n $TEMPRESFILE | uniq > $OUTPUTDIR/summary.csv
+echo "generating summary file $OUTPUTDIR/summary.csv"
+cat $OUTPUTDIR/statistics_* | sort -n | uniq > $OUTPUTDIR/summary.csv
 q postProcLargestBatchSizeCSV.q $OUTPUTDIR/summary.csv $OUTPUTDIR/summary.csv
 
 if [[ $NOCLEAN -ne 1 ]]; then
     echo "Cleaning up temporal files..."
-    rm ${OUTPUTDIR}/statistics_*.csv $TEMPRESFILE
+    rm ${OUTPUTDIR}/statistics_*.csv
 fi
 
 
