@@ -6,14 +6,16 @@ NOCLEAN=0
 TCP=''
 FLUSH=''
 OUTPUTDIR=../out
+OUTPUT=${OUTPUTDIR}/summary.csv
 FREQS='10000 30000 60000 100000 150000'
 DURS=60
 BATCHSIZES=0
 BATCHTYPE=cache
 
+
 function args()
 {
-    options=$(getopt --long noclean --long tcp --long flush --long freq: --long dur: --long outputdir: --long batchsize: --long batchtype: -- "$@")
+    options=$(getopt --long noclean --long tcp --long flush --long freq: --long dur: --long outputdir: --long output: --long batchsize: --long batchtype: -- "$@")
     [ $? -eq 0 ] || {
         echo "Incorrect option provided"
         exit 1
@@ -31,17 +33,21 @@ function args()
             FLUSH='--flush'
             ;;                        
         --freq)
-            shift; # The arg is next in position args
+            shift;
             FREQS=$(echo $1 | tr "," " ")
             ;;
         --dur)
-            shift; # The arg is next in position args
+            shift;
             DURS=$(echo $1 | tr "," " ")
             ;;
         --outputdir)
-            shift; # The arg is next in position args
+            shift;
             OUTPUTDIR=$1
             ;;
+        --output)
+            shift;
+            OUTPUT=$1
+            ;;            
         --batchsize)
             shift;
             BATCHSIZES=$(echo $1 | tr "," " ")
@@ -72,15 +78,15 @@ for FREQ in $(echo $FREQS); do
 		echo "Running test with duration $DUR ..."
         for BATCHSIZE in $(echo $BATCHSIZES); do
             echo "Running test with batch size $BATCHSIZE ..."
-            OUTPUT=${OUTPUTDIR}/statistics_${FREQ}_${DUR}_${BATCHSIZE}.csv
-		    $SINGLEMEASURESCRIPT $FLUSH $TCP --freq $FREQ --dur $DUR --output ${OUTPUT} --batchsize $BATCHSIZE --batchtype $BATCHTYPE
+            PARTIALOUTPUT=${OUTPUTDIR}/statistics_${FREQ}_${DUR}_${BATCHSIZE}.csv
+		    $SINGLEMEASURESCRIPT $FLUSH $TCP --freq $FREQ --dur $DUR --output ${PARTIALOUTPUT} --batchsize $BATCHSIZE --batchtype $BATCHTYPE
             tail -n 1 ${OUTPUT} >> ${OUTPUTDIR}/summary.csv
         done
 	done
 done
 
-echo "Generating summary file ${OUTPUTDIR}/summary.csv"
-cat ${OUTPUTDIR}/statistics_*.csv | sort -n | uniq > ${OUTPUTDIR}/summary.csv
+echo "Generating summary file ${OUTPUT}"
+cat ${OUTPUTDIR}/statistics_*.csv | sort -n | uniq > ${OUTPUT}
 
 if [[ $NOCLEAN -ne 1 ]]; then
     echo "Cleaning up temporal files..."
