@@ -122,3 +122,8 @@ You might want to figure out the maximal frequency of updates your kdb+ process 
 ```
 
 The file that collects all statistics will be placed at `../out/summary.csv`. 
+
+### prerequisite
+The following packages are required by script `measureKdbLatency.sh`
+   * numactl:. CentOS install: `sudo yum install numactl`
+   * perf tools: `sudo yum install perf gawk`
