@@ -3,7 +3,7 @@ FREQ=30000
 DURATION=10
 PUBLISHEROUTPUT=/tmp/timer.csv
 OUTPUT=stat.csv
-KDBHOST=0.0.0.0
+RDBHOST=0.0.0.0    # default: using unix socket
 RDBPORT=5001
 FLUSH=0
 BATCHSIZE=0
@@ -11,7 +11,7 @@ BATCHTYPE=cache
 
 function args()
 {
-    options=$(getopt -o q --long tcp --long flush --long freq: --long dur: --long output: --long batchsize: --long batchtype: -- "$@")
+    options=$(getopt -o q --long flush --long rdbhost: --long freq: --long dur: --long output: --long batchsize: --long batchtype: -- "$@")
     [ $? -eq 0 ] || {
         echo "Incorrect option provided"
         exit 1
@@ -22,12 +22,13 @@ function args()
         -q)
             VERBOSE=0
             ;;
-        --tcp)
-            KDBHOST=localhost
-            ;;            
         --flush)
             FLUSH=1
             ;;
+        --rdbhost)
+            shift;        
+            RDBHOST=$1
+            ;;            
         --freq)
             shift;
             FREQ=$1
@@ -77,7 +78,7 @@ log
 
 log "Starting publisher with frequency $FREQ for duration $DURATION"
 nohup numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION \
-    $PUBLISHEROUTPUT $KDBHOST $RDBPORT $FLUSH $BATCHSIZE $BATCHTYPE > ${LOGDIR}/publisher.txt 2>&1 &
+    $PUBLISHEROUTPUT $RDBHOST $RDBPORT $FLUSH $BATCHSIZE $BATCHTYPE > ${LOGDIR}/publisher.txt 2>&1 &
 PUB_PID=$!
 
 afterStartWork

@@ -5,8 +5,8 @@ set -eu -o pipefail
 IFS=','     # to process csv files
 
 NOCLEAN=0
-FLUSH=''
-TCP=''
+FLUSHOPT=''
+RDBHOSTOPT=''
 DURATION=60
 
 declare -i STARTFREQ=50000
@@ -14,7 +14,7 @@ declare -i STARTBATCH=1
 
 function args()
 {
-    options=$(getopt --long noclean --long tcp --long flush --long dur: --long startfreq: --long startbatchsize: -- "$@")
+    options=$(getopt --long noclean --long flush --long rdbhost: --long dur: --long startfreq: --long startbatchsize: -- "$@")
     [ $? -eq 0 ] || {
         echo "Incorrect option provided"
         exit 1
@@ -25,12 +25,13 @@ function args()
         --noclean)
             NOCLEAN=1
             ;;
-        --tcp)
-            TCP='--tcp'
-            ;;   
         --flush)
-            FLUSH='--flush'
-            ;;              
+            FLUSHOPT='--flush'
+            ;;                          
+        --rdbhost)
+            shift;
+            RDBHOSTOPT='--rdbhost $1'
+            ;;  
         --dur)
             shift;
             DURATION=$1
@@ -83,7 +84,7 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 	echo "running test with frequency $FREQ ..."
 	
 	statFilename=$OUTPUTDIR/statistics_${FREQ}_${BATCHSIZE}.csv 
-    ./measureKdbLatency.sh $FLUSH $TCP --freq $FREQ --dur $DURATION --output ${statFilename} --batchsize $BATCHSIZE --batchtype cache
+    ./measureKdbLatency.sh $FLUSHOPT $RDBHOSTOPT --freq $FREQ --dur $DURATION --output ${statFilename} --batchsize $BATCHSIZE --batchtype cache
 
 	stat=($(tail -n 1 $statFilename))
 	declare -i RDBCPUUSAGE=$(echo "100 * ${stat[3]:-0} / 1" | bc)

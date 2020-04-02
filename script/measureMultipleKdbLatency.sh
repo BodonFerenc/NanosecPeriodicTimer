@@ -3,10 +3,10 @@
 set -eu -o pipefail
 
 NOCLEAN=0
-TCP=''
-FLUSH=''
+FLUSHOPT=''
 OUTPUTDIR=../out
 OUTPUT=${OUTPUTDIR}/summary.csv
+RDBHOSTOPT=''
 FREQS='10000 30000 60000 100000 150000'
 DURS=60
 BATCHSIZES=0
@@ -15,7 +15,7 @@ BATCHTYPE=cache
 
 function args()
 {
-    options=$(getopt --long noclean --long tcp --long flush --long freq: --long dur: --long outputdir: --long output: --long batchsize: --long batchtype: -- "$@")
+    options=$(getopt --long noclean --long flush --long rdbhost: --long freq: --long dur: --long outputdir: --long output: --long batchsize: --long batchtype: -- "$@")
     [ $? -eq 0 ] || {
         echo "Incorrect option provided"
         exit 1
@@ -24,14 +24,15 @@ function args()
     while true; do
         case "$1" in
         --noclean)
-            NOCLEAN=1
+            NOCLEAN=$1
             ;;
-        --tcp)
-            TCP='--tcp'
-            ;;            
         --flush)
-            FLUSH='--flush'
+            FLUSHOPT='--flush'
             ;;                        
+        --rdbhost)
+            shift;
+            RDBHOSTOPT='--rdbhost $1'
+            ;;            
         --freq)
             shift;
             FREQS=$(echo $1 | tr "," " ")
@@ -79,7 +80,7 @@ for FREQ in $(echo $FREQS); do
         for BATCHSIZE in $(echo $BATCHSIZES); do
             echo "Running test with batch size $BATCHSIZE ..."
             PARTIALOUTPUT=${OUTPUTDIR}/statistics_${FREQ}_${DUR}_${BATCHSIZE}.csv
-		    $SINGLEMEASURESCRIPT $FLUSH $TCP --freq $FREQ --dur $DUR --output ${PARTIALOUTPUT} --batchsize $BATCHSIZE --batchtype $BATCHTYPE
+		    $SINGLEMEASURESCRIPT $FLUSHOPT $RDBHOSTOPT --freq $FREQ --dur $DUR --output ${PARTIALOUTPUT} --batchsize $BATCHSIZE --batchtype $BATCHTYPE
             tail -n 1 ${OUTPUT} >> ${OUTPUTDIR}/summary.csv
         done
 	done
