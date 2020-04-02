@@ -56,6 +56,7 @@ args $0 "$@"
 
 OUTPUTDIR=../res
 mkdir -p $OUTPUTDIR
+rm -f ${OUTPUTDIR}/statistics_*.csv
 
 
 declare -i ENDFREQ=6000000
