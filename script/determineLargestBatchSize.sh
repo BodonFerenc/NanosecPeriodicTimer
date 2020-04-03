@@ -6,7 +6,7 @@ IFS=','     # to process csv files
 
 NOCLEAN=0
 FLUSHOPT=''
-RDBHOSTOPT=''
+RDBHOST='0.0.0.0'
 DURATION=60
 
 declare -i STARTFREQ=50000
@@ -30,7 +30,7 @@ function args()
             ;;                          
         --rdbhost)
             shift;
-            RDBHOSTOPT="--rdbhost $1"
+            RDBHOST=$1
             ;;  
         --dur)
             shift;
@@ -84,7 +84,7 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 	echo "running test with frequency $FREQ ..."
 	
 	statFilename=$OUTPUTDIR/statistics_${FREQ}_${BATCHSIZE}.csv 
-    ./measureKdbLatency.sh $FLUSHOPT $RDBHOSTOPT --freq $FREQ --dur $DURATION --output ${statFilename} --batchsize $BATCHSIZE --batchtype cache
+    ./measureKdbLatency.sh $FLUSHOPT --rdbhost $RDBHOST --freq $FREQ --dur $DURATION --output ${statFilename} --batchsize $BATCHSIZE --batchtype cache
 
 	stat=($(tail -n 1 $statFilename))
 	declare -i RDBCPUUSAGE=$(echo "100 * ${stat[3]:-0} / 1" | bc)
