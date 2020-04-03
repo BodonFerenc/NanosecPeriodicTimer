@@ -3,7 +3,7 @@
 set -eu -o pipefail
 
 RDBOUTPUTFILE=/tmp/rdb.csv
-RDBSCRIPT="rdb_latency.q -output $RDBOUTPUTFILE"
+RDBSCRIPT="nohup numactl --physcpubind=0 q rdb_latency.q -output $RDBOUTPUTFILE -p $RDBPORT -q"
 
 function afterStartWork() {
     # do nothing

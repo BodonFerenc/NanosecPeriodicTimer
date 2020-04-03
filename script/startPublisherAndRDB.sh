@@ -69,7 +69,7 @@ LOGDIR=../log
 mkdir -p $LOGDIR
 
 log "Starting RDB script in the background..."
-nohup numactl --physcpubind=0 q ${RDBSCRIPT} -p $RDBPORT -q 2>&1 > ${LOGDIR}/rdb.txt 2>&1 &
+nohup ${RDBSCRIPT} 2>&1 > ${LOGDIR}/rdb.txt 2>&1 &
 RDB_PID=$!
 
 sleep 1   # wait a sec till RDB comes up. TODO: implement more robust solution
