@@ -91,8 +91,6 @@ log
 log "Processing output $PUBLISHEROUTPUT"
 q generatePublisherLatencyStats.q $PUBLISHEROUTPUT $TIMERSTATFILE -q
 
-wait $RDB_PID
-
 log "Waiting for perf stat (PID: $PERF_PID) and to finish"
 if wait $PERF_PID; then
     RDBCPUUSAGESTAT=($(cat ${LOGDIR}/perf.txt))
