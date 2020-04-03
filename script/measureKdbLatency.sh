@@ -2,6 +2,7 @@
 
 set -eu -o pipefail
 
+RDBPORT=5001
 RDBOUTPUTFILE=/tmp/rdb.csv
 RDBSCRIPT="numactl --physcpubind=0 q rdb_latency.q -output $RDBOUTPUTFILE -p $RDBPORT -q"
 

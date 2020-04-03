@@ -4,7 +4,6 @@ DURATION=10
 PUBLISHEROUTPUT=/tmp/timer.csv
 OUTPUT=stat.csv
 RDBHOST=0.0.0.0    # default: using unix socket
-RDBPORT=5001
 FLUSH=0
 BATCHSIZE=0
 BATCHTYPE=cache
