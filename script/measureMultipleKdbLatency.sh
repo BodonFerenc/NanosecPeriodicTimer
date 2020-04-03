@@ -31,7 +31,7 @@ function args()
             ;;                        
         --rdbhost)
             shift;
-            RDBHOSTOPT='--rdbhost $1'
+            RDBHOSTOPT="--rdbhost $1"
             ;;            
         --freq)
             shift;
