@@ -5,6 +5,11 @@ if [not `output in key cmd;
   show "Please provide an output file name by command line parameter -output";
   exit 1];
 
+if [`grouped in key cmd;
+	show "setting grouped attribute on column sym";
+	update `g#sym from `trade;
+	];
+
 output: first `$cmd[`output];
 
 timesAfterInsert: ();
