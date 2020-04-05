@@ -2,9 +2,11 @@
 
 set -eu -o pipefail
 
+source handleCommandlineArgs.sh
+
 RDBPORT=5001
 RDBOUTPUTFILE=/tmp/rdb.csv
-RDBSCRIPT="numactl --physcpubind=0 q rdb_latency.q -output $RDBOUTPUTFILE -p $RDBPORT -q"
+RDBSCRIPT="numactl --physcpubind=0 q rdb_latency.q $GROUPEDOPT -output $RDBOUTPUTFILE -p $RDBPORT -q"
 
 function afterStartWork() {
     # do nothing
