@@ -2,6 +2,7 @@
 
 set -eu -o pipefail
 
+GROUPEDOPT=''      # grouped attribute on sym
 NOCLEAN=0
 FLUSHOPT=''
 OUTPUTDIR=../out
@@ -15,7 +16,7 @@ BATCHTYPE=cache
 
 function args()
 {
-    options=$(getopt --long noclean --long flush --long rdbhost: --long freq: --long dur: --long outputdir: --long output: --long batchsize: --long batchtype: -- "$@")
+    options=$(getopt -o g --long noclean --long flush --long rdbhost: --long freq: --long dur: --long outputdir: --long output: --long batchsize: --long batchtype: -- "$@")
     [ $? -eq 0 ] || {
         echo "Incorrect option provided"
         exit 1
@@ -23,6 +24,9 @@ function args()
     eval set -- "$options"
     while true; do
         case "$1" in
+        -g)
+            GROUPEDOPT='-g'
+            ;;
         --noclean)
             NOCLEAN=$1
             ;;
@@ -80,7 +84,7 @@ for FREQ in $(echo $FREQS); do
         for BATCHSIZE in $(echo $BATCHSIZES); do
             echo "Running test with batch size $BATCHSIZE ..."
             PARTIALOUTPUT=${OUTPUTDIR}/statistics_${FREQ}_${DUR}_${BATCHSIZE}.csv
-		    $SINGLEMEASURESCRIPT $FLUSHOPT $RDBHOSTOPT --freq $FREQ --dur $DUR --output ${PARTIALOUTPUT} --batchsize $BATCHSIZE --batchtype $BATCHTYPE
+		    $SINGLEMEASURESCRIPT $GROUPEDOPT $FLUSHOPT $RDBHOSTOPT --freq $FREQ --dur $DUR --output ${PARTIALOUTPUT} --batchsize $BATCHSIZE --batchtype $BATCHTYPE
             tail -n 1 ${OUTPUT} >> ${OUTPUTDIR}/summary.csv
         done
 	done
