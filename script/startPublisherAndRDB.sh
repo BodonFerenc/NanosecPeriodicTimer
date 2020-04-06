@@ -14,7 +14,7 @@ RDB_PID=$!
 
 sleep 1   # wait a sec till RDB comes up. TODO: implement more robust solution
 
-PUBLISHEROUTPUT=/tmp/timer.csv
+PUBLISHEROUTPUT=${PUBLISHEROUTPUT:-"/tmp/timer.csv"}
 
 log "Starting publisher with frequency $FREQ for duration $DURATION"
 nohup numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION \
