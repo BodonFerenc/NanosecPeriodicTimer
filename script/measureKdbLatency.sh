@@ -6,7 +6,7 @@ source handleCommandlineArgs.sh
 
 RDBPORT=5001
 RDBOUTPUTFILE=/tmp/rdb.csv
-RDBSCRIPT="numactl --physcpubind=0 q rdb_latency.q $GROUPEDOPT -output $RDBOUTPUTFILE -p $RDBPORT -q"
+RDBSCRIPT="rdb_latency.q -output $RDBOUTPUTFILE"
 
 function afterStartWork() {
     # do nothing
