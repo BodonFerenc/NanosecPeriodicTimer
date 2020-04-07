@@ -5,7 +5,8 @@ set -eu -o pipefail
 source handleCommandlineArgs.sh
 
 RDBPORT=5001
-RDBOUTPUTFILE=/tmp/rdb.csv
+RDBOUTPUTFILE=${RDBOUTPUTFILE:-/tmp/rdb.csv}
+rm -f $RDBOUTPUTFILE
 RDBSCRIPT="rdb_latency.q -output $RDBOUTPUTFILE"
 
 function afterStartWork() {
@@ -14,6 +15,16 @@ function afterStartWork() {
 }
 
 source startPublisherAndRDB.sh
+
+# This is for slow NFS filesystems
+log "Waiting for RDB output file to be available"
+i=1
+sp="/-\|"
+while [[ ! -f $RDBOUTPUTFILE ]]; do
+    printf "\b${sp:i++%${#sp}:1}"
+    sleep 1
+done
+log
 
 log "Merging meta data with timer and RDB statistics into $OUTPUT"
 paste -d, $METAFILE $TIMERSTATFILE $RDBOUTPUTFILE > $OUTPUT

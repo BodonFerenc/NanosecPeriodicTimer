@@ -8,9 +8,17 @@ function log () {
 LOGDIR=../log
 mkdir -p $LOGDIR
 
-log "Starting RDB script in the background..."
-nohup numactl --physcpubind=0 q ${RDBSCRIPT} $GROUPEDOPT -q -p $RDBPORT > ${LOGDIR}/rdb.txt 2>&1 &
-RDB_PID=$!
+RDBSCRIPTFULL="${RDBSCRIPT} $GROUPEDOPT -q -p $RDBPORT"
+if [[ $RDBHOST == 0.0.0.0 || $RDBHOST == localhost ]]; then
+    ISLOCAL=true
+    log "Starting RDB script in the background..."
+    nohup numactl --physcpubind=0 q ${RDBSCRIPTFULL} > ${LOGDIR}/rdb.txt 2>&1 &
+    RDB_PID=$!
+else 
+    ISLOCAL=false
+    BASEDIR=$(pwd)
+    nohup ssh $RDBHOST "cd ${BASEDIR}; nice -n 19 numactl --physcpubind=0 ${QHOME}/l64/q ${RDBSCRIPTFULL}" > ${LOGDIR}/rdb.txt 2>&1 &
+fi
 
 sleep 1   # wait a sec till RDB comes up. TODO: implement more robust solution
 
@@ -23,8 +31,10 @@ PUB_PID=$!
 
 afterStartWork
 
-nohup perf stat -x " " -p $RDB_PID -e task-clock --log-fd 1 > ${LOGDIR}/perf.txt 2>&1 &
-PERF_PID=$!
+if [[ $ISLOCAL == true ]]; then
+    nohup perf stat -x " " -p $RDB_PID -e task-clock --log-fd 1 > ${LOGDIR}/perf.txt 2>&1 &
+    PERF_PID=$!
+fi
 
 wait $PUB_PID
 TIMERSTATFILE=/tmp/timerstat.csv
@@ -32,14 +42,18 @@ log
 log "Processing output $PUBLISHEROUTPUT"
 q generatePublisherLatencyStats.q $PUBLISHEROUTPUT $TIMERSTATFILE -q
 
-log "Waiting for perf stat (PID: $PERF_PID) and to finish"
-if wait $PERF_PID; then
-    RDBCPUUSAGESTAT=($(cat ${LOGDIR}/perf.txt))
-    RDBCPUUSAGE=${RDBCPUUSAGESTAT[5]}
-    log "RDB CPU usage $RDBCPUUSAGE"
+if [[ $ISLOCAL == true ]]; then
+    if wait $PERF_PID; then
+        log "Waiting for perf stat (PID: $PERF_PID) and to finish"    
+        RDBCPUUSAGESTAT=($(cat ${LOGDIR}/perf.txt))
+        RDBCPUUSAGE=${RDBCPUUSAGESTAT[5]}
+        log "RDB CPU usage $RDBCPUUSAGE"
+    else
+        # TODO: invetigate perf stat errors
+        log "Error measuring RDB CPU usage, command perf failed."
+        RDBCPUUSAGE=''
+    fi
 else
-    # TODO: invetigate perf stat errors
-    log "Error measuring RDB CPU usage, command perf failed."
     RDBCPUUSAGE=''
 fi
 
