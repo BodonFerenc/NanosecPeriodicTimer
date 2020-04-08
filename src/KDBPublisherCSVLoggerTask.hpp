@@ -38,13 +38,13 @@ class KDBPublisherCSVLoggerTask: public CSVStatLoggerTask, public KDBPublisher {
 
 template<bool FLUSH>
 KDBPublisherCSVLoggerTask<FLUSH>::KDBPublisherCSVLoggerTask(unsigned long triggerNr, const char* argv[]) 
-    : CSVLoggerTask(triggerNr, argv), KDBPublisher(triggerNr, argv+1), symGenerator{triggerNr} {  
+    : CSVStatLoggerTask(triggerNr, argv), KDBPublisher(triggerNr, argv+1), symGenerator{triggerNr} {  
     tableName = (ks((S) "trade"));    
 }
 
 template<bool FLUSH>
 bool inline KDBPublisherCSVLoggerTask<FLUSH>::run(const TIME& expected, const TIME& real) {
-    unsigned long sq = expectedTriggerTimes.size();
+    unsigned long sq = latencies.size();
 
     K row = knk(7, ks(*symGenerator.sym_it), kj(sq), kc(stop), ki(size), kf(price), kj(sq), 
         ktj(-KP, DURNANO((std::chrono::system_clock::now() - kdb_start).time_since_epoch())));

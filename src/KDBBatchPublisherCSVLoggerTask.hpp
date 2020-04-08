@@ -31,7 +31,7 @@ template<bool FLUSH>
 bool inline KDBBatchPublisherCSVLoggerTask<FLUSH>::run(const TIME& expected, const TIME& real) {
     auto sym = *KDBPublisherCSVLoggerTask<FLUSH>::symGenerator.sym_it;
     static unsigned long sq = 0;
-    const unsigned long batchnr = CSVLoggerTask::expectedTriggerTimes.size();
+    const unsigned long batchnr = CSVStatLoggerTask::latencies.size();
 
     const unsigned long realTriggerTime = DURNANO((real - kdb_start).time_since_epoch());
 
