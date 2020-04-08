@@ -90,21 +90,21 @@ sym time price size stop ex
 ---------------------------
 
 # In Terminal 2:
-./bin/KDBPublishLatencyTester 10000 20 timer.csv localhost 5003 0
+./bin/KDBPublishLatencyTester 10000 20 ../timerStat.csv localhost 5003 0
 ```
 
 If the publisher and the kdb+ process are on the same machine then you can unix sockets. All you need to do is changing the host parameter to `0.0.0.0`. This will result in lower data transfer latencies.
 
 ```
 # In Terminal 2:
-./bin/KDBPublishLatencyTester 10000 20 timer.csv 0.0.0.0 5003 0
+./bin/KDBPublishLatencyTester 10000 20 ../timerStat.csv 0.0.0.0 5003 0
 ```
 
 
-You can observe the latency statistics in file statistics.csv. If you would like to see all statistics in a single view then you can simply merge publisher's and RDB's output by Linux command [paste](https://en.wikipedia.org/wiki/Paste_(Unix))
+You can observe the latency statistics in file `../statistics.csv`. If you would like to see all statistics in a single view then you can simply merge publisher's and RDB's output by Linux command [paste](https://en.wikipedia.org/wiki/Paste_(Unix))
 
 ```
-paste -d, timerStatistics.csv ../statistics.csv
+paste -d, ../timerStat.csv ../statistics.csv
 ```
 
 If you dont want to do all these manually then you can use bash script `measureKdbLatency.sh`. It starts RDB and publisher for you and even measures RDB CPU usage rate.
@@ -113,7 +113,7 @@ If you dont want to do all these manually then you can use bash script `measureK
 ./measureKdbLatency.sh --freq 10000 --dur 20 --output ../statistics.csv --rdbhost localhost
 ```
 
-Use `--rdbhost localhost` if you would like to use TCP/IP connection and `--flush` to flush output buffer after each send message.
+Use `--rdbhost localhost` if you would like to use TCP/IP connection and `--flush` to [flush output buffer](https://code.kx.com/q/basics/ipc/#block-queue-flush) after each send message.
 
 Script `measureKdbLatency.sh` also supports **remote kdb+ process via TCP**. If you pass an IP address via the `--rdbhost` parameter then the script will start the server via ssh. You probably want to use `~/.ssh/config` to provide the user name and private key location for the remote server. The RDB writes out latency statistics that your local host needs so you need a filesystem that is available from both boxes. By default the RDB output is written to `/tmp/rdb.csv` but you can overwrite this with environment variable `RDBOUTPUTFILE` like
 
