@@ -37,8 +37,9 @@ CSVStatLoggerTask::~CSVStatLoggerTask() {
     auto median = latencies[latencies.size() / 2];
 
 
-    file << "realFrequency,maxTimerLatency,avgTimerLatency,medTimerLatency" << endl;
+    file << "realFrequency,sentMessageNr,maxTimerLatency,avgTimerLatency,medTimerLatency" << endl;
     file << 1000 * 1000 * 1000 * latencies.size() / (lastTS - firstTS).count() << "," 
+         << latencies.size() << ","
          << latencies.back().count() << "," 
          << average << ","
          << median.count() << endl;
