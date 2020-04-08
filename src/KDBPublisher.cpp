@@ -17,6 +17,9 @@ KDBPublisher::KDBPublisher(unsigned long triggerNr, const char* argv[]) {
   
 
 KDBPublisher::~KDBPublisher() {
+    // explicit flush is required before close if async messages were sent.
+    // https://code.kx.com/q/ref/hopen/#hclose
+    k(-socket, (char *) "[]", (K)0);      
     kclose(socket);   
     cout << "KDB+ connection closed" <<  endl; 
 }
