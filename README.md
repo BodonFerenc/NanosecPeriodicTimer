@@ -77,7 +77,7 @@ sym time price size stop ex
 
 Now switch back to `Terminal 1` and check the content of table trade or see how its size grows by executing command `count tradeTP` in the q interpreter.
 
-## measuring kdb+ ingest latency
+## Measuring kdb+ ingest latency
 The script can also be used to measure how long it takes from a trigger event, through a trade data publish till it arrives into a kdb+ process that inserts the data into its local table. 
 
 ```
@@ -110,10 +110,16 @@ paste -d, timerStatistics.csv ../statistics.csv
 If you dont want to do all these manually then you can use bash script `measureKdbLatency.sh`. It starts RDB and publisher for you and even measures RDB CPU usage rate.
 
 ```
-./measureKdbLatency.sh --freq 10000 --dur 20 --output ../statistics.csv --tcp
+./measureKdbLatency.sh --freq 10000 --dur 20 --output ../statistics.csv --rdbhost localhost
 ```
 
-Use `--tcp` if you would like to use TCP/IP connection and `--flush` to flush output buffer after each send message..
+Use `--rdbhost localhost` if you would like to use TCP/IP connection and `--flush` to flush output buffer after each send message.
+
+Script `measureKdbLatency.sh` also supports **remote kdb+ process via TCP**. If you pass an IP address via the `--rdbhost` parameter then the script will start the server via ssh. You probably want to use `~/.ssh/config` to provide the user name and private key location for the remote server. The RDB writes out latency statistics that your local host needs so you need a filesystem that is available from both boxes. By default the RDB output is written to `/tmp/rdb.csv` but you can overwrite this with environment variable `RDBOUTPUTFILE` like
+
+```
+RDBOUTPUTFILE=/nfs/data/rdb.csv ./measureKdbLatency.sh --freq 10000 --dur 20 --output ../statistics.csv --rdbhost 72.7.9.248
+```
 
 You might want to figure out the maximal frequency of updates your kdb+ process can ingest. You can manually run `measureKdbLatency.sh` with various parameters or use `./measureMultipleKdbLatency.sh` that does this for you and create a summary table.
 
@@ -121,7 +127,8 @@ You might want to figure out the maximal frequency of updates your kdb+ process 
 ./measureMultipleKdbLatency.sh --freq 10000,50000,100000 --dur 60,180 --outputdir ../out
 ```
 
-The file that collects all statistics will be placed at `../out/summary.csv`. 
+The file that collects all statistics will be placed at `../out/summary.csv`.
+
 
 ### prerequisite
 The following packages are required by script `measureKdbLatency.sh`
