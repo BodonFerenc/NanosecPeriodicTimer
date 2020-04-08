@@ -85,7 +85,7 @@ while (( FREQ > MINFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 
 	stat=($(tail -n 1 $statFilename))
 	declare -i RDBCPUUSAGE=$(echo "100 * ${stat[3]:-0} / 1" | bc)
-	declare -i MEDPUBLAT=${stat[7]}
+	declare -i MEDPUBLAT=${stat[8]}
 	echo "Median of publication latency was $MEDPUBLAT"
 
 	if (( MEDPUBLAT > MEDPUBLATLIMIT  || RDBCPUUSAGE > 95 )); then
