@@ -52,7 +52,7 @@ bool inline KDBPublisherCSVLoggerTask<FLUSH>::run(const TIME& expected, const TI
     bool res = sendUpdate<FLUSH>(row);
     ++symGenerator.sym_it;
 
-    CSVLoggerTask::run(expected, real);
+    CSVStatLoggerTask::run(expected, real);
     return res;
 }
 

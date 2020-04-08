@@ -63,5 +63,5 @@ bool inline KDBCacheAndSendBatchPublisherCSVLoggerTask<FLUSH>::run(const TIME& e
         batchSq=0;
     }
 
-    return CSVLoggerTask::run(expected, real);
+    return CSVStatLoggerTask::run(expected, real);
 }
