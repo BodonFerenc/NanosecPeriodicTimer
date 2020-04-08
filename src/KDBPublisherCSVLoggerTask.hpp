@@ -21,6 +21,11 @@
 #include "KDBPublisher.hpp"
 #include "KDBSymGenerator.hpp"
 
+
+// The order of parent classes matters to make sure 
+// that kdb+ connection is closed first during destruction.
+// Destructors are called in reverse order of declaration
+
 template<bool FLUSH>
 class KDBPublisherCSVLoggerTask: public CSVStatLoggerTask, public KDBPublisher {
     protected:  
