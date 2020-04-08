@@ -20,6 +20,8 @@ timesAfterInsert: ();
 
 .z.pc: {
   if[0=x; :()];
+  
+  rdbDur: .z.p - first timesAfterInsert;
 
   // extra complexity is required for batch updates
   update kobjcreation: last[time] - first time by batchnr from `trade;
@@ -28,6 +30,8 @@ timesAfterInsert: ();
 
   show "saving latency statistics of table of size ",  string count trade;
   output 0:","0:select 
+    RDBduration: rdbDur % 1000 * 1000 * 1000,
+    recMessageNr: count i,
     medKobjCreation: med kobjcreation,
     maxLatency: `long$max latency,
     minLatency: `long$min latency, 
