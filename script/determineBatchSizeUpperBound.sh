@@ -93,15 +93,8 @@ while (( FREQ > MINFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
         FREQ=${FREQRAW%%.*}
 		echo "frequency decreased"
 	else
-     declare -i BATCHINC
-        if (( BATCHSIZE > 20 )); then
-            BATCHINCFLOAT=$(echo "l($BATCHSIZE)-1" | bc -l)
-            BATCHINC=${BATCHINCFLOAT%%.*}
-        else
-            BATCHINC=1
-        fi
-		(( BATCHSIZE += BATCHINC ))
-		echo "batch size increased by $BATCHINC"        
+        BATCHSIZERAW=$(echo "1 + $BATCHSIZE * 1.05" | bc -l)
+        BATCHSIZE=${BATCHSIZERAW%%.*}
 	fi
 done
 
