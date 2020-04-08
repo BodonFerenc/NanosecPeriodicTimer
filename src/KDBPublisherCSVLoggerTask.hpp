@@ -17,12 +17,12 @@
 #include <chrono>
 #include <vector>
 #include <array>
-#include "CSVLoggerTask.hpp"
+#include "CSVStatLoggerTask.hpp"
 #include "KDBPublisher.hpp"
 #include "KDBSymGenerator.hpp"
 
 template<bool FLUSH>
-class KDBPublisherCSVLoggerTask: public CSVLoggerTask, public KDBPublisher {
+class KDBPublisherCSVLoggerTask: public CSVStatLoggerTask, public KDBPublisher {
     protected:  
         KDBSymGenerator symGenerator;
         

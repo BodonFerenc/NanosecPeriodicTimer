@@ -22,11 +22,11 @@ fi
 
 sleep 1   # wait a sec till RDB comes up. TODO: implement more robust solution
 
-PUBLISHEROUTPUT=${PUBLISHEROUTPUT:-"/tmp/timer.csv"}
+TIMERSTATFILE=${TIMERSTATFILE:-"/tmp/timerstat.csv"}
 
 log "Starting publisher with frequency $FREQ for duration $DURATION"
 nohup numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION \
-    $PUBLISHEROUTPUT $RDBHOST $RDBPORT $FLUSH $BATCHSIZE $BATCHTYPE > ${LOGDIR}/publisher.txt 2>&1 &
+    $TIMERSTATFILE $RDBHOST $RDBPORT $FLUSH $BATCHSIZE $BATCHTYPE > ${LOGDIR}/publisher.txt 2>&1 &
 PUB_PID=$!
 
 afterStartWork
@@ -37,10 +37,6 @@ if [[ $ISLOCAL == true ]]; then
 fi
 
 wait $PUB_PID
-TIMERSTATFILE=/tmp/timerstat.csv
-log
-log "Processing output $PUBLISHEROUTPUT"
-q generatePublisherLatencyStats.q $PUBLISHEROUTPUT $TIMERSTATFILE -q
 
 if [[ $ISLOCAL == true ]]; then
     if wait $PERF_PID; then
