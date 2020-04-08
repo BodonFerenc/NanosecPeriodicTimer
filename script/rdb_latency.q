@@ -30,7 +30,7 @@ timesAfterInsert: ();
 
   show "saving latency statistics of table of size ",  string count trade;
   output 0:","0:select 
-    RDBduration: rdbDur % 1000 * 1000 * 1000,
+    RDBduration: enlist rdbDur % 1000 * 1000 * 1000,
     recMessageNr: count i,
     medKobjCreation: med kobjcreation,
     maxLatency: `long$max latency,
