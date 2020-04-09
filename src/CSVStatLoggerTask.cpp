@@ -36,9 +36,12 @@ CSVStatLoggerTask::~CSVStatLoggerTask() {
     sort(latencies.begin(), latencies.end()); 
     auto median = latencies[latencies.size() / 2];
 
+    const auto realdur = (float) (lastTS - firstTS).count() / BILLION;
+    const auto realfreq = (long) (latencies.size() / realdur);
+
 
     file << "realFrequency,sentMessageNr,maxTimerLatency,avgTimerLatency,medTimerLatency" << endl;
-    file << 1000 * 1000 * 1000 * latencies.size() / (lastTS - firstTS).count() << "," 
+    file << realfreq << "," 
          << latencies.size() << ","
          << latencies.back().count() << "," 
          << average << ","
@@ -46,8 +49,6 @@ CSVStatLoggerTask::~CSVStatLoggerTask() {
     file.close();
 
     cout << "Average wait time latency\t" << average << " nanosec" << endl;
-
-    const float realdur = (float) (lastTS - firstTS).count() / BILLION;    
     cout << "Real duration was\t\t" << realdur << " sec" << endl;
-    cout << "Real frequency was\t\t" << (long) (latencies.size() / realdur) << endl;
+    cout << "Real frequency was\t\t" << realfreq << endl;
 }
