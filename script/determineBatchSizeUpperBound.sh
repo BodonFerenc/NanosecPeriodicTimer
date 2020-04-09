@@ -104,7 +104,7 @@ done
 
 echo "generating summary file $OUTPUTDIR/summary.csv"
 cat $OUTPUTDIR/statistics_* | sort -n | uniq > $OUTPUTDIR/summaryTemp.csv
-q postProcLargestBatchSizeCSV.q $OUTPUTDIR/summaryTemp.csv $OUTPUTDIR/largestBatchSize.csv
+q postProcBatchSizeUpperBound.q $OUTPUTDIR/summaryTemp.csv $OUTPUTDIR/largestBatchSize.csv
 
 paste -d, $OUTPUTDIR/summaryTemp.csv $OUTPUTDIR/largestBatchSize.csv > $OUTPUTDIR/summary.csv
 
