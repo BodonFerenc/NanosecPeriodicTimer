@@ -17,7 +17,7 @@ if [[ $RDBHOST == 0.0.0.0 || $RDBHOST == localhost ]]; then
 else 
     ISLOCAL=false
     BASEDIR=$(pwd)
-    nohup ssh $RDBHOST "cd ${BASEDIR}; nice -n 19 numactl --physcpubind=0 ${QHOME}/l64/q ${RDBSCRIPTFULL}" > ${LOGDIR}/rdb.txt 2>&1 &
+    nohup ssh -o "StrictHostKeyChecking no" $RDBHOST "cd ${BASEDIR}; nice -n 19 numactl --physcpubind=0 ${QHOME}/l64/q ${RDBSCRIPTFULL}" > ${LOGDIR}/rdb.txt 2>&1 &
 fi
 
 sleep 1   # wait a sec till RDB comes up. TODO: implement more robust solution
