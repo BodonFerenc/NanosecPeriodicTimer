@@ -39,6 +39,7 @@ fi
 wait $PUB_PID
 
 if [[ $ISLOCAL == true ]]; then
+    wait $RDB_PID
     if wait $PERF_PID; then
         log "Waiting for perf stat (PID: $PERF_PID) and to finish"    
         RDBCPUUSAGESTAT=($(cat ${LOGDIR}/perf.txt))
