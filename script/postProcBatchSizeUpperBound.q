@@ -6,5 +6,5 @@ t: `frequency`batchsize xasc ("J*J************J";enlist",") 0:hsym input;
 res: fills `frequency xdesc select largestBatchSize: batchsize 1, 
                                    largestBatchSize: medLatency 1 by frequency from `batchsize xdesc t;
 
-output 0:","0:flip -2#flip t lj res;
+output 0:","0:flip -3#flip update maxRowPerSec: frequency * largestBatchSize from t lj res;
 exit 0;
