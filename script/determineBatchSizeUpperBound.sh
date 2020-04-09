@@ -103,12 +103,14 @@ while (( FREQ > MINFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 done
 
 echo "generating summary file $OUTPUTDIR/summary.csv"
-cat $OUTPUTDIR/statistics_* | sort -n | uniq > $OUTPUTDIR/summary.csv
-q postProcLargestBatchSizeCSV.q $OUTPUTDIR/summary.csv $OUTPUTDIR/summary.csv
+cat $OUTPUTDIR/statistics_* | sort -n | uniq > $OUTPUTDIR/summaryTemp.csv
+q postProcLargestBatchSizeCSV.q $OUTPUTDIR/summaryTemp.csv $OUTPUTDIR/largestBatchSize.csv
+
+paste -d, $OUTPUTDIR/summaryTemp.csv $OUTPUTDIR/largestBatchSize.csv > $OUTPUTDIR/summary.csv
 
 if [[ $NOCLEAN -ne 1 ]]; then
     echo "Cleaning up temporal files..."
-    rm ${OUTPUTDIR}/statistics_*.csv
+    rm ${OUTPUTDIR}/statistics_*.csv $OUTPUTDIR/summaryTemp.csv $OUTPUTDIR/largestBatchSize.csv
 fi
 
 
