@@ -20,8 +20,8 @@ timesAfterInsert: ();
 
 .z.pc: {
   if[0=x; :()];
-  
-  rdbDur: .z.p - first timesAfterInsert;
+  start: .z.p;
+  rdbDur: start - first timesAfterInsert;
 
   // extra complexity is required for batch updates
   update kobjcreation: last[time] - first time by batchnr from `trade;
@@ -37,6 +37,9 @@ timesAfterInsert: ();
     minLatency: `long$min latency, 
     avgLatency: avg latency,
     medLatency: `long$med latency from trade;     // force to long for easier post-processing
+
+  end: .z.p;
+  show "time required for saving results: ", string end - start;
 
   show "exitting...";
   exit 0
