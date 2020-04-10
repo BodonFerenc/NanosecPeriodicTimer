@@ -18,13 +18,13 @@ source startPublisherAndRDB.sh
 
 # This is for slow NFS filesystems
 log "Waiting for RDB output file to be available"
-i=1
+i=0
 sp="/-\|"
 while [[ ! -f $RDBOUTPUTFILE ]]; do
     printf "\b${sp:i++%${#sp}:1}"
     sleep 1
 done
-log
+log "Waited $i seconds for RDB output to be available"
 
 log "Merging meta data with timer and RDB statistics into $OUTPUT"
 paste -d, $METAFILE $TIMERSTATFILE $RDBOUTPUTFILE > $OUTPUT
