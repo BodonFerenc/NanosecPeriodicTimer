@@ -2,7 +2,7 @@ input: `$first .z.x;
 output: `$last .z.x; 
 
 // TODO: find more robust solution than hardcoding all types!
-t: `frequency`batchsize xasc ("JJJFJJJFJFJJJJFJ";enlist",") 0:hsym input;
+t: `frequency`batchsize xasc ("JJJFJJJJFJFJJJJFJ";enlist",") 0:hsym input;
 bestMedLatency: select 
     largestBatchSize: last batchsize, 
     medLatencyAtLargestBatchSize: last medLatency by frequency 
