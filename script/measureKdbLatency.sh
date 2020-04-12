@@ -4,6 +4,9 @@ set -eu -o pipefail
 
 source handleCommandlineArgs.sh
 
+BASEDIR=$(pwd)
+echo "basedir: $BASEDIR"
+
 RDBPORT=5001
 RDBOUTPUTFILE=${RDBOUTPUTFILE:-/tmp/rdb.csv}
 rm -f $RDBOUTPUTFILE
