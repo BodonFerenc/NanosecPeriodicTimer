@@ -7,6 +7,7 @@ source handleCommandlineArgs.sh
 RDBPORT=5001
 RDBOUTPUTFILE=${RDBOUTPUTFILE:-/tmp/rdb.csv}
 TIMERSTATONLY=1
+TIMEROUTPUTFILE=/tmp/timerstat.csv
 rm -f $RDBOUTPUTFILE
 RDBSCRIPT="rdb_latency.q -output $RDBOUTPUTFILE"
 
