@@ -16,7 +16,8 @@ if [[ $RDBHOST == 0.0.0.0 || $RDBHOST == localhost ]]; then
     RDB_PID=$!
 else 
     ISLOCAL=false
-    nohup ssh -o "StrictHostKeyChecking no" $RDBHOST "cd ${BASEDIR}; nice -n 19 numactl --physcpubind=0 ${QHOME}/l64/q ${RDBSCRIPTFULL}" > ${LOGDIR}/rdb.txt 2>&1 &
+    SCRIPTDIR=$(pwd)
+    nohup ssh -o "StrictHostKeyChecking no" $RDBHOST "cd ${SCRIPTDIR}; nice -n 19 numactl --physcpubind=0 ${QHOME}/l64/q ${RDBSCRIPTFULL}" > ${LOGDIR}/rdb.txt 2>&1 &
 fi
 
 sleep 1   # wait a sec till RDB comes up. TODO: implement more robust solution
@@ -25,7 +26,7 @@ TIMERSTATFILE=${TIMERSTATFILE:-"/tmp/timerstat.csv"}
 
 log "Starting publisher with frequency $FREQ for duration $DURATION"
 nohup numactl --physcpubind=1 ../bin/KDBPublishLatencyTester $FREQ $DURATION \
-    $TIMERSTATFILE $RDBHOST $RDBPORT $FLUSH $BATCHSIZE $BATCHTYPE > ${LOGDIR}/publisher.txt 2>&1 &
+    $TIMERSTATFILE $RDBHOST $RDBPORT $FLUSH $TIMERSTATONLY $BATCHSIZE $BATCHTYPE > ${LOGDIR}/publisher.txt 2>&1 &
 PUB_PID=$!
 
 afterStartWork

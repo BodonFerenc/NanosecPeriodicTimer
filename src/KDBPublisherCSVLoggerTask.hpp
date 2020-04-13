@@ -17,7 +17,6 @@
 #include <chrono>
 #include <vector>
 #include <array>
-#include "CSVStatLoggerTask.hpp"
 #include "KDBPublisher.hpp"
 #include "KDBSymGenerator.hpp"
 
@@ -26,10 +25,11 @@
 // that kdb+ connection is closed first during destruction.
 // Destructors are called in reverse order of declaration
 
-template<bool FLUSH>
-class KDBPublisherCSVLoggerTask: public CSVStatLoggerTask, public KDBPublisher {
+template<class P, bool FLUSH>
+class KDBPublisherCSVLoggerTask: public KDBPublisher {
     protected:  
         KDBSymGenerator symGenerator;
+        P csvLogger;
         
         // fields to send. We dont really care about the content.
         char stop = 'i';            /* charactor example */
@@ -41,15 +41,15 @@ class KDBPublisherCSVLoggerTask: public CSVStatLoggerTask, public KDBPublisher {
         bool run(const TIME&, const TIME&);
 };
 
-template<bool FLUSH>
-KDBPublisherCSVLoggerTask<FLUSH>::KDBPublisherCSVLoggerTask(unsigned long triggerNr, const char* argv[]) 
-    : CSVStatLoggerTask(triggerNr, argv), KDBPublisher(triggerNr, argv+1), symGenerator{triggerNr} {  
+template<class P, bool FLUSH>
+KDBPublisherCSVLoggerTask<P, FLUSH>::KDBPublisherCSVLoggerTask(unsigned long triggerNr, const char* argv[]) 
+    : KDBPublisher(triggerNr, argv+1), symGenerator{triggerNr}, csvLogger(triggerNr, argv) {  
     tableName = (ks((S) "trade"));    
 }
 
-template<bool FLUSH>
-bool inline KDBPublisherCSVLoggerTask<FLUSH>::run(const TIME& expected, const TIME& real) {
-    unsigned long sq = latencies.size();
+template<class P, bool FLUSH>
+bool inline KDBPublisherCSVLoggerTask<P, FLUSH>::run(const TIME& expected, const TIME& real) {
+    unsigned long sq = csvLogger.getSize();
 
     K row = knk(7, ks(*symGenerator.sym_it), kj(sq), kc(stop), ki(size), kf(price), kj(sq), 
         ktj(-KP, DURNANO((std::chrono::system_clock::now() - kdb_start).time_since_epoch())));
@@ -57,7 +57,7 @@ bool inline KDBPublisherCSVLoggerTask<FLUSH>::run(const TIME& expected, const TI
     bool res = sendUpdate<FLUSH>(row);
     ++symGenerator.sym_it;
 
-    CSVStatLoggerTask::run(expected, real);
+    csvLogger.run(expected, real);
     return res;
 }
 

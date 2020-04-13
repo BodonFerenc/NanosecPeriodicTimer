@@ -29,6 +29,7 @@ class CSVStatLoggerTask {
 
     public: 
         CSVStatLoggerTask(unsigned long, const char* argv[]);
+        auto getSize() {return latencies.size();}
         bool run(const TIME&, const TIME&);
         ~CSVStatLoggerTask();
 };

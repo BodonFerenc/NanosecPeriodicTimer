@@ -4,11 +4,9 @@ set -eu -o pipefail
 
 source handleCommandlineArgs.sh
 
-BASEDIR=$(pwd)
-echo "basedir: $BASEDIR"
-
 RDBPORT=5001
 RDBOUTPUTFILE=${RDBOUTPUTFILE:-/tmp/rdb.csv}
+TIMERSTATONLY=1
 rm -f $RDBOUTPUTFILE
 RDBSCRIPT="rdb_latency.q -output $RDBOUTPUTFILE"
 

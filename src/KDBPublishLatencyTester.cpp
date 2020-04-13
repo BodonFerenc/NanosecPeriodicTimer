@@ -6,6 +6,8 @@
 #include <functional>
 
 #include "constant.hpp"
+#include "CSVLoggerTask.hpp"
+#include "CSVStatLoggerTask.hpp"
 #include "KDBPublisherCSVLoggerTask.hpp"
 #include "Timers.hpp"
 #include "KDBBatchPublisherCSVLoggerTask.hpp"
@@ -13,13 +15,8 @@
 
 using namespace std;
 
-int main(int argc, const char* argv[])
-{
-    if (argc < 7) {
-        cerr << "Usage: " << argv[0] << "freq dur outputfile host port flush [batchsize] [type]" << endl;
-        return 1;
-    }
-
+template <class TTRUE, class TFALSE>
+void startTimer(int argc, const char* argv[]) {
     const auto FREQ = atol(argv[1]);          // frequency
     const chrono::nanoseconds WAIT(BILLION / FREQ);          // wait time between ticks
     cout << "Wait time is set to\t\t" << WAIT.count() << " nanosec" << endl;
@@ -28,58 +25,51 @@ int main(int argc, const char* argv[])
     const auto MAXRUN = DUR * FREQ;
     const auto flush = atoi(argv[6]);
 
-    if (argc < 8 || atoi(argv[7]) < 2) {
-        cout << "No batching" << endl;        
-        if (flush) {
+    if (flush) {
             cout << "flushing is enabled" << endl;
-            KDBPublisherCSVLoggerTask<true> task(MAXRUN, argv + 3);
-            auto timer = std::bind(bytimecheck<KDBPublisherCSVLoggerTask<true>>, strict, 
+            TTRUE task(MAXRUN, argv + 3);
+            auto timer = std::bind(bytimecheck<TTRUE>, strict, 
                 std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
             timer(task, WAIT, MAXRUN);    
         }
-        else {
-            KDBPublisherCSVLoggerTask<false> task(MAXRUN, argv + 3);
-            auto timer = std::bind(bytimecheck<KDBPublisherCSVLoggerTask<false>>, strict, 
+    else {
+            TFALSE task(MAXRUN, argv + 3);
+            auto timer = std::bind(bytimecheck<TFALSE>, strict, 
                 std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
             timer(task, WAIT, MAXRUN);    
-        }
+    }
+}
+
+template<typename P>
+int selectTimer(int argc, const char* argv[]) {
+    if (argc < 9 || atoi(argv[8]) < 2) {
+        cout << "No batching" << endl;    
+        startTimer<KDBPublisherCSVLoggerTask<P, true>, KDBPublisherCSVLoggerTask<P, false>>(argc, argv);
     } else {
-        cout << "Batch size\t\t\t"<< atoi(argv[7]) << endl;
-        if (argc < 9 || 0 == string(argv[8]).compare("cache")) {
-            cout << "Cache N' Batch publisher is created" << endl;            
-            if (flush) {
-                cout << "flushing is enabled" << endl;
-                KDBCacheAndSendBatchPublisherCSVLoggerTask<true> task(MAXRUN, argv + 3);
-                auto timer = std::bind(bytimecheck<KDBCacheAndSendBatchPublisherCSVLoggerTask<true>>, strict, 
-                    std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-                timer(task, WAIT, MAXRUN);    
-            }
-            else {
-                KDBCacheAndSendBatchPublisherCSVLoggerTask<false> task(MAXRUN, argv + 3);
-                auto timer = std::bind(bytimecheck<KDBCacheAndSendBatchPublisherCSVLoggerTask<false>>, strict, 
-                    std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-                timer(task, WAIT, MAXRUN);    
-            }            
-        } else if (0 == string(argv[8]).compare("batch")) {
+        cout << "Batch size\t\t\t"<< atoi(argv[8]) << endl;
+        if (argc < 10 || 0 == string(argv[9]).compare("cache")) {
+            cout << "Cache N' Batch publisher is created" << endl;
+            startTimer<KDBCacheAndSendBatchPublisherCSVLoggerTask<P, true>, KDBCacheAndSendBatchPublisherCSVLoggerTask<P, false>>(argc, argv);           
+        } else if (0 == string(argv[9]).compare("batch")) {
             cout << "Batch publisher is created" << endl;
-            if (flush) {
-                cout << "flushing is enabled" << endl;
-                KDBBatchPublisherCSVLoggerTask<true> task(MAXRUN, argv + 3);
-                auto timer = std::bind(bytimecheck<KDBBatchPublisherCSVLoggerTask<true>>, strict, 
-                    std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-                timer(task, WAIT, MAXRUN);    
-            }
-            else {
-                KDBBatchPublisherCSVLoggerTask<false> task(MAXRUN, argv + 3);
-                auto timer = std::bind(bytimecheck<KDBBatchPublisherCSVLoggerTask<false>>, strict, 
-                    std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-                timer(task, WAIT, MAXRUN);    
-            }
+            startTimer<KDBBatchPublisherCSVLoggerTask<P, true>, KDBBatchPublisherCSVLoggerTask<P, false>>(argc, argv);           
         }
         else {
-            cerr << "Unknown batch type (should be 'cache' or 'batch'): " << argv[8] << endl;
+            cerr << "Unknown batch type (should be 'cache' or 'batch'): " << argv[9] << endl;
             return 1;
         }
     }
     return 0;
+}
+
+int main(int argc, const char* argv[])
+{
+    if (argc < 7) {
+        cerr << "Usage: " << argv[0] << "freq dur outputfile host port flush [statonly] [batchsize] [type]" << endl;
+        return 1;
+    }
+
+    return atoi(argv[7]) ? selectTimer<CSVStatLoggerTask>(argc, argv) 
+        : selectTimer<CSVLoggerTask>(argc, argv);
+    
 }
