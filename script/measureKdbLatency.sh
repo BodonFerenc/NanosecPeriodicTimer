@@ -29,7 +29,7 @@ done
 log "Waited $i seconds for RDB output to be available"
 
 log "Merging meta data with timer and RDB statistics into $OUTPUT"
-paste -d, $METAFILE $TIMERSTATFILE $RDBOUTPUTFILE > $OUTPUT
+paste -d, $METAFILE $TIMEROUTPUTFILE $RDBOUTPUTFILE > $OUTPUT
 
 rm $METAFILE
 
