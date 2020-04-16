@@ -25,7 +25,7 @@ class KDBCacheAndSendBatchPublisherCSVLoggerTask: public KDBPublisherCSVLoggerTa
 
     public: 
         KDBCacheAndSendBatchPublisherCSVLoggerTask(unsigned long triggerNr, const char* argv[]): 
-            KDBPublisherCSVLoggerTask<P, FLUSH>(triggerNr, argv), batchSize(atoi(argv[4])) {
+            KDBPublisherCSVLoggerTask<P, FLUSH>(triggerNr, argv), batchSize(atoi(argv[5])) {
             initRow();
         }
         bool run(const TIME&, const TIME&);
