@@ -20,19 +20,19 @@ void bysleep(T& task, std::chrono::nanoseconds wait, unsigned long nr) {
     std::cout << "Timer finished" << std::endl;
 }
 
-void strict(const TIME& input, TIME& nextTriggerTime, const std::chrono::nanoseconds& wait) {
-            nextTriggerTime += wait;
+TIME strict(const TIME& input, const TIME& nextTriggerTime, const std::chrono::nanoseconds& wait) {
+    return nextTriggerTime + wait;
     }
 
-void jumpforward(const TIME& input, TIME& nextTriggerTime, const std::chrono::nanoseconds& wait) {
-            nextTriggerTime = input + wait -
+TIME jumpforward(const TIME& input, const TIME& nextTriggerTime, const std::chrono::nanoseconds& wait) {
+    return input + wait -
                 std::chrono::nanoseconds(DURNANO((input + wait).time_since_epoch()) % wait.count());
     }
 
 
 
 template <class T>
-void bytimecheck(std::function<void(const TIME&, TIME&, const std::chrono::nanoseconds&)> nexttimeSetter, 
+void bytimecheck(std::function<TIME(const TIME&, const TIME&, const std::chrono::nanoseconds&)> nexttimeSetter, 
     T& task, std::chrono::nanoseconds wait, unsigned long nr) {
 
     std::cout << "Starting timecheck-based timer" << std::endl;          
@@ -41,13 +41,13 @@ void bytimecheck(std::function<void(const TIME&, TIME&, const std::chrono::nanos
     TIME nextTriggerTime = std::chrono::system_clock::now();
     TIME timenow = std::chrono::system_clock::now();
 
-    nexttimeSetter(timenow, nextTriggerTime, wait);
+    nextTriggerTime = nexttimeSetter(timenow, nextTriggerTime, wait);
 
     while (ok && runs < nr) {  
         timenow = std::chrono::system_clock::now();
         if (timenow >= nextTriggerTime) {
           ok = task.run(nextTriggerTime, timenow);
-          nexttimeSetter(timenow, nextTriggerTime, wait);
+          nextTriggerTime = nexttimeSetter(timenow, nextTriggerTime, wait);
           ++runs;
           }
     }

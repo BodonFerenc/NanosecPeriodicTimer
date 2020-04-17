@@ -35,3 +35,7 @@ bin/*
 # log and result libraries
 log/*
 out/*
+
+# Misc
+.vscode/launch.json
+lib/k.h

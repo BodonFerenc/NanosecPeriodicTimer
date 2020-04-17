@@ -7,7 +7,7 @@
 
 using namespace std;
 
-CSVStatLoggerTask::CSVStatLoggerTask(unsigned long triggerNr, const char* argv[]) : filename(argv[0]) {
+CSVStatLoggerTask::CSVStatLoggerTask(unsigned long triggerNr, const char* argv[]) : filename{argv[0]} {
     latencies.reserve(triggerNr);
     cout << "Nr of expected ticks\t\t" << triggerNr << endl;
 }
