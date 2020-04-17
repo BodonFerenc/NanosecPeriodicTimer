@@ -28,7 +28,7 @@ function args()
             GROUPEDOPT='-g'
             ;;
         --noclean)
-            NOCLEAN=$1
+            NOCLEAN=1
             ;;
         --flush)
             FLUSHOPT='--flush'

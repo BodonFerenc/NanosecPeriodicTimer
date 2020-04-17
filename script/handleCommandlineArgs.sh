@@ -2,6 +2,7 @@
 
 VERBOSE=1
 GROUPEDOPT=''      # grouped attribute on sym
+NOCLEAN=0
 FLUSH=0
 RDBHOST=0.0.0.0    # default: using unix socket
 FREQ=30000
@@ -13,7 +14,7 @@ BATCHTYPE=cache
 
 function args()
 {
-    options=$(getopt -o q -o g --long flush --long rdbhost: --long freq: --long dur: --long output: --long batchsize: --long batchtype: -- "$@")
+    options=$(getopt -o q -o g --long noclean --long flush --long rdbhost: --long freq: --long dur: --long output: --long batchsize: --long batchtype: -- "$@")
     [ $? -eq 0 ] || {
         echo "Incorrect option provided"
         exit 1
@@ -27,6 +28,9 @@ function args()
         -g)
             GROUPEDOPT='-grouped'
             ;;
+        --noclean)
+            NOCLEAN=1
+            ;;            
         --flush)
             FLUSH=1
             ;;
