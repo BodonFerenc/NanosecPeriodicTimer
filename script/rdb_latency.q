@@ -22,6 +22,7 @@ timesAfterInsert: ();
   if[0=x; :()];
   start: .z.p;
   rdbDur: start - first timesAfterInsert;
+  show "Upper bound of the RDB insert time is ",  string rdbDur;
 
   // extra complexity is required for batch updates
   update kobjcreation: last[time] - first time by batchnr from `trade;
