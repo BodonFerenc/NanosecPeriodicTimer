@@ -61,8 +61,6 @@ rm -f ${OUTPUTDIR}/statistics_*.csv
 
 
 declare -i ENDFREQ=6000000
-declare -i STEPFREQ=10000
-declare -i INCFREQ=500000   # increase increment
 
 declare -i MAXBATCHSIZE=8000
 
@@ -78,13 +76,14 @@ declare -i STARTMEDPUBLATLIMIT=$(q <<< 'exec `long$1+med latency from ("JJJ";enl
 
 (( MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
 
+SINGLEMEASURESCRIPT=${SINGLEMEASURESCRIPT:-"./measureKdbLatency.sh"}
 
 while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 	echo "running test with batchsize $BATCHSIZE ..."
 	echo "running test with frequency $FREQ ..."
 	
 	statFilename=$OUTPUTDIR/statistics_${FREQ}_${BATCHSIZE}.csv 
-    ./measureKdbLatency.sh $FLUSHOPT --rdbhost $RDBHOST --freq $FREQ --dur $DURATION --output ${statFilename} --batchsize $BATCHSIZE --batchtype cache
+    SINGLEMEASURESCRIPT $FLUSHOPT --rdbhost $RDBHOST --freq $FREQ --dur $DURATION --output ${statFilename} --batchsize $BATCHSIZE --batchtype cache
 
 	stat=($(tail -n 1 $statFilename))
 	declare -i RDBCPUUSAGE=$(echo "100 * ${stat[3]:-0} / 1" | bc)
@@ -93,19 +92,13 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
     echo "Current limit for the median of publication latency is $MEDPUBLATLIMIT"
 
 	if (( MEDPUBLAT > MEDPUBLATLIMIT  || RDBCPUUSAGE > 95 )); then
-        declare -i BATCHINC
-        if (( BATCHSIZE > 20 )); then
-            BATCHINCFLOAT=$(echo "l($BATCHSIZE)-1" | bc -l)
-            BATCHINC=${BATCHINCFLOAT%%.*}
-        else
-            BATCHINC=1
-        fi
-		(( BATCHSIZE += BATCHINC ))
+        BATCHSIZERAW=$(echo "1 + $BATCHSIZE * 1.05" | bc -l)
+        BATCHSIZE=${BATCHSIZERAW%%.*}
 		(( MEDPUBLATLIMIT = STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
 		echo "batch size increased by $BATCHINC"
 	else
-        (( FREQ += STEPFREQ * (1 + FREQ / INCFREQ) ))
-		(( FREQ += STEPFREQ ))
+        FREQRAW=$(echo "1 + $FREQ * 1.05" | bc -l)
+        FREQ=${FREQRAW%%.*}
 		echo "frequency increased"
 	fi
 done
