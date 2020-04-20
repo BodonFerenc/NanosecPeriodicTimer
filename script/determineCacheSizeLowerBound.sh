@@ -4,6 +4,7 @@ set -eu -o pipefail
 
 IFS=','     # to process csv files
 
+GROUPEDOPT=''      # grouped attribute on sym
 NOCLEAN=0
 FLUSHOPT=''
 RDBHOST='0.0.0.0'
@@ -14,7 +15,7 @@ declare -i STARTBATCH=1
 
 function args()
 {
-    options=$(getopt --long noclean --long flush --long rdbhost: --long dur: --long startfreq: --long startbatchsize: -- "$@")
+    options=$(getopt -o g --long noclean --long flush --long rdbhost: --long dur: --long startfreq: --long startbatchsize: -- "$@")
     [ $? -eq 0 ] || {
         echo "Incorrect option provided"
         exit 1
@@ -22,6 +23,9 @@ function args()
     eval set -- "$options"
     while true; do
         case "$1" in
+        -g)
+            GROUPEDOPT='-g'
+            ;; 
         --noclean)
             NOCLEAN=1
             ;;
@@ -83,7 +87,7 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 	echo "running test with frequency $FREQ ..."
 	
 	statFilename=$OUTPUTDIR/statistics_${FREQ}_${BATCHSIZE}.csv 
-    SINGLEMEASURESCRIPT $FLUSHOPT --rdbhost $RDBHOST --freq $FREQ --dur $DURATION --output ${statFilename} --batchsize $BATCHSIZE --batchtype cache
+    SINGLEMEASURESCRIPT $GROUPEDOPT $FLUSHOPT --rdbhost $RDBHOST --freq $FREQ --dur $DURATION --output ${statFilename} --batchsize $BATCHSIZE --batchtype cache
 
 	stat=($(tail -n 1 $statFilename))
 	declare -i RDBCPUUSAGE=$(echo "100 * ${stat[3]:-0} / 1" | bc)
