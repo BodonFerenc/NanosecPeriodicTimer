@@ -99,7 +99,7 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
         BATCHSIZERAW=$(echo "1 + $BATCHSIZE * 1.05" | bc -l)
         BATCHSIZE=${BATCHSIZERAW%%.*}
 		(( MEDPUBLATLIMIT = STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
-		echo "batch size increased by $BATCHINC"
+		echo "batch size increased"
 	else
         FREQRAW=$(echo "1 + $FREQ * 1.05" | bc -l)
         FREQ=${FREQRAW%%.*}
