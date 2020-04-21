@@ -5,5 +5,5 @@ registerStatCollector:{[]
   };
 
 sendStat: {[stat]
-    collectorHandler (`collectRDBStat; stat);
+  if[0 < collectorHandler; collectorHandler (`collectRDBStat; stat)];
   };

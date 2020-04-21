@@ -12,6 +12,7 @@ collectRDBStat: {[stat]
   };
 
 .z.pc: {
+  if[0=x; :()];
   show "exitting...";
   exit 0;
   };
