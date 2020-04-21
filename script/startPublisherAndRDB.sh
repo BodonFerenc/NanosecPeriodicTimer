@@ -8,6 +8,7 @@ function log () {
 LOGDIR=../log
 mkdir -p $LOGDIR
 
+RDBPORT=5001
 RDBSCRIPTFULL="${RDBPRECOMMAND} ${QHOME}/${PLATFORM}/q ${RDBSCRIPT} $GROUPEDOPT -q -p $RDBPORT"
 if [[ $RDBHOST == 0.0.0.0 || $RDBHOST == localhost ]]; then
     ISLOCAL=true
@@ -22,7 +23,6 @@ fi
 
 sleep 2   # wait a sec till RDB comes up. TODO: implement more robust solution
 
-RDBPORT=5001
 RDBOUTPUTFILE=${RDBOUTPUTFILE:-/tmp/rdb.csv}
 if [[ $RDBHOST == 0.0.0.0 ]]; then
     RDBQADDRESS="unix://$RDBPORT"
