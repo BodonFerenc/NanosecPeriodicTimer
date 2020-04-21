@@ -22,6 +22,7 @@ fi
 
 sleep 2   # wait a sec till RDB comes up. TODO: implement more robust solution
 
+RDBPORT=5001
 RDBOUTPUTFILE=${RDBOUTPUTFILE:-/tmp/rdb.csv}
 if [[ $RDBHOST == 0.0.0.0 ]]; then
     RDBQADDRESS="unix://$RDBPORT"
@@ -63,3 +64,11 @@ METAFILE=/tmp/rdbperfmeta.csv
 log "Creating csv for the meta data..."
 echo "frequency,duration,batchsize,RDB CPU Usage" > $METAFILE
 echo "$FREQ,$DURATION,$BATCHSIZE,$RDBCPUUSAGE" >> $METAFILE
+
+log "Merging meta data with timer and RDB statistics into $OUTPUT"
+paste -d, $METAFILE $TIMEROUTPUTFILE $RDBOUTPUTFILE > $OUTPUT
+
+if [[ $NOCLEAN -ne 1 ]]; then
+    echo "Cleaning up temporal files..."
+    rm $METAFILE $TIMEROUTPUTFILE $RDBOUTPUTFILE
+fi
