@@ -15,8 +15,8 @@ OS=$(uname)
 case $OS in
     Linux)
         PLATFORM=l64
-        RDBPRECOMMAND=numactl --physcpubind=0
-        TIMERPRECOMMAND=numactl --physcpubind=1
+        RDBPRECOMMAND="numactl --physcpubind=0"
+        TIMERPRECOMMAND="numactl --physcpubind=1"
         ;;
     Darwin)
         PLATFORM=m64

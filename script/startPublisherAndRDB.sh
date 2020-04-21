@@ -23,9 +23,14 @@ fi
 sleep 2   # wait a sec till RDB comes up. TODO: implement more robust solution
 
 RDBOUTPUTFILE=${RDBOUTPUTFILE:-/tmp/rdb.csv}
+if [[ $RDBHOST == 0.0.0.0 ]]; then
+    RDBQADDRESS="unix://$RDBPORT"
+else
+    RDBQADDRESS="$RDBHOST:$RDBPORT"
+fi
 rm -f $RDBOUTPUTFILE
 log "Starting RDB stat collector..."
-nohup ${QHOME}/${PLATFORM}/q RDBStatCollector.q -rdb $RDBHOST:$RDBPORT -output $RDBOUTPUTFILE > ${LOGDIR}/rdbStatCollector.txt 2>&1 &
+nohup ${QHOME}/${PLATFORM}/q RDBStatCollector.q -rdb $RDBQADDRESS -output $RDBOUTPUTFILE > ${LOGDIR}/rdbStatCollector.txt 2>&1 &
 
 log "Starting publisher with frequency $FREQ for duration $DURATION"
 nohup ${TIMERPRECOMMAND} ../bin/KDBPublishLatencyTester $FREQ $DURATION \
