@@ -1,16 +1,12 @@
 \l schema.q
+\l rdb_statsender.q
 
 cmd: .Q.opt .z.x
-if [not `output in key cmd; 
-  show "Please provide an output file name by command line parameter -output";
-  exit 1];
 
 if [`grouped in key cmd;
 	show "setting grouped attribute on column sym";
 	update `g#sym from `trade;
 	];
-
-output: first `$cmd[`output];
 
 timesAfterInsert: ();
 
@@ -30,7 +26,7 @@ timesAfterInsert: ();
   update latency: timesAfterInsert[batchnr] - adaptertime from `trade;    
 
   show "saving latency statistics of table of size ",  string count trade;
-  output 0:","0:select 
+  stat: select 
     RDBduration: enlist rdbDur % 1000 * 1000 * 1000,
     recMessageNr: count timesAfterInsert,
     recRowNr: count i,
@@ -40,6 +36,7 @@ timesAfterInsert: ();
     avgLatency: avg latency,
     medLatency: `long$med latency from trade;     // force to long for easier post-processing
 
+  sendStat[stat];
   end: .z.p;
   show "time required for saving results: ", string end - start;
 

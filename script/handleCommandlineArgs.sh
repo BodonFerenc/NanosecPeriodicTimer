@@ -11,6 +11,22 @@ OUTPUT=stat.csv
 BATCHSIZE=0
 BATCHTYPE=cache
 
+OS=$(uname)
+case $OS in
+    Linux)
+        PLATFORM=l64
+        RDBPRECOMMAND=numactl --physcpubind=0
+        TIMERPRECOMMAND=numactl --physcpubind=1
+        ;;
+    Darwin)
+        PLATFORM=m64
+        RDBPRECOMMAND=
+        TIMERPRECOMMAND=
+        ;;
+    *)
+        echo "Not supported operating system $OS."
+        exit 2
+esac
 
 function args()
 {
