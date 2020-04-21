@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-constexpr auto BILLION=1000000000l;
+constexpr auto BILLION=1000'000'000l;
 
 // what you really want here is monotonic clock
 using TIME = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
