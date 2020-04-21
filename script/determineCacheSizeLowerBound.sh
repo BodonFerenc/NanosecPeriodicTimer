@@ -64,7 +64,7 @@ mkdir -p $OUTPUTDIR
 rm -f ${OUTPUTDIR}/statistics_*.csv
 
 
-declare -i ENDFREQ=6000000
+declare -i ENDFREQ=3000000
 
 declare -i MAXBATCHSIZE=8000
 
