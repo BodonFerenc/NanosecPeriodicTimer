@@ -65,10 +65,3 @@ log "Creating csv for the meta data..."
 echo "frequency,duration,batchsize,RDB CPU Usage" > $METAFILE
 echo "$FREQ,$DURATION,$BATCHSIZE,$RDBCPUUSAGE" >> $METAFILE
 
-log "Merging meta data with timer and RDB statistics into $OUTPUT"
-paste -d, $METAFILE $TIMEROUTPUTFILE $RDBOUTPUTFILE > $OUTPUT
-
-if [[ $NOCLEAN -ne 1 ]]; then
-    echo "Cleaning up temporal files..."
-    rm $METAFILE $TIMEROUTPUTFILE $RDBOUTPUTFILE
-fi
