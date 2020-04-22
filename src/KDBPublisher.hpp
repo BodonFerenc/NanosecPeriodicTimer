@@ -29,11 +29,12 @@ constexpr std::chrono::duration<int, detail::ratio_multiply<std::ratio<24>, std:
 class KDBPublisher {
     protected:  
         int socket;
-        K tableName;
 
     public: 
+        K tableName;
+
         KDBPublisher(unsigned long, const char* argv[]);
-        
+
         template<bool FLUSH=false>
         bool sendUpdate(K row) const;
 

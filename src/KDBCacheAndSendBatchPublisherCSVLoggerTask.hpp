@@ -41,7 +41,7 @@ template<class P, bool FLUSH>
 bool inline KDBCacheAndSendBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME& expected, const TIME& real) {
     static unsigned long batchnr = 0;
     static unsigned long batchSq = 0;
-    const unsigned long sq = KDBPublisherCSVLoggerTask<P, FLUSH>::csvLogger.getSize();
+    const unsigned long sq = KDBPublisherCSVLoggerTask<P, FLUSH>::getSize();
 
     auto sym = *KDBPublisherCSVLoggerTask<P, FLUSH>::symGenerator.sym_it;
 
@@ -56,12 +56,12 @@ bool inline KDBCacheAndSendBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME
     ++batchSq;
 
     if (batchSq == batchSize) {
-        KDBPublisher::sendUpdate<FLUSH>(row);    
+        KDBPublisherCSVLoggerTask<P, FLUSH>::kdbpublisher.sendUpdate(row);    
         initRow();
         ++KDBPublisherCSVLoggerTask<P, FLUSH>::symGenerator.sym_it; 
         ++batchnr;
         batchSq=0;
     }
 
-    return KDBPublisherCSVLoggerTask<P, FLUSH>::csvLogger.run(expected, real);
+    return KDBPublisherCSVLoggerTask<P, FLUSH>::run(expected, real);
 }

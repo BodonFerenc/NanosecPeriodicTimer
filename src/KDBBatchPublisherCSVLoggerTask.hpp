@@ -31,7 +31,7 @@ template<class P, bool FLUSH>
 bool inline KDBBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME& expected, const TIME& real) {
     auto sym = *KDBPublisherCSVLoggerTask<P, FLUSH>::symGenerator.sym_it;
     static unsigned long sq = 0;
-    const unsigned long batchnr = KDBPublisherCSVLoggerTask<P, FLUSH>::csvLogger.getSize();
+    const unsigned long batchnr = KDBPublisherCSVLoggerTask<P, FLUSH>::getSize();
 
     const unsigned long realTriggerTime = DURNANO((real - kdb_start).time_since_epoch());
 
@@ -61,7 +61,7 @@ bool inline KDBBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME& expected, 
 
     ++batchSize;
 
-    KDBPublisher::sendUpdate<FLUSH>(row);
+    KDBPublisherCSVLoggerTask<P, FLUSH>::kdbpublisher.sendUpdate(row);
 
-    return KDBPublisherCSVLoggerTask<P, FLUSH>::csvLogger.run(expected, real);
+    return KDBPublisherCSVLoggerTask<P, FLUSH>::run(expected, real);
 }

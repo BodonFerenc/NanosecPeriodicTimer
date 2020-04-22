@@ -21,20 +21,22 @@
 #include "KDBSymGenerator.hpp"
 
 
-// The order of parent classes matters to make sure 
-// that kdb+ connection is closed first during destruction.
-// Destructors are called in reverse order of declaration
-
 template<class P, bool FLUSH>
-class KDBPublisherCSVLoggerTask: public KDBPublisher {
+class KDBPublisherCSVLoggerTask: public P {
     protected:  
         KDBSymGenerator symGenerator;
-        P csvLogger;
         
         // fields to send. We dont really care about the content.
         char stop = 'i';            /* charactor example */
         int size = 444;             /* long example */
         double price = 12.12;       /* double example */
+
+// The order of data members matters!
+// The kdb+ connection needs to be closed as a first task during destruction.
+// This allows getting an accurate upper bound for the kdb+ insert time.
+// Hence KDBPublisher must be the last data member.
+
+        KDBPublisher kdbpublisher;
 
     public: 
         KDBPublisherCSVLoggerTask(unsigned long, const char* argv[]);
@@ -43,21 +45,21 @@ class KDBPublisherCSVLoggerTask: public KDBPublisher {
 
 template<class P, bool FLUSH>
 KDBPublisherCSVLoggerTask<P, FLUSH>::KDBPublisherCSVLoggerTask(unsigned long triggerNr, const char* argv[]) 
-    : KDBPublisher(triggerNr, argv+1), symGenerator{triggerNr}, csvLogger(triggerNr, argv) {  
-    tableName = (ks((S) "trade"));    
+    :P{triggerNr, argv}, symGenerator{triggerNr}, kdbpublisher(triggerNr, argv+1) {  
+    kdbpublisher.tableName = (ks((S) "trade"));    
 }
 
 template<class P, bool FLUSH>
 bool inline KDBPublisherCSVLoggerTask<P, FLUSH>::run(const TIME& expected, const TIME& real) {
-    unsigned long sq = csvLogger.getSize();
+    unsigned long sq = P::getSize();
 
     K row = knk(7, ks(*symGenerator.sym_it), kj(sq), kc(stop), ki(size), kf(price), kj(sq), 
         ktj(-KP, DURNANO((std::chrono::system_clock::now() - kdb_start).time_since_epoch())));
 
-    bool res = sendUpdate<FLUSH>(row);
+    bool res = kdbpublisher.sendUpdate<FLUSH>(row);
     ++symGenerator.sym_it;
 
-    csvLogger.run(expected, real);
+    P::run(expected, real);
     return res;
 }
 
