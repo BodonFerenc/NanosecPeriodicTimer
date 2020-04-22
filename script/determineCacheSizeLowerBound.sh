@@ -5,6 +5,7 @@ set -eu -o pipefail
 IFS=','     # to process csv files
 
 GROUPEDOPT=''      # grouped attribute on sym
+CONTINUE=0
 NOCLEAN=0
 FLUSHOPT=''
 RDBHOST='0.0.0.0'
@@ -15,7 +16,7 @@ declare -i STARTBATCH=1
 
 function args()
 {
-    options=$(getopt -o g --long noclean --long flush --long rdbhost: --long dur: --long startfreq: --long startbatchsize: -- "$@")
+    options=$(getopt -o g --long cont --long noclean --long flush --long rdbhost: --long dur: --long startfreq: --long startbatchsize: -- "$@")
     [ $? -eq 0 ] || {
         echo "Incorrect option provided"
         exit 1
@@ -26,6 +27,9 @@ function args()
         -g)
             GROUPEDOPT='-g'
             ;; 
+        --cont)
+            CONTINUE=1
+            ;;            
         --noclean)
             NOCLEAN=1
             ;;
@@ -61,7 +65,7 @@ args $0 "$@"
 
 OUTPUTDIR=../res
 mkdir -p $OUTPUTDIR
-rm -f ${OUTPUTDIR}/statistics_*.csv
+[[ $CONTINUE -ne 1 ]] && rm -f ${OUTPUTDIR}/statistics_*.csv   # previous run was cancelled
 
 
 declare -i ENDFREQ=3000000
