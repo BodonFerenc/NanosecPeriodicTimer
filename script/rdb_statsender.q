@@ -13,16 +13,13 @@ registerStatCollector:{[]
 sendStat: {[stat]
   start: .z.p;
 
-  $[0 < collectorHandler; [
-    if[isOutputFileSet; show "Parameter output is ignored, using a stat collector process"];
-    collectorHandler (`collectRDBStat; stat)
-    ];
-    $[isOutputFileSet; [
+  if[0 < collectorHandler;
+    show "sending RDB statistics to stat collector process ";    
+    collectorHandler (`collectRDBStat; stat)];
+
+  if[isOutputFileSet;
       show "saving RDB statistics to ", string output;    
-      output 0:","0: stat;
-      ];
-      show stat;
-    ]];
+      output 0:","0: stat];
 
   end: .z.p;
   show "Time required for handling RDB statistics: ", string end - start;
