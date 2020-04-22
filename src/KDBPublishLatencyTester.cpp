@@ -69,7 +69,9 @@ int main(int argc, const char* argv[])
         return 1;
     }
 
-    return atoi(argv[7]) ? selectTimer<CSVStatLoggerTask>(argc, argv) 
+    auto res = atoi(argv[7]) ? selectTimer<CSVStatLoggerTask>(argc, argv) 
         : selectTimer<CSVLoggerTask>(argc, argv);
+    cout << "Timer finished" << endl;
+    return res;       
     
 }
