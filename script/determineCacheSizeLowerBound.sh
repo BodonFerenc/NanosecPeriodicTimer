@@ -96,7 +96,8 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 	stat=($(tail -n 1 $statFilename))
 	declare -i MEDPUBLAT=${stat[8]}
     echo "Median of publication latency was $MEDPUBLAT"
-    declare -i RDBTIME=${stat[9]}
+    RDBTIMERAW=${stat[9]}
+    RDBTIME=${RDBTIMERAW%%.*}
     echo "RDB ingest time was $RDBTIME"
 	
     echo "Current limit for the median of publication latency is $MEDPUBLATLIMIT"
