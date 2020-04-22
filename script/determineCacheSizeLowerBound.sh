@@ -9,7 +9,7 @@ CONTINUE=0
 NOCLEAN=0
 FLUSHOPT=''
 RDBHOST='0.0.0.0'
-DURATION=60
+DURATION=30
 
 declare -i STARTFREQ=50000
 declare -i STARTBATCH=1
@@ -94,12 +94,14 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
     $SINGLEMEASURESCRIPT $GROUPEDOPT $FLUSHOPT --rdbhost $RDBHOST --freq $FREQ --dur $DURATION --output ${statFilename} --batchsize $BATCHSIZE --batchtype cache
 
 	stat=($(tail -n 1 $statFilename))
-	declare -i RDBCPUUSAGE=$(echo "100 * ${stat[3]:-0} / 1" | bc)
 	declare -i MEDPUBLAT=${stat[8]}
-	echo "Median of publication latency was $MEDPUBLAT"
+    echo "Median of publication latency was $MEDPUBLAT"
+    declare -i RDBTIME=${stat[9]}
+    echo "RDB ingest time was $RDBTIME"
+	
     echo "Current limit for the median of publication latency is $MEDPUBLATLIMIT"
 
-	if (( MEDPUBLAT > MEDPUBLATLIMIT  || RDBCPUUSAGE > 95 )); then
+	if (( RDBTIME > DURATION + 3 )); then
         BATCHSIZERAW=$(echo "1 + $BATCHSIZE * 1.05" | bc -l)
         BATCHSIZE=${BATCHSIZERAW%%.*}
 		(( MEDPUBLATLIMIT = STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
