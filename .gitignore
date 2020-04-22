@@ -35,6 +35,7 @@ bin/*
 # log and result libraries
 log/*
 out/*
+*.csv
 
 # Misc
 .vscode/launch.json
