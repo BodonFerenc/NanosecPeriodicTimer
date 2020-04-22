@@ -1,7 +1,7 @@
+cmd: .Q.opt .z.x
+
 \l schema.q
 \l rdb_statsender.q
-
-cmd: .Q.opt .z.x
 
 if [`grouped in key cmd;
 	show "setting grouped attribute on column sym";
@@ -25,7 +25,7 @@ timesAfterInsert: ();
   update adaptertime: first time by batchnr from `trade;  
   update latency: timesAfterInsert[batchnr] - adaptertime from `trade;    
 
-  show "saving latency statistics of table of size ",  string count trade;
+  show "Calculating latency statistics of table of size ",  string count trade;
   stat: select 
     RDBduration: enlist rdbDur % 1000 * 1000 * 1000,
     recMessageNr: count timesAfterInsert,
@@ -37,8 +37,6 @@ timesAfterInsert: ();
     medLatency: `long$med latency from trade;     // force to long for easier post-processing
 
   sendStat[stat];
-  end: .z.p;
-  show "time required for saving results: ", string end - start;
 
   show "exitting...";
   exit 0
