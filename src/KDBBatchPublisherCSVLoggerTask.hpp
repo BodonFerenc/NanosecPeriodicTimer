@@ -63,5 +63,5 @@ bool inline KDBBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME& expected, 
 
     KDBPublisherCSVLoggerTask<P, FLUSH>::kdbpublisher.sendUpdate(row);
 
-    return KDBPublisherCSVLoggerTask<P, FLUSH>::run(expected, real);
+    return P::run(expected, real);
 }

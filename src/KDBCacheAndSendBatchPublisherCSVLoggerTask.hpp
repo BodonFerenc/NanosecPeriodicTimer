@@ -63,5 +63,5 @@ bool inline KDBCacheAndSendBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME
         batchSq=0;
     }
 
-    return KDBPublisherCSVLoggerTask<P, FLUSH>::run(expected, real);
+    return P::run(expected, real);
 }
