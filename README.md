@@ -8,16 +8,18 @@ $ make
 ```
 
 To run the executables:
+
 ```
-$ ./bin/PeriodicTimerDemo bytimerjumpforward 200000 30 timer.csv
+$ ./bin/PeriodicTimerDemo bytimerjumpforward 200000 30 ../out/timer.csv
 ```
-which will run a time check based periodic timer for 30 seconds. The frequency of triggers is 20000, i.e. 20000 events per second and the planned and actual trigger times are saved in file `timer.csv`. Pass `bysleep` as first parameter for a sleep based timer.
+
+which will run a time check based periodic timer for 30 seconds. The frequency of triggers is 20000, i.e. 20000 events per second and the planned and actual trigger times are saved in file `../out/timer.csv`. Pass `bysleep` as first parameter for a sleep based timer.
 
 The program will output a few useful information, e.g the planned delays between triggers and the average of actual and planned delays. You can get a full distribution of the delays, .e.g by a simple q process:
 
 ```
 $ q
-q) t: ("JJJ";enlist",") 0:hsym `timer.csv
+q) t: ("JJJ";enlist",") 0:hsym `$"../out/timer.csv"
 q)select median_latency: med latency, avg_latency: avg latency, max_latency: max latency from t
 median_latency avg_latency max_latency
 --------------------------------------
@@ -36,7 +38,7 @@ latency| nr      rate
 The q script `generatePublisherLatencyStats.q` also generates some useful statistics (like median of the latencies) in a CSV file specified by its second parameter.
 
 ```
-$ q script/generatePublisherLatencyStats.q timer.csv timerStatistics.csv
+$ q script/generatePublisherLatencyStats.q ../out/timer.csv ../out/timerStatistics.csv
 ```
 
 ## Clock aspects
@@ -78,47 +80,52 @@ sym time price size stop ex
 Now switch back to `Terminal 1` and check the content of table trade or see how its size grows by executing command `count tradeTP` in the q interpreter.
 
 ## Measuring kdb+ ingest latency
-The script can also be used to measure how long it takes from a trigger event, through a trade data publish till it arrives into a kdb+ process that inserts the data into its local table. 
+The script can also be used to measure how long it takes from a trigger event, through a trade data publish till it arrives into a kdb+ process that inserts the data into its local table. Script `rdb_latency.q` differs from `rdb_light` in storing a timestamp for each update. This timestamp can be compared to the real trigger time sent by the timer.
 
 ```
 # In Terminal 1:
 $ cd script
-$ q rdb_latency.q -output ../statistics.csv -p 5003
+$ q rdb_latency.q -output ../out/statistics.csv -p 5003
 
 q) trade
 sym time price size stop ex
 ---------------------------
 
 # In Terminal 2:
-./bin/KDBPublishLatencyTester 10000 20 ../timerStat.csv localhost 5003 0 1
+./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv localhost 5003 0 1
 ```
 
 If the publisher and the kdb+ process are on the same machine then you can unix sockets. All you need to do is changing the host parameter to `0.0.0.0`. This will result in lower data transfer latencies.
 
 ```
 # In Terminal 2:
-./bin/KDBPublishLatencyTester 10000 20 ../timerStat.csv 0.0.0.0 5003 0 1
+./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv 0.0.0.0 5003 0 1
 ```
 
-
-You can observe the latency statistics in file `../statistics.csv`. If you would like to see all statistics in a single view then you can simply merge publisher's and RDB's output by Linux command [paste](https://en.wikipedia.org/wiki/Paste_(Unix))
-
-```
-paste -d, ../timerStat.csv ../statistics.csv
-```
-
-If you dont want to do all these manually then you can use bash script `measureKdbLatency.sh`. It starts RDB and publisher for you and even measures RDB CPU usage rate.
+You can observe the latency statistics in file `../out/statistics.csv`. If you would like to see all statistics in a single view then you can simply merge publisher's and RDB's output by Linux command [paste](https://en.wikipedia.org/wiki/Paste_(Unix))
 
 ```
-./measureKdbLatency.sh --freq 10000 --dur 20 --output ../statistics.csv --rdbhost localhost
+paste -d, ../out/timerStat.csv ../out/statistics.csv
+```
+
+If the RDB is on a remote host and there is no shared filesystem (e.g. NFS) between the hosts then you can use kdb+ script `RDBStatCollector.q` on the publisher's host to fetch statistics from the RDB.
+
+```
+q RDBStatCollector.q -rdb 72.7.9.248 -output ../out/statistics.csv
+```
+
+If you dont want to do all these manually then you can use bash script `measureKdbLatency.sh`. It starts an RDB, RDB statistics fetcher and a publisher for you and even measures RDB CPU usage rate.
+
+```
+./measureKdbLatency.sh --freq 10000 --dur 20 --output ../out/statistics.csv --rdbhost localhost
 ```
 
 Use `--rdbhost localhost` if you would like to use TCP/IP connection and `--flush` to [flush output buffer](https://code.kx.com/q/basics/ipc/#block-queue-flush) after each send message.
 
-Script `measureKdbLatency.sh` also supports **remote kdb+ process via TCP**. If you pass an IP address via the `--rdbhost` parameter then the script will start the server via ssh. You probably want to use `~/.ssh/config` to provide the user name and private key location for the remote server. The RDB writes out latency statistics that your local host needs so you need a filesystem that is available from both boxes. By default the RDB output is written to `/tmp/rdb.csv` but you can overwrite this with environment variable `RDBOUTPUTFILE` like
+Script `measureKdbLatency.sh` also supports **remote kdb+ process via TCP**. If you pass an IP address via the `--rdbhost` parameter then the script will start the RDB on remote host via ssh. You probably want to use `~/.ssh/config` to provide the user name and private key location for the remote server. The RDB writes out latency statistics that your local host needs so you need a filesystem that is available from both boxes. By default the RDB output is written to `/tmp/rdb.csv` but you can overwrite this with environment variable `RDBOUTPUTFILE` like
 
 ```
-RDBOUTPUTFILE=/nfs/data/rdb.csv ./measureKdbLatency.sh --freq 10000 --dur 20 --output ../statistics.csv --rdbhost 72.7.9.248
+RDBOUTPUTFILE=/nfs/data/rdb.csv ./measureKdbLatency.sh --freq 10000 --dur 20 --output ../out/statistics.csv --rdbhost 72.7.9.248
 ```
 
 The C++ publisher and the batch scripts handle batch update. Use parameter `batchsize` to specify batch size. You can decide if each trigger should generate a batch of rows (`--batchtype batch`) or each trigger should only generate a single row, that the publisher caches and if the size of the cache reaches a limit then it sends the batch to the kdb+ process. This option requires command line paramter `--batchtype cache`.
