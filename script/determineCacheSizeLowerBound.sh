@@ -102,7 +102,7 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 	
     echo "Current limit for the median of publication latency is $MEDPUBLATLIMIT"
 
-	if (( RDBTIME > DURATION + 3 )); then
+	if (( RDBTIME > DURATION + 2 || MEDPUBLAT > MEDPUBLATLIMIT)); then
         BATCHSIZERAW=$(echo "1 + $BATCHSIZE * 1.05" | bc -l)
         BATCHSIZE=${BATCHSIZERAW%%.*}
 		(( MEDPUBLATLIMIT = STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
