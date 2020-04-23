@@ -28,7 +28,7 @@ class CSVLoggerTask {
 
     public: 
         CSVLoggerTask(unsigned long, const char* argv[]);
-        auto getSize() {return expectedTriggerTimes.size();}
+        auto size() {return expectedTriggerTimes.size();}
         bool run(const TIME&, const TIME&);
         ~CSVLoggerTask();
 };

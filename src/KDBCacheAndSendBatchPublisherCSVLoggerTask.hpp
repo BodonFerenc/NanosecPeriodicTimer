@@ -41,7 +41,7 @@ template<class P, bool FLUSH>
 bool inline KDBCacheAndSendBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME& expected, const TIME& real) {
     static unsigned long batchnr = 0;
     static unsigned long batchSq = 0;
-    const unsigned long sq = KDBPublisherCSVLoggerTask<P, FLUSH>::getSize();
+    const unsigned long sq = KDBPublisherCSVLoggerTask<P, FLUSH>::size();
 
     auto sym = *KDBPublisherCSVLoggerTask<P, FLUSH>::symGenerator.sym_it;
 
