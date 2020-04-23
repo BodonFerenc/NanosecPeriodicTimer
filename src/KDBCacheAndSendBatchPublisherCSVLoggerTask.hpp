@@ -41,14 +41,14 @@ template<class P, bool FLUSH>
 bool inline KDBCacheAndSendBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME& expected, const TIME& real) {
     static unsigned long batchnr = 0;
     static unsigned long batchSq = 0;
-    const unsigned long sq = KDBPublisherCSVLoggerTask<P, FLUSH>::size();
+    const unsigned long sq = KDBPublisherCSVLoggerTask<P, FLUSH>::getSize();
 
     auto sym = *KDBPublisherCSVLoggerTask<P, FLUSH>::symGenerator.sym_it;
 
     kS(kK(row)[0])[batchSq]= sym;        
     kJ(kK(row)[1])[batchSq]= sq;
     kC(kK(row)[2])[batchSq]= KDBPublisherCSVLoggerTask<P, FLUSH>::stop;
-    kI(kK(row)[3])[batchSq]= KDBPublisherCSVLoggerTask<P, FLUSH>::size;
+    kI(kK(row)[3])[batchSq]= KDBPublisherCSVLoggerTask<P, FLUSH>::getSize;
     kF(kK(row)[4])[batchSq]= KDBPublisherCSVLoggerTask<P, FLUSH>::price;
     kJ(kK(row)[5])[batchSq]= batchnr;
     kJ(kK(row)[6])[batchSq]= DURNANO((real - kdb_start).time_since_epoch());
