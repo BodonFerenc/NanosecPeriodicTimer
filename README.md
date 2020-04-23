@@ -1,13 +1,13 @@
 # High precision, high frequency periodic timer demo
 
-This small repository contains C files that demonstrate the two ways of creating a periodic timer. The first approach is based on sleep the second is based constantly checking the time to see when to trigger.
+This small repository contains C++ files that demonstrate the two ways of creating a single threaded periodic timer. The first approach is based on sleep the second is based constantly checking the time to see when to trigger.
 
-To build the two binaries:
+To build the binary do
 ```
 $ make
 ```
 
-To run the executables:
+and to run the executable
 
 ```
 $ ./bin/PeriodicTimerDemo bytimerjumpforward 200000 30 ../out/timer.csv
@@ -62,6 +62,7 @@ Read this [excellent article](http://btorpey.github.io/blog/2014/02/18/clock-sou
 
 ## kdb+ trade table publisher
 Class [KDBTradePublisher](https://github.com/BodonFerenc/NanosecPeriodicTimer/blob/master/src/KDBTradePublisher.cpp) sends single row updates of table [trade](https://github.com/BodonFerenc/NanosecPeriodicTimer/blob/master/q/schema.q) to a [kdb+ process](https://github.com/BodonFerenc/NanosecPeriodicTimer/blob/master/q/rdb_light.q) when the timer triggers. [kdb+ needs to be installed](https://code.kx.com/q/learn/).
+
 To run do the following after command `make`
 
 ```
