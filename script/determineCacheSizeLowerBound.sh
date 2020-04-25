@@ -70,7 +70,7 @@ mkdir -p $OUTPUTDIR
 
 declare -i ENDFREQ=8000000
 
-declare -i MAXBATCHSIZE=8000
+declare -i MAXBATCHSIZE=15000
 
 declare -i MEDPUBLIMITOFFSET=300000
 
