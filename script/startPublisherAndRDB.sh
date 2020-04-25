@@ -59,9 +59,51 @@ fi
 
 wait
 
-METAFILE=/tmp/rdbperfmeta.csv
-
 log "Creating csv for the meta data..."
+METAFILE=/tmp/rdbperfmeta.csv
 echo "frequency,duration,batchsize,RDB CPU Usage" > $METAFILE
 echo "$FREQ,$DURATION,$BATCHSIZE,$RDBCPUUSAGE" >> $METAFILE
+
+function getISStableFlag {
+    local statFilename=$1
+
+    log "Determining if ingest was stable"
+    ISSTABLEFLAG=0
+
+    local IFS=,
+    local -a stat=($(tail -n 1 $statFilename))
+
+    local -i MEDLATLIMIT=1200000     # limit for the median of the latency
+    local -i MEDLAT=${stat[16]}
+    echo "Median latency was $MEDLAT"
+    if (( MEDLAT > MEDLATLIMIT)); then return 0; fi
+
+    local RDBTIMERAW=${stat[9]}
+    local -i RDBTIME=${RDBTIMERAW%%.*}
+    echo "RDB ingest time was $RDBTIME"
+    if (( RDBTIME > DURATION + 1 )); then return 0; fi
+
+	local -i MEDPUBLAT=${stat[8]}
+    echo "Median of publication latency was $MEDPUBLAT"
+
+    if [[ -z ${STARTMEDPUBLATLIMIT+dontcare} ]]; then
+        echo "Determining median of timer latency on current hardware"
+        echo "Running a timer with a simple task..."
+        ../bin/PeriodicTimerDemo bytimerstrict 5000 5 /tmp/raw.csv
+        declare -i STARTMEDPUBLATLIMIT=$(q <<< 'exec `long$1+med latency from ("JJJ";enlist",") 0:hsym `$"/tmp/raw.csv"')
+    fi
+    local -i MEDPUBLATLIMIT
+    if [[ $BATCHSIZE -gt 0 && $BATCHTYPE == "cache" ]]; then        
+        local -i MEDPUBLIMITOFFSET=300000        
+        (( MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
+        echo "Limit for the median of publication latency is $MEDPUBLATLIMIT"
+    else
+        MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT
+    fi
+
+    if (( MEDPUBLAT > MEDPUBLATLIMIT)); then return 0; fi
+
+    ISSTABLEFLAG=1
+    return 0
+}
 

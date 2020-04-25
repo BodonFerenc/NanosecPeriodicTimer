@@ -15,12 +15,23 @@ function afterStartWork() {
 
 source startPublisherAndRDB.sh
 
-log "Merging meta data with timer and RDB statistics into $OUTPUT"
-paste -d, $METAFILE $TIMEROUTPUTFILE $RDBOUTPUTFILE > $OUTPUT
+TEMPOUTPUT=/tmp/summary.csv
+log "Merging meta data with timer and RDB statistics into $TEMPOUTPUT"
+paste -d, $METAFILE $TIMEROUTPUTFILE $RDBOUTPUTFILE > $TEMPOUTPUT
+
+ISSTABLEFILE=/tmp/isstable.csv
+echo "isStable" > $ISSTABLEFILE
+getISStableFlag $TEMPOUTPUT
+log "Is stable flag: $ISSTABLEFLAG"
+echo $ISSTABLEFLAG >> $ISSTABLEFILE
+
+log "Merging temp result file and is stable file to $OUTPUT"
+paste -d, $TEMPOUTPUT $ISSTABLEFILE > $OUTPUT
+
 
 if [[ $NOCLEAN -ne 1 ]]; then
     echo "Cleaning up temporal files..."
-    rm $METAFILE $TIMEROUTPUTFILE $RDBOUTPUTFILE
+    rm $METAFILE $TIMEROUTPUTFILE $RDBOUTPUTFILE $ISSTABLEFILE $TEMPOUTPUT
 fi
 
 exit 0

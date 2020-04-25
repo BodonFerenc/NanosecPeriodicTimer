@@ -68,7 +68,7 @@ mkdir -p $OUTPUTDIR
 [[ $CONTINUE -ne 1 ]] && rm -f ${OUTPUTDIR}/statistics_*.csv   # previous run was cancelled
 
 
-declare -i ENDFREQ=3000000
+declare -i ENDFREQ=8000000
 
 declare -i MAXBATCHSIZE=8000
 
@@ -77,12 +77,12 @@ declare -i MEDPUBLIMITOFFSET=300000
 declare -i BATCHSIZE=STARTBATCH
 declare -i FREQ=STARTFREQ
 
+declare -i MEDLATLIMIT=1200000     # limit for the median of the latency
+
 echo "Determining median of timer latency on current hardware"
 echo "Running a timer with a simple task..."
 ../bin/PeriodicTimerDemo bytimerstrict 5000 5 /tmp/raw.csv
 declare -i STARTMEDPUBLATLIMIT=$(q <<< 'exec `long$1+med latency from ("JJJ";enlist",") 0:hsym `$"/tmp/raw.csv"')
-
-(( MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
 
 SINGLEMEASURESCRIPT=${SINGLEMEASURESCRIPT:-"./measureKdbLatency.sh"}
 
@@ -94,18 +94,11 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
     $SINGLEMEASURESCRIPT $GROUPEDOPT $FLUSHOPT --rdbhost $RDBHOST --freq $FREQ --dur $DURATION --output ${statFilename} --batchsize $BATCHSIZE --batchtype cache
 
 	stat=($(tail -n 1 $statFilename))
-	declare -i MEDPUBLAT=${stat[8]}
-    echo "Median of publication latency was $MEDPUBLAT"
-    RDBTIMERAW=${stat[9]}
-    RDBTIME=${RDBTIMERAW%%.*}
-    echo "RDB ingest time was $RDBTIME"
-	
-    echo "Current limit for the median of publication latency is $MEDPUBLATLIMIT"
+    declare -i ISSTABLEFLAG=${stat[-1]}
 
-	if (( RDBTIME > DURATION + 2 || MEDPUBLAT > MEDPUBLATLIMIT)); then
+	if (( ! ISSTABLEFLAG )); then
         BATCHSIZERAW=$(echo "1 + $BATCHSIZE * 1.05" | bc -l)
         BATCHSIZE=${BATCHSIZERAW%%.*}
-		(( MEDPUBLATLIMIT = STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
 		echo "batch size increased"
 	else
         FREQRAW=$(echo "1 + $FREQ * 1.05" | bc -l)

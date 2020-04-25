@@ -81,8 +81,8 @@ SINGLEMEASURESCRIPT=${SINGLEMEASURESCRIPT:-"./measureKdbLatency.sh"}
 echo "Determining median of timer latency on current hardware"
 echo "Running a timer with a simple task..."
 ../bin/PeriodicTimerDemo bytimerstrict 5000 5 /tmp/raw.csv
-declare -i MEDPUBLATLIMIT=$(q <<< 'exec `long$1+med latency from ("JJJ";enlist",") 0:hsym `$"/tmp/raw.csv"')
-echo "Limit of the median timer latency is set to $MEDPUBLATLIMIT "
+declare -i STARTMEDPUBLATLIMIT=$(q <<< 'exec `long$1+med latency from ("JJJ";enlist",") 0:hsym `$"/tmp/raw.csv"')
+echo "Limit of the median timer latency is set to $STARTMEDPUBLATLIMIT "
 
 while (( FREQ > MINFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 	echo "running test with batchsize $BATCHSIZE ..."
@@ -92,11 +92,9 @@ while (( FREQ > MINFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
     $SINGLEMEASURESCRIPT $GROUPEDOPT $FLUSHOPT --rdbhost $RDBHOST --freq $FREQ --dur $DURATION --output ${statFilename} --batchsize $BATCHSIZE --batchtype batch
 
 	stat=($(tail -n 1 $statFilename))
-	declare -i RDBCPUUSAGE=$(echo "100 * ${stat[3]:-0} / 1" | bc)
-	declare -i MEDPUBLAT=${stat[8]}
-	echo "Median of publication latency was $MEDPUBLAT"
+    declare -i ISSTABLEFLAG=${stat[-1]}
 
-	if (( MEDPUBLAT > MEDPUBLATLIMIT  || RDBCPUUSAGE > 95 )); then
+	if (( ISSTABLEFLAG )); then
         FREQRAW=$(echo "$FREQ * 0.95" | bc -l)
         FREQ=${FREQRAW%%.*}
 		echo "frequency decreased"
