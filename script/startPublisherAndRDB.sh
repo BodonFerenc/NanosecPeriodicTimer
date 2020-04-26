@@ -73,15 +73,23 @@ function getISStableFlag {
     local IFS=,
     local -a stat=($(tail -n 1 $statFilename))
 
-    local -i MEDLATLIMIT=1200000     # limit for the median of the latency
-    local -i MEDLAT=${stat[16]}
-    echo "Median latency was $MEDLAT"
-    if (( MEDLAT > MEDLATLIMIT)); then return 0; fi
-
     local RDBTIMERAW=${stat[9]}
     local -i RDBTIME=${RDBTIMERAW%%.*}
     echo "RDB ingest time was $RDBTIME"
     if (( RDBTIME > DURATION + 1 )); then return 0; fi
+
+    MEDLATLIMITOFFSET=${MEDLATLIMITOFFSET:-1000000}
+    local -i MEDLATLIMIT
+    if [[ $BATCHSIZE -gt 0 && $BATCHTYPE == "cache" ]]; then
+        (( MEDLATLIMIT = MEDLATLIMITOFFSET + 1000000000 * BATCHSIZE / FREQ )) 
+    else
+        MEDLATLIMIT=$MEDLATLIMITOFFSET     # limit for the median of the latency
+    fi
+    
+    local -i MEDLAT=${stat[16]}
+    echo "Median latency was $MEDLAT, the limit is $MEDLATLIMIT"
+    if (( MEDLAT > MEDLATLIMIT )); then return 0; fi
+
 
 	local -i MEDPUBLAT=${stat[8]}
     echo "Median of publication latency was $MEDPUBLAT"
@@ -94,7 +102,7 @@ function getISStableFlag {
     fi
     local -i MEDPUBLATLIMIT
     if [[ $BATCHSIZE -gt 0 && $BATCHTYPE == "cache" ]]; then        
-        local -i MEDPUBLIMITOFFSET=300000        
+        MEDPUBLIMITOFFSET=${MEDPUBLIMITOFFSET:-300000}
         (( MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
         echo "Limit for the median of publication latency is $MEDPUBLATLIMIT"
     else
