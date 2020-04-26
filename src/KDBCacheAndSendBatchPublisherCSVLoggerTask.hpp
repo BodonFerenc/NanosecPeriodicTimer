@@ -48,7 +48,7 @@ bool inline KDBCacheAndSendBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME
     kS(kK(row)[0])[batchSq]= sym;        
     kJ(kK(row)[1])[batchSq]= sq;
     kC(kK(row)[2])[batchSq]= KDBPublisherCSVLoggerTask<P, FLUSH>::stop;
-    kI(kK(row)[3])[batchSq]= KDBPublisherCSVLoggerTask<P, FLUSH>::getSize;
+    kI(kK(row)[3])[batchSq]= KDBPublisherCSVLoggerTask<P, FLUSH>::size;
     kF(kK(row)[4])[batchSq]= KDBPublisherCSVLoggerTask<P, FLUSH>::price;
     kJ(kK(row)[5])[batchSq]= batchnr;
     kJ(kK(row)[6])[batchSq]= DURNANO((real - kdb_start).time_since_epoch());
