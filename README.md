@@ -123,13 +123,9 @@ If you dont want to do all these manually then you can use bash script `measureK
 
 Use `--rdbhost localhost` if you would like to use TCP/IP connection and `--flush` to [flush output buffer](https://code.kx.com/q/basics/ipc/#block-queue-flush) after each send message. This starts the timer with `-f` command line parameter.
 
-Script `measureKdbLatency.sh` also supports **remote kdb+ process via TCP**. If you pass an IP address via the `--rdbhost` parameter then the script will start the RDB on remote host via ssh. You probably want to use `~/.ssh/config` to provide the user name and private key location for the remote server. The RDB writes out latency statistics that your local host needs so you need a filesystem that is available from both boxes. By default the RDB output is written to `/tmp/rdb.csv` but you can overwrite this with environment variable `RDBOUTPUTFILE` like
+Script `measureKdbLatency.sh` also supports **remote kdb+ process via TCP**. If you pass an IP address via the `--rdbhost` parameter then the script will start the RDB on remote host via ssh. You probably want to use `~/.ssh/config` to provide the user name and private key location for the remote server. 
 
-```
-RDBOUTPUTFILE=/nfs/data/rdb.csv ./measureKdbLatency.sh --freq 10000 --dur 20 --output ../out/statistics.csv --rdbhost 72.7.9.248
-```
-
-The C++ publisher and the batch scripts handle batch update. Use parameter `batchsize` to specify batch size. You can decide if each trigger should generate a batch of rows (`--batchtype batch`) or each trigger should only generate a single row, that the publisher caches and if the size of the cache reaches a limit then it sends the batch to the kdb+ process. This option requires command line paramter `--batchtype cache`.
+The C++ publisher and the bash scripts handle batch update. Use parameter `batchsize` to specify batch size. You can decide if each trigger should generate a batch of rows (`--batchtype batch`) or each trigger should only generate a single row, that the publisher caches and if the size of the cache reaches a limit then it sends the batch to the kdb+ process. This option requires command line paramter `--batchtype cache`.
 
 You might want to figure out the maximal frequency of updates your kdb+ process can ingest. You can manually run `measureKdbLatency.sh` with various parameters or use `./measureMultipleKdbLatency.sh` that does this for you and create a summary table.
 
