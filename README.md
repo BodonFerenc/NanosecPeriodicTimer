@@ -96,6 +96,13 @@ sym time price size stop ex
 ./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv localhost 5003 -s
 ```
 
+The output CSV contains the following fields:
+   * _realFrequency_: The number of messages sent divided by the timer duration (approx. difference of first and last trigger time).
+   * _sentMessageNr_: The number of messages sent.
+   * _maxTimerLatency_: The maximum of the timer latency, which is the difference of the planned and real trigger time.
+   * _avgTimerLatency_: The average timer latency.
+   * _medTimerLatency_: The median timer latency.
+
 If the publisher and the kdb+ process are on the same machine then you can unix sockets. All you need to do is changing the host parameter to `0.0.0.0`. This will result in lower data transfer latencies.
 
 ```
