@@ -33,6 +33,7 @@ rm -f $RDBOUTPUTFILE
 log "Starting RDB stat collector..."
 nohup ${QHOME}/${PLATFORM}/q RDBStatCollector.q -rdb $RDBQADDRESS -output $RDBOUTPUTFILE > ${LOGDIR}/rdbStatCollector.txt 2>&1 &
 
+rm -f $TIMEROUTPUTFILE
 log "Starting publisher with frequency $FREQ for duration $DURATION"
 nohup ${TIMERPRECOMMAND} ../bin/KDBPublishLatencyTester $FREQ $DURATION \
     $TIMEROUTPUTFILE $RDBHOST $RDBPORT $FLUSH $TIMERSTATONLY -b $BATCHSIZE -t $BATCHTYPE > ${LOGDIR}/publisher.txt 2>&1 &
