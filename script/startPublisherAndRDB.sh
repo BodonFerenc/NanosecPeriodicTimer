@@ -21,7 +21,7 @@ else
     nohup ssh -o "StrictHostKeyChecking no" $RDBHOST "cd ${SCRIPTDIR}; nice -n 19 ${RDBSCRIPTFULL}" > ${LOGDIR}/rdb.txt 2>&1 &
 fi
 
-sleep 2   # wait a sec till RDB comes up. TODO: implement more robust solution
+while ! nc -z $RDBHOST $RDBPORT; do sleep 0.1; done
 
 RDBOUTPUTFILE=${RDBOUTPUTFILE:-/tmp/rdb.csv}
 if [[ $RDBHOST == 0.0.0.0 ]]; then
