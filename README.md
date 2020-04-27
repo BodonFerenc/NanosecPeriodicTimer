@@ -1,6 +1,6 @@
 # High precision, high frequency periodic timer demo
 
-This small repository contains C++ files that demonstrate the two ways of creating a single threaded periodic timer. The first approach is based on sleep the second is based constantly checking the time to see when to trigger.
+This small repository contains C++ files that demonstrate the two ways of creating a single threaded periodic timer. We can use this timer e.g. to benchmark kdb+ ingestion latencies and throughput. The first approach is based on sleep the second is based constantly checking the time to see when to trigger.
 
 To build the binary do
 ```
@@ -93,14 +93,14 @@ sym time price size stop ex
 ---------------------------
 
 # In Terminal 2:
-./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv localhost 5003 0 1
+./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv localhost 5003 -s
 ```
 
 If the publisher and the kdb+ process are on the same machine then you can unix sockets. All you need to do is changing the host parameter to `0.0.0.0`. This will result in lower data transfer latencies.
 
 ```
 # In Terminal 2:
-./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv 0.0.0.0 5003 0 1
+./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv 0.0.0.0 5003 -s
 ```
 
 You can observe the latency statistics in file `../out/statistics.csv`. If you would like to see all statistics in a single view then you can simply merge publisher's and RDB's output by Linux command [paste](https://en.wikipedia.org/wiki/Paste_(Unix))
@@ -121,15 +121,11 @@ If you dont want to do all these manually then you can use bash script `measureK
 ./measureKdbLatency.sh --freq 10000 --dur 20 --output ../out/statistics.csv --rdbhost localhost
 ```
 
-Use `--rdbhost localhost` if you would like to use TCP/IP connection and `--flush` to [flush output buffer](https://code.kx.com/q/basics/ipc/#block-queue-flush) after each send message.
+Use `--rdbhost localhost` if you would like to use TCP/IP connection and `--flush` to [flush output buffer](https://code.kx.com/q/basics/ipc/#block-queue-flush) after each send message. This starts the timer with `-f` command line parameter.
 
-Script `measureKdbLatency.sh` also supports **remote kdb+ process via TCP**. If you pass an IP address via the `--rdbhost` parameter then the script will start the RDB on remote host via ssh. You probably want to use `~/.ssh/config` to provide the user name and private key location for the remote server. The RDB writes out latency statistics that your local host needs so you need a filesystem that is available from both boxes. By default the RDB output is written to `/tmp/rdb.csv` but you can overwrite this with environment variable `RDBOUTPUTFILE` like
+Script `measureKdbLatency.sh` also supports **remote kdb+ process via TCP**. If you pass an IP address via the `--rdbhost` parameter then the script will start the RDB on remote host via ssh. You probably want to use `~/.ssh/config` to provide the user name and private key location for the remote server. 
 
-```
-RDBOUTPUTFILE=/nfs/data/rdb.csv ./measureKdbLatency.sh --freq 10000 --dur 20 --output ../out/statistics.csv --rdbhost 72.7.9.248
-```
-
-The C++ publisher and the batch scripts handle batch update. Use parameter `batchsize` to specify batch size. You can decide if each trigger should generate a batch of rows (`--batchtype batch`) or each trigger should only generate a single row, that the publisher caches and if the size of the cache reaches a limit then it sends the batch to the kdb+ process. This option requires command line paramter `--batchtype cache`.
+The C++ publisher and the bash scripts handle batch update. Use parameter `batchsize` to specify batch size. You can decide if each trigger should generate a batch of rows (`--batchtype batch`) or each trigger should only generate a single row, that the publisher caches and if the size of the cache reaches a limit then it sends the batch to the kdb+ process. This option requires command line paramter `--batchtype cache`. The bash script passes batch parameters to the C++ publisher via `-b` and `-t` command line parameters, e.g. `-t cache -b 100`.
 
 You might want to figure out the maximal frequency of updates your kdb+ process can ingest. You can manually run `measureKdbLatency.sh` with various parameters or use `./measureMultipleKdbLatency.sh` that does this for you and create a summary table.
 
