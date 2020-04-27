@@ -1,6 +1,6 @@
 # High precision, high frequency periodic timer demo
 
-This small repository contains C++ files that demonstrate the two ways of creating a single threaded periodic timer. The first approach is based on sleep the second is based constantly checking the time to see when to trigger.
+This small repository contains C++ files that demonstrate the two ways of creating a single threaded periodic timer. We can use this timer e.g. to benchmark kdb+ ingestion latencies and throughput. The first approach is based on sleep the second is based constantly checking the time to see when to trigger.
 
 To build the binary do
 ```
