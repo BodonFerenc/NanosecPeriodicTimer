@@ -3,16 +3,15 @@
 
 using namespace std;
 
-KDBPublisher::KDBPublisher(unsigned long triggerNr, const char* argv[]) {  
-
-    socket = khpu(S(argv[0]), atoi(argv[1]), S("Administrator:password")); 
+KDBPublisher::KDBPublisher(unsigned long triggerNr, string host, int port) {
+    socket = khpu(S(host.c_str()), port, S("Administrator:password")); 
     if (socket < 0) {
         /* problem connecting */
-        cerr << "Problem connecting to kdb at " << argv[0] << ":" << argv[1] 
+        cerr << "Problem connecting to kdb at " << host << ":" << port 
              << ". Error code " << socket << endl;
         exit(1);
     }
-    cout << "Connection to " << argv[0] << ":" << argv[1] << " was successful" << endl;
+    cout << "Connection to " << host << ":" << port << " was successful" << endl;
 }
   
 

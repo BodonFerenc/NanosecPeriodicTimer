@@ -14,18 +14,19 @@ using namespace std;
 int main(int argc, const char* argv[])
 {
     if (argc < 5) {
-        cerr << "Usage: " << argv[0] << " [type] [freq] [dur] [outputfile]" << endl;
+        cerr << "Usage: " << argv[0] << " type freq dur outputfile" << endl;
         return 1;
     }
 
-    const auto FREQ = atol(argv[2]);          // frequency
-    chrono::nanoseconds WAIT(BILLION / FREQ);          // wait time between ticks
-    cout << "Wait time is set to\t\t" << WAIT.count() << " nanosec" << endl;
-    const auto DUR = atoi(argv[3]);            // duration is second
+    const auto freq = atol(argv[2]);          // frequency
+    chrono::nanoseconds wait(BILLION / freq);          // wait time between ticks
+    cout << "Wait time is set to\t\t" << wait.count() << " nanosec" << endl;
+    const auto dur = atoi(argv[3]);            // duration is second
 
-    const auto MAXRUN = DUR * FREQ;
+    const auto maxrun = dur * freq;
+    cout << "Nr of expected ticks\t\t" << maxrun << endl;
 
-    CSVLoggerTask task(MAXRUN, argv + 4);
+    CSVLoggerTask task(maxrun, argv[4]);
     string timertype(argv[1]);
 
 
@@ -44,7 +45,7 @@ int main(int argc, const char* argv[])
         return 1;
     }     
 
-    timer(task, WAIT, MAXRUN);
+    timer(task, wait, maxrun);
 
     return 0;
 }

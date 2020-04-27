@@ -24,8 +24,8 @@ class KDBCacheAndSendBatchPublisherCSVLoggerTask: public KDBPublisherCSVLoggerTa
         void initRow();     
 
     public: 
-        KDBCacheAndSendBatchPublisherCSVLoggerTask(unsigned long triggerNr, const char* argv[]): 
-            KDBPublisherCSVLoggerTask<P, FLUSH>(triggerNr, argv), batchSize(atoi(argv[5])) {
+        KDBCacheAndSendBatchPublisherCSVLoggerTask(unsigned long triggerNr, std::string filename, std::string host, int port, unsigned int batchsize): 
+            KDBPublisherCSVLoggerTask<P, FLUSH>{triggerNr, filename, host, port}, batchSize{batchsize} {
             initRow();
         }
         bool run(const TIME&, const TIME&);

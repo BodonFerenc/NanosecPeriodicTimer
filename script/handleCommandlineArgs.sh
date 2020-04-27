@@ -3,13 +3,13 @@
 VERBOSE=1
 GROUPEDOPT=''      # grouped attribute on sym
 NOCLEAN=0
-FLUSH=0
+FLUSH=
 RDBHOST=0.0.0.0    # default: using unix socket
-FREQ=30000
-DURATION=10
+declare -i FREQ=30000
+declare -i DURATION=10
 OUTPUT=stat.csv
-BATCHSIZE=0
-BATCHTYPE=cache
+declare -i BATCHSIZE=0
+BATCHTYPE='nobatch'
 
 OS=$(uname)
 case $OS in
@@ -46,14 +46,14 @@ function args()
             ;;
         --noclean)
             NOCLEAN=1
-            ;;            
+            ;;
         --flush)
-            FLUSH=1
+            FLUSH='-f'
             ;;
         --rdbhost)
-            shift;        
+            shift;
             RDBHOST=$1
-            ;;            
+            ;;
         --freq)
             shift;
             FREQ=$1
@@ -69,11 +69,11 @@ function args()
         --batchsize)
             shift;
             BATCHSIZE=$1
-           ;;           
+           ;;
        --batchtype)
             shift;
             BATCHTYPE=$1
-           ;;               
+           ;;
         --)
             shift
             break

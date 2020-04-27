@@ -27,7 +27,7 @@ class CSVLoggerTask {
         std::vector<TIME> realTriggerTimes;
 
     public: 
-        CSVLoggerTask(unsigned long, const char* argv[]);
+        CSVLoggerTask(unsigned long, std::string filename);
         auto getSize() {return expectedTriggerTimes.size();}
         bool run(const TIME&, const TIME&);
         ~CSVLoggerTask();

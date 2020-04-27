@@ -13,22 +13,23 @@ using namespace std;
 int main(int argc, const char* argv[])
 {
     if (argc < 5) {
-        cerr << "Usage: " << argv[0] << "[freq] [dur] [host] [port]" << endl;
+        cerr << "Usage: " << argv[0] << "freq dur host port" << endl;
         return 1;
     }
 
-    const unsigned long FREQ = atol(argv[1]);          // frequency
-    chrono::nanoseconds WAIT(BILLION / FREQ);          // wait time between ticks
-    cout << "Wait time is set to\t\t" << WAIT.count() << " nanosec" << endl;
-    const unsigned int DUR = atoi(argv[2]);            // duration is second
+    const unsigned long freq = atol(argv[1]);          // frequency
+    chrono::nanoseconds wait(BILLION / freq);          // wait time between ticks
+    cout << "Wait time is set to\t\t" << wait.count() << " nanosec" << endl;
+    const unsigned int dur = atoi(argv[2]);            // duration is second
 
-    const unsigned long MAXRUN = DUR * FREQ;
+    const unsigned long maxrun = dur * freq;
+    cout << "Nr of expected ticks\t\t" << maxrun << endl;
 
-    KDBTradePublisher task(MAXRUN, argv + 3);
+    KDBTradePublisher task(maxrun, argv[3], atoi(argv[4]));
 
     auto timer = std::bind(bytimecheck<KDBTradePublisher>, strict, 
                 std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-    timer(task, WAIT, MAXRUN);    
+    timer(task, wait, maxrun);    
 
     return 0;
 }

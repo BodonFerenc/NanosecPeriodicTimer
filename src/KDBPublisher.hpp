@@ -33,7 +33,7 @@ class KDBPublisher {
     public: 
         K tableName;
 
-        KDBPublisher(unsigned long, const char* argv[]);
+        KDBPublisher(unsigned long, std::string host, int port);
 
         template<bool FLUSH=false>
         bool sendUpdate(K row) const;

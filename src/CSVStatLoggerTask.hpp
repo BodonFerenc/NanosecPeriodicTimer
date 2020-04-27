@@ -28,7 +28,7 @@ class CSVStatLoggerTask {
         TIME lastTS;
 
     public: 
-        CSVStatLoggerTask(unsigned long, const char* argv[]);
+        CSVStatLoggerTask(unsigned long, std::string filename);
         auto getSize() {return latencies.size();}
         bool run(const TIME&, const TIME&);
         ~CSVStatLoggerTask();

@@ -39,13 +39,14 @@ class KDBPublisherCSVLoggerTask: public P {
         KDBPublisher kdbpublisher;
 
     public: 
-        KDBPublisherCSVLoggerTask(unsigned long, const char* argv[]);
+        KDBPublisherCSVLoggerTask(unsigned long, std::string, std::string, int);
         bool run(const TIME&, const TIME&);
 };
 
 template<class P, bool FLUSH>
-KDBPublisherCSVLoggerTask<P, FLUSH>::KDBPublisherCSVLoggerTask(unsigned long triggerNr, const char* argv[]) 
-    :P{triggerNr, argv}, symGenerator{triggerNr}, kdbpublisher(triggerNr, argv+1) {  
+KDBPublisherCSVLoggerTask<P, FLUSH>::KDBPublisherCSVLoggerTask(unsigned long triggerNr, 
+    std::string filename, std::string host, int port) 
+    :P{triggerNr, filename}, symGenerator{triggerNr}, kdbpublisher{triggerNr, host, port} {  
     kdbpublisher.tableName = (ks((S) "trade"));    
 }
 

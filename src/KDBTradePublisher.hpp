@@ -22,10 +22,10 @@
 
 
 class KDBTradePublisher: public KDBPublisher {
-    private:  
+    private:
         KDBSymGenerator symGenerator;
 
-    public: 
-        KDBTradePublisher(unsigned long, const char* argv[]);
+    public:
+        KDBTradePublisher(unsigned long, std::string, int);
         bool run(const TIME&, const TIME&);
 };

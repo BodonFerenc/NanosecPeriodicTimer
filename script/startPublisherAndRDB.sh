@@ -15,7 +15,7 @@ if [[ $RDBHOST == 0.0.0.0 || $RDBHOST == localhost ]]; then
     log "Starting RDB script in the background..."
     nohup ${RDBSCRIPTFULL} > ${LOGDIR}/rdb.txt 2>&1 &
     RDB_PID=$!
-else 
+else
     ISLOCAL=false
     SCRIPTDIR=$(pwd)
     nohup ssh -o "StrictHostKeyChecking no" $RDBHOST "cd ${SCRIPTDIR}; nice -n 19 ${RDBSCRIPTFULL}" > ${LOGDIR}/rdb.txt 2>&1 &
@@ -35,7 +35,7 @@ nohup ${QHOME}/${PLATFORM}/q RDBStatCollector.q -rdb $RDBQADDRESS -output $RDBOU
 
 log "Starting publisher with frequency $FREQ for duration $DURATION"
 nohup ${TIMERPRECOMMAND} ../bin/KDBPublishLatencyTester $FREQ $DURATION \
-    $TIMEROUTPUTFILE $RDBHOST $RDBPORT $FLUSH $TIMERSTATONLY $BATCHSIZE $BATCHTYPE > ${LOGDIR}/publisher.txt 2>&1 &
+    $TIMEROUTPUTFILE $RDBHOST $RDBPORT $FLUSH $TIMERSTATONLY -b $BATCHSIZE -t $BATCHTYPE > ${LOGDIR}/publisher.txt 2>&1 &
 PUB_PID=$!
 
 afterStartWork
@@ -44,7 +44,7 @@ if [[ $ISLOCAL == true && $OS == Linux ]]; then
     nohup perf stat -x " " -p $RDB_PID -e task-clock --log-fd 1 > ${LOGDIR}/perf.txt 2>&1 &
     PERF_PID=$!
     if wait $PERF_PID; then
-        log "Waiting for perf stat (PID: $PERF_PID) and to finish"    
+        log "Waiting for perf stat (PID: $PERF_PID) and to finish"
         RDBCPUUSAGESTAT=($(cat ${LOGDIR}/perf.txt))
         RDBCPUUSAGE=${RDBCPUUSAGESTAT[5]}
         log "RDB CPU usage $RDBCPUUSAGE"
@@ -81,11 +81,11 @@ function getISStableFlag {
     MEDLATLIMITOFFSET=${MEDLATLIMITOFFSET:-1000000}
     local -i MEDLATLIMIT
     if [[ $BATCHSIZE -gt 0 && $BATCHTYPE == "cache" ]]; then
-        (( MEDLATLIMIT = MEDLATLIMITOFFSET + 1000000000 * BATCHSIZE / FREQ )) 
+        (( MEDLATLIMIT = MEDLATLIMITOFFSET + 1000000000 * BATCHSIZE / FREQ ))
     else
         MEDLATLIMIT=$MEDLATLIMITOFFSET     # limit for the median of the latency
     fi
-    
+
     local -i MEDLAT=${stat[16]}
     echo "Median latency was $MEDLAT, the limit is $MEDLATLIMIT"
     if (( MEDLAT > MEDLATLIMIT )); then return 0; fi
@@ -101,7 +101,7 @@ function getISStableFlag {
         declare -i STARTMEDPUBLATLIMIT=$(q <<< 'exec `long$1+med latency from ("JJJ";enlist",") 0:hsym `$"/tmp/raw.csv"')
     fi
     local -i MEDPUBLATLIMIT
-    if [[ $BATCHSIZE -gt 0 && $BATCHTYPE == "cache" ]]; then        
+    if [[ $BATCHSIZE -gt 0 && $BATCHTYPE == "cache" ]]; then
         MEDPUBLIMITOFFSET=${MEDPUBLIMITOFFSET:-300000}
         (( MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
         echo "Limit for the median of publication latency is $MEDPUBLATLIMIT"

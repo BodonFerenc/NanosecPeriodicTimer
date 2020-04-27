@@ -5,10 +5,9 @@
 
 using namespace std;
 
-CSVLoggerTask::CSVLoggerTask(unsigned long triggerNr, const char* argv[]) : filename(argv[0]) {
+CSVLoggerTask::CSVLoggerTask(unsigned long triggerNr, string filename) : filename{filename} {
     expectedTriggerTimes.reserve(triggerNr);
     realTriggerTimes.reserve(triggerNr);
-    cout << "Nr of expected ticks\t\t" << triggerNr << endl;
 }
 
 bool CSVLoggerTask::run(const TIME& expected, const TIME& real) {

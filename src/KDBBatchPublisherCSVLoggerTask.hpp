@@ -22,8 +22,8 @@ class KDBBatchPublisherCSVLoggerTask: public KDBPublisherCSVLoggerTask<P, FLUSH>
         unsigned int batchSize;      
 
     public: 
-        KDBBatchPublisherCSVLoggerTask(unsigned long triggerNr, const char* argv[]) : 
-            KDBPublisherCSVLoggerTask<P, FLUSH>(triggerNr, argv), batchSize(atoi(argv[5])) {}
+        KDBBatchPublisherCSVLoggerTask(unsigned long triggerNr, std::string filename, std::string host, int port, unsigned int batchsize) : 
+            KDBPublisherCSVLoggerTask<P, FLUSH>{triggerNr, filename, host, port}, batchSize{batchsize} {}
         bool run(const TIME&, const TIME&);
 };
 
