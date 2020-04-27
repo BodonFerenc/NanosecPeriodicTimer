@@ -21,6 +21,7 @@ else
     nohup ssh -o "StrictHostKeyChecking no" $RDBHOST "cd ${SCRIPTDIR}; nice -n 19 ${RDBSCRIPTFULL}" > ${LOGDIR}/rdb.txt 2>&1 &
 fi
 
+# Waiting for the RDB to be responsive
 while ! nc -z $RDBHOST $RDBPORT; do sleep 0.1; done
 
 RDBOUTPUTFILE=${RDBOUTPUTFILE:-/tmp/rdb.csv}
