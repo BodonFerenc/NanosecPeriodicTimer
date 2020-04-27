@@ -93,14 +93,14 @@ sym time price size stop ex
 ---------------------------
 
 # In Terminal 2:
-./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv localhost 5003 0 1
+./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv localhost 5003 -s
 ```
 
 If the publisher and the kdb+ process are on the same machine then you can unix sockets. All you need to do is changing the host parameter to `0.0.0.0`. This will result in lower data transfer latencies.
 
 ```
 # In Terminal 2:
-./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv 0.0.0.0 5003 0 1
+./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv 0.0.0.0 5003 -s
 ```
 
 You can observe the latency statistics in file `../out/statistics.csv`. If you would like to see all statistics in a single view then you can simply merge publisher's and RDB's output by Linux command [paste](https://en.wikipedia.org/wiki/Paste_(Unix))
@@ -121,7 +121,7 @@ If you dont want to do all these manually then you can use bash script `measureK
 ./measureKdbLatency.sh --freq 10000 --dur 20 --output ../out/statistics.csv --rdbhost localhost
 ```
 
-Use `--rdbhost localhost` if you would like to use TCP/IP connection and `--flush` to [flush output buffer](https://code.kx.com/q/basics/ipc/#block-queue-flush) after each send message.
+Use `--rdbhost localhost` if you would like to use TCP/IP connection and `--flush` to [flush output buffer](https://code.kx.com/q/basics/ipc/#block-queue-flush) after each send message. This starts the timer with `-f` command line parameter.
 
 Script `measureKdbLatency.sh` also supports **remote kdb+ process via TCP**. If you pass an IP address via the `--rdbhost` parameter then the script will start the RDB on remote host via ssh. You probably want to use `~/.ssh/config` to provide the user name and private key location for the remote server. The RDB writes out latency statistics that your local host needs so you need a filesystem that is available from both boxes. By default the RDB output is written to `/tmp/rdb.csv` but you can overwrite this with environment variable `RDBOUTPUTFILE` like
 
