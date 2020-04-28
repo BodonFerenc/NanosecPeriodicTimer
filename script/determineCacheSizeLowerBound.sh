@@ -26,32 +26,32 @@ function args()
         case "$1" in
         -g)
             GROUPEDOPT='-g'
-            ;; 
+            ;;
         --cont)
             CONTINUE=1
-            ;;            
+            ;;
         --noclean)
             NOCLEAN=1
             ;;
         --flush)
             FLUSHOPT='--flush'
-            ;;                          
+            ;;
         --rdbhost)
             shift;
             RDBHOST=$1
-            ;;  
+            ;;
         --dur)
             shift;
             DURATION=$1
-            ;;              
+            ;;
         --startfreq)
             shift;
             STARTFREQ=$1
-            ;;    
+            ;;
         --startbatchsize)
             shift;
             STARTBATCH=$1
-            ;;                        
+            ;;
         --)
             shift
             break
@@ -89,9 +89,9 @@ SINGLEMEASURESCRIPT=${SINGLEMEASURESCRIPT:-"./measureKdbLatency.sh"}
 while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
 	echo "running test with batchsize $BATCHSIZE ..."
 	echo "running test with frequency $FREQ ..."
-	
-	statFilename=$OUTPUTDIR/statistics_${FREQ}_${BATCHSIZE}.csv 
-    $SINGLEMEASURESCRIPT $GROUPEDOPT $FLUSHOPT --rdbhost $RDBHOST --freq $FREQ --dur $DURATION --output ${statFilename} --batchsize $BATCHSIZE --batchtype cache
+
+	statFilename=$OUTPUTDIR/statistics_${FREQ}_${BATCHSIZE}.csv
+    STARTMEDPUBLATLIMIT=$STARTMEDPUBLATLIMIT $SINGLEMEASURESCRIPT $GROUPEDOPT $FLUSHOPT --rdbhost $RDBHOST --freq $FREQ --dur $DURATION --output ${statFilename} --batchsize $BATCHSIZE --batchtype cache
 
 	stat=($(tail -n 1 $statFilename))
     declare -i ISSTABLEFLAG=${stat[-1]}
