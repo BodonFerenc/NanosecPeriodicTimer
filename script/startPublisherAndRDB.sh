@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function log () {
-    (( VERBOSE )) && echo "$@"
+    (( VERBOSE )) && echo $(date -u +"%d %b %X") "$@"
 }
 
 
@@ -77,7 +77,7 @@ function getISStableFlag {
 
     local RDBTIMERAW=${stat[9]}
     local -i RDBTIME=${RDBTIMERAW%%.*}
-    echo "RDB ingest time was $RDBTIME"
+    log "RDB ingest time was $RDBTIME"
     if (( RDBTIME > DURATION + 1 )); then return 0; fi
 
     MEDLATLIMITOFFSET=${MEDLATLIMITOFFSET:-1000000}
@@ -89,16 +89,16 @@ function getISStableFlag {
     fi
 
     local -i MEDLAT=${stat[16]}
-    echo "Median latency was $MEDLAT, the limit is $MEDLATLIMIT"
+    log "Median latency was $MEDLAT, the limit is $MEDLATLIMIT"
     if (( MEDLAT > MEDLATLIMIT )); then return 0; fi
 
 
 	local -i MEDPUBLAT=${stat[8]}
-    echo "Median of publication latency was $MEDPUBLAT"
+    log "Median of publication latency was $MEDPUBLAT"
 
     if [[ -z ${STARTMEDPUBLATLIMIT+dontcare} ]]; then
-        echo "Determining median of timer latency on current hardware"
-        echo "Running a timer with a simple task..."
+        log "Determining median of timer latency on current hardware"
+        log "Running a timer with a simple task..."
         ../bin/PeriodicTimerDemo bytimerstrict 5000 5 /tmp/raw.csv
         declare -i STARTMEDPUBLATLIMIT=$(q <<< 'exec `long$1+med latency from ("JJJ";enlist",") 0:hsym `$"/tmp/raw.csv"')
     fi
@@ -106,7 +106,7 @@ function getISStableFlag {
     if [[ $BATCHSIZE -gt 0 && $BATCHTYPE == "cache" ]]; then
         MEDPUBLIMITOFFSET=${MEDPUBLIMITOFFSET:-200000}
         (( MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
-        echo "Limit for the median of publication latency is $MEDPUBLATLIMIT"
+        log "Limit for the median of publication latency is $MEDPUBLATLIMIT"
     else
         MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT
     fi
