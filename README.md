@@ -81,7 +81,7 @@ sym time price size stop ex
 Now switch back to `Terminal 1` and check the content of table trade or see how its size grows by executing command `count tradeTP` in the q interpreter.
 
 ## Measuring kdb+ ingest latency
-The script can also be used to measure how long it takes from a trigger event, through a trade data publish till it arrives into a kdb+ process that inserts the data into its local table. Script `rdb_latency.q` differs from `rdb_light` in storing a timestamp for each update. This timestamp can be compared to the real trigger time sent by the timer.
+The script can also be used to measure how long it takes from a trigger event, through a trade data publish till it arrives into a kdb+ process that inserts the data into its local table. Script `rdb_latency.q` differs from `rdb_light` in storing a timestamp for each update. This timestamp can be compared to the real trigger time sent by the timer to obtain _ingest latency_.
 
 ```
 # In Terminal 1:
@@ -96,6 +96,13 @@ sym time price size stop ex
 ./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv localhost 5003 -s
 ```
 
+The output CSV contains the following fields:
+   * _realFrequency_: The number of messages sent divided by the timer duration (approx. difference of first and last trigger time).
+   * _sentMessageNr_: The number of messages sent.
+   * _maxTimerLatency_: The maximum of the timer latency, which is the difference of the planned and real trigger time.
+   * _avgTimerLatency_: The average timer latency.
+   * _medTimerLatency_: The median timer latency.
+
 If the publisher and the kdb+ process are on the same machine then you can unix sockets. All you need to do is changing the host parameter to `0.0.0.0`. This will result in lower data transfer latencies.
 
 ```
@@ -103,7 +110,13 @@ If the publisher and the kdb+ process are on the same machine then you can unix 
 ./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv 0.0.0.0 5003 -s
 ```
 
-You can observe the latency statistics in file `../out/statistics.csv`. If you would like to see all statistics in a single view then you can simply merge publisher's and RDB's output by Linux command [paste](https://en.wikipedia.org/wiki/Paste_(Unix))
+You can observe the latency statistics in file `../out/statistics.csv`. The CSV contains four statistic of the ingest latency, the maximun (_maxLatency_), the minimum (_minLatency_), the average (_avgLatency_) and the median (_medLatency_) and some core statistics: 
+   * _RDBduration_: The difference between the first update's time and the time of publisher disconnect (observed via [.z.pc](https://code.kx.com/q/ref/dotz/#zpc-close))
+   * _recMessageNr_: Number of message received.
+   * _recRowNr_: Number of rows received. This number differs from _recMessageNr_ if publisher sends batch updates.
+   * _medKobjCreation_: This metric is interesting for batch updates and shows the median of the time differences of the first and the last rows of each batch. You can learn how long it takes to create the K objects in the publisher.
+
+If you would like to see all statistics in a single view then you can simply merge publisher's and RDB's output by Linux command [paste](https://en.wikipedia.org/wiki/Paste_(Unix))
 
 ```
 paste -d, ../out/timerStat.csv ../out/statistics.csv
@@ -115,7 +128,7 @@ If the RDB is on a remote host and there is no shared filesystem (e.g. NFS) betw
 q RDBStatCollector.q -rdb 72.7.9.248 -output ../out/statistics.csv
 ```
 
-If you dont want to do all these manually then you can use bash script `measureKdbLatency.sh`. It starts an RDB, RDB statistics fetcher and a publisher for you and even measures RDB CPU usage rate.
+You dont need to start processes manually and merge the outputs, bash script `measureKdbLatency.sh` does it for you. It starts an RDB, RDB statistics fetcher and a publisher for you and even measures RDB CPU usage rate.
 
 ```
 ./measureKdbLatency.sh --freq 10000 --dur 20 --output ../out/statistics.csv --rdbhost localhost
