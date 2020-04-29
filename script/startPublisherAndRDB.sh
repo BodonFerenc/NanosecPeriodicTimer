@@ -83,7 +83,7 @@ function getISStableFlag {
     MEDLATLIMITOFFSET=${MEDLATLIMITOFFSET:-1000000}
     local -i MEDLATLIMIT
     if [[ $BATCHSIZE -gt 0 && $BATCHTYPE == "cache" ]]; then
-        (( MEDLATLIMIT = MEDLATLIMITOFFSET + 1000000000 * BATCHSIZE / FREQ ))
+        MEDLATLIMIT=$(( MEDLATLIMITOFFSET + 1000000000 * BATCHSIZE / FREQ ))
     else
         MEDLATLIMIT=$MEDLATLIMITOFFSET     # limit for the median of the latency
     fi
@@ -105,7 +105,7 @@ function getISStableFlag {
     local -i MEDPUBLATLIMIT
     if [[ $BATCHSIZE -gt 0 && $BATCHTYPE == "cache" ]]; then
         MEDPUBLIMITOFFSET=${MEDPUBLIMITOFFSET:-200000}
-        (( MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
+        MEDPUBLATLIMIT=$(( STARTMEDPUBLATLIMIT + FREQ / MEDPUBLIMITOFFSET ))
         log "Limit for the median of publication latency is $MEDPUBLATLIMIT"
     else
         MEDPUBLATLIMIT=STARTMEDPUBLATLIMIT
