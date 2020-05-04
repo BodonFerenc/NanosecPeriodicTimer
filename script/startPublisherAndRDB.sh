@@ -9,7 +9,7 @@ LOGDIR=../log
 mkdir -p $LOGDIR
 
 RDBPORT=5001
-RDBSCRIPTFULL="${RDBPRECOMMAND} ${QHOME}/${PLATFORM}/q ${RDBSCRIPT} $GROUPEDOPT -q -p $RDBPORT"
+RDBSCRIPTFULL="${RDBPRECOMMAND} ${QHOME}/${PLATFORM}/q ${RDBSCRIPT} $GROUPEDOPT -q -exit -p $RDBPORT"
 if [[ $RDBHOST == 0.0.0.0 || $RDBHOST == localhost ]]; then
     ISLOCAL=true
     log "Starting RDB script in the background..."
