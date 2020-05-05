@@ -1,18 +1,22 @@
+\l log.q
 
 cmd: .Q.opt .z.x
 
-show "opening connection to address: ", first cmd[`rdb];
+LOG "opening connection to address: ", first cmd[`rdb];
 h: hopen hsym `$first cmd[`rdb];
 h (`registerStatCollector; ::);
 output: first `$cmd[`output];
+STAT: ();
 
 collectRDBStat: {[stat]
-  show "collecting and saving RDB statistics";
-  output 0:","0: stat;
+  LOG "collecting RDB statistics";
+  STAT:: stat;
   };
 
 .z.pc: {
   if[0=x; :()];
-  show "exitting...";
+  LOG "Saving RDB statistics";
+  output 0:","0: STAT;
+  LOG "exitting...";
   exit 0;
   };

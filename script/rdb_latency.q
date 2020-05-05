@@ -2,13 +2,14 @@ cmd: .Q.opt .z.x
 
 \l schema.q
 \l rdb_statsender.q
+\l log.q
 
 // If true then the RDB exits if a connection closes
 // Useful for debugging
 EXIT: `exit in key cmd;
 
 if [`grouped in key cmd;
-	show "setting grouped attribute on column sym";
+	LOG "setting grouped attribute on column sym";
 	update `g#sym from `trade;
 	];
 
@@ -22,14 +23,14 @@ timesAfterInsert: ();
   if[0=x; :()];
   start: .z.p;
   rdbDur: start - first timesAfterInsert;
-  show "Upper bound of the RDB insert time is ",  string rdbDur;
+  LOG "Upper bound of the RDB insert time is ",  string rdbDur;
 
   // extra complexity is required for batch updates
   update kobjcreation: last[time] - first time by batchnr from `trade;
   update adaptertime: first time by batchnr from `trade;
   update latency: timesAfterInsert[batchnr] - adaptertime from `trade;
 
-  show "Calculating latency statistics of table of size ",  string count trade;
+  LOG "Calculating latency statistics of table of size ",  string count trade;
   stat: select
     RDBduration: enlist rdbDur % 1000 * 1000 * 1000,
     recMessageNr: count timesAfterInsert,
@@ -43,6 +44,6 @@ timesAfterInsert: ();
   sendStat[stat];
 
   if[EXIT;
-    show "exitting...";
+    LOG "exitting...";
     exit 0];
   };
