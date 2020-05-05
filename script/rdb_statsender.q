@@ -1,3 +1,5 @@
+\l log.q
+
 isOutputFileSet: 0b;
 if [`output in key cmd;
   output: first `$cmd[`output];
@@ -6,7 +8,7 @@ if [`output in key cmd;
 
 collectorHandler: 0i;
 registerStatCollector:{[]
-  show "Stat collector registration on handler ", string .z.w;
+  LOG "Stat collector registration on handler ", string .z.w;
   `collectorHandler set .z.w;
   };
 
@@ -14,13 +16,13 @@ sendStat: {[stat]
   start: .z.p;
 
   if[0 < collectorHandler;
-    show "sending RDB statistics to stat collector process ";    
+    LOG "sending RDB statistics to stat collector process ";
     collectorHandler (`collectRDBStat; stat)];
 
   if[isOutputFileSet;
-      show "saving RDB statistics to ", string output;    
+      LOG "saving RDB statistics to ", string output;
       output 0:","0: stat];
 
   end: .z.p;
-  show "Time required for handling RDB statistics: ", string end - start;
+  LOG "Time required for handling RDB statistics: ", string end - start;
   };
