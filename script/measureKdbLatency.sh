@@ -23,10 +23,10 @@ log "Merging meta data with timer and RDB statistics into $TEMPOUTPUT"
 paste -d, $METAFILE $TIMEROUTPUTFILE $RDBOUTPUTFILE > $TEMPOUTPUT
 
 ISSTABLEFILE=/tmp/isstable.csv
-log "isStable" > $ISSTABLEFILE
+echo "isStable" > $ISSTABLEFILE
 getISStableFlag $TEMPOUTPUT
 log "Is stable flag: $ISSTABLEFLAG"
-log $ISSTABLEFLAG >> $ISSTABLEFILE
+echo $ISSTABLEFLAG >> $ISSTABLEFILE
 
 log "Merging temp result file and is stable file to $OUTPUT"
 paste -d, $TEMPOUTPUT $ISSTABLEFILE > $OUTPUT
