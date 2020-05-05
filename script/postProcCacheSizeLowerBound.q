@@ -1,10 +1,14 @@
 input: `$first .z.x;
-output: `$last .z.x; 
+output: `$last .z.x;
 
-// TODO: find more robust solution than position based reference!
-t: `frequency`batchsize xasc ("J*J*************J";enlist",") 0:hsym input;
-res: fills `frequency xasc select largestBatchSize: batchsize 1, 
-                       medLatencyAtLargestBatchSize: medLatency 1 by frequency from `batchsize xdesc t;
+\l utils/csvutil.q
+
+t: `frequency`batchsize`medLatency`isStable#.csv.read[input];
+
+res: t lj `frequency xkey select frequency,
+    minBatchSize: batchsize,
+    medLatencyAtMinBatchSize: medLatency from
+    t where isStable, batchsize=(min; batchsize) fby frequency;
 
 output 0:","0:flip -2#flip t lj res;
 exit 0;
