@@ -16,7 +16,7 @@ function afterStartWork() {
 source startPublisherAndRDB.sh
 
 # make sure required data is written out
-sync -d $METAFILE $TIMEROUTPUTFILE $RDBOUTPUTFILE
+sync
 
 TEMPOUTPUT=/tmp/summary.csv
 log "Merging meta data with timer and RDB statistics into $TEMPOUTPUT"
