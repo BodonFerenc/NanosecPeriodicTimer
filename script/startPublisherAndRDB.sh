@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-function log () {
-    (( VERBOSE )) && echo $(date -u +"%d %b %X") "$@"
-}
-
-
 LOGDIR=../log
 mkdir -p $LOGDIR
 

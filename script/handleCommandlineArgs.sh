@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+function log () {
+    (( VERBOSE )) && echo $(date -u +"%d %b %X") "$@"
+}
+
 VERBOSE=1
 GROUPEDOPT=''      # grouped attribute on sym
 NOCLEAN=0
@@ -24,7 +28,7 @@ case $OS in
         TIMERPRECOMMAND=
         ;;
     *)
-        echo "Not supported operating system $OS."
+        log "Not supported operating system $OS."
         exit 2
 esac
 
@@ -32,7 +36,7 @@ function args()
 {
     options=$(getopt -o q -o g --long noclean --long flush --long rdbhost: --long freq: --long dur: --long output: --long batchsize: --long batchtype: -- "$@")
     [ $? -eq 0 ] || {
-        echo "Incorrect option provided"
+        log "Incorrect option provided"
         exit 1
     }
     eval set -- "$options"
