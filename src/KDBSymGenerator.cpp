@@ -1,25 +1,18 @@
+#include <string>
 #include <stdlib.h>
 #include "KDBSymGenerator.hpp"
 
+const std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 constexpr auto SYMNR = 26 * 26 * 26 * 26;
 
-KDBSymGenerator::KDBSymGenerator(unsigned long size) {  
+KDBSymGenerator::KDBSymGenerator(unsigned long size) {
     symUniverse.resize(SYMNR);
     unsigned int i=0;
-    for (char a = 'A'; a <= 'Z'; ++a) {
-        for (char b = 'A'; b <= 'Z'; ++b) {
-            for (char c = 'A'; c <= 'Z'; ++c) {
-                for (char d = 'A'; d <= 'Z'; ++d) {
-                    symUniverse[i][0] = a;
-                    symUniverse[i][1] = b;
-                    symUniverse[i][2] = c;
-                    symUniverse[i][3] = d;
-                    symUniverse[i][4] = '\0';
-                    ++i;
-                }
-            }
-        }
-    }
+    for (auto a : alphabet)
+        for (auto b : alphabet)
+            for (auto c : alphabet)
+                for (auto d : alphabet)
+                    symUniverse[i++] = {a,b,c,d,'\0'};
 
     srand(time(nullptr));
     symList.reserve(size);
