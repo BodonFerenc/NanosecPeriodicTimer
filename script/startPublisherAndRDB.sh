@@ -11,6 +11,10 @@ if [[ $RDBHOST == 0.0.0.0 || $RDBHOST == localhost ]]; then
     ${RDBSCRIPTFULL} > ${LOGDIR}/rdb.txt 2>&1 &
     RDB_PID=$!
 else
+    if [[ -z $(dig +short $RDBHOST) ]]; then
+        log "Invalid RDB address!"
+        exit 2
+    fi
     ISLOCAL=false
     SCRIPTDIR=$(pwd)
     ssh -o "StrictHostKeyChecking no" $RDBHOST "cd ${SCRIPTDIR}; nice -n 19 ${RDBSCRIPTFULL}" > ${LOGDIR}/rdb.txt 2>&1 &
