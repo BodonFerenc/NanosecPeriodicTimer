@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Abnormal exit codes:
+# 2: invalid RDB host
+# 3: RDB died abnormally
+
 LOGDIR=../log
 mkdir -p $LOGDIR
 
@@ -43,17 +47,18 @@ afterStartWork
 
 if [[ $ISLOCAL == true && $OS == Linux ]]; then
     log "Collecting CPU stat of RDB process (PID: $RDB_PID)"
-    perf stat -x " " -p $RDB_PID -e task-clock --log-fd 1 > ${LOGDIR}/perf.txt 2>&1 &
+    perf stat -x "," -p $RDB_PID -e task-clock --log-fd 1 > ${LOGDIR}/perf.txt 2>&1 &
     PERF_PID=$!
-    log "Waiting for perf stat (PID: $PERF_PID) and to finish"
-    if wait $PERF_PID; then
+    log "Waiting for RDB to finish"
+    if wait $RDB_PID; then
+        kill -s SIGINT $PERF_PID
+        IFS=,
         RDBCPUUSAGESTAT=($(cat ${LOGDIR}/perf.txt))
         RDBCPUUSAGE=${RDBCPUUSAGESTAT[5]}
         log "RDB CPU usage $RDBCPUUSAGE"
     else
-        # TODO: invetigate perf stat errors
-        log "Error measuring RDB CPU usage, command perf failed."
-        RDBCPUUSAGE=''
+        log "RDB died abnormally."
+        exit 3
     fi
 else
     RDBCPUUSAGE=''
