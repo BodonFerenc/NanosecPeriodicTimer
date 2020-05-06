@@ -21,7 +21,7 @@ else
     fi
     ISLOCAL=false
     SCRIPTDIR=$(pwd)
-    ssh -o "StrictHostKeyChecking no" $RDBHOST "cd ${SCRIPTDIR}; nice -n 19 ${RDBSCRIPTFULL}" > ${LOGDIR}/rdb.txt 2>&1 &
+    ssh -o "StrictHostKeyChecking no" $RDBHOST "cd ${SCRIPTDIR}; RDBSCRIPTFULL=\"${RDBSCRIPTFULL}\" LOGDIR=${LOGDIR} ./startRemoteRDB.sh" > ${LOGDIR}/rdb.txt 2>&1 &
 fi
 
 # Waiting for the RDB to be responsive
@@ -45,24 +45,20 @@ PUB_PID=$!
 
 afterStartWork
 
-if [[ $ISLOCAL == true && $OS == Linux ]]; then
-    log "Collecting CPU stat of RDB process (PID: $RDB_PID)"
-    perf stat -x "," -p $RDB_PID -e task-clock --log-fd 1 > ${LOGDIR}/perf.txt 2>&1 &
-    PERF_PID=$!
-    log "Waiting for RDB to finish"
-    if wait $RDB_PID; then
-        kill -s SIGINT $PERF_PID
-        IFS=,
-        RDBCPUUSAGESTAT=($(cat ${LOGDIR}/perf.txt))
-        RDBCPUUSAGE=${RDBCPUUSAGESTAT[5]}
-        log "RDB CPU usage $RDBCPUUSAGE"
-    else
-        log "RDB died abnormally."
-        exit 3
-    fi
+source rdbcpu.sh
+
+if [[ $ISLOCAL == true ]]; then
+    getRDBCPUUsage $RDB_PID $LOGDIR
 else
-    RDBCPUUSAGE=''
+    log "Waiting for RDB to become unresponsive"
+    while nc -z $RDBHOST $RDBPORT > /dev/null; do sleep 1; done
+    scp $RDBHOST:${SCRIPTDIR}/${LOGDIR}/perf.txt $LOGDIR
 fi
+
+IFS=,
+RDBCPUUSAGESTAT=($(cat ${LOGDIR}/perf.txt))
+RDBCPUUSAGE=${RDBCPUUSAGESTAT[5]}
+log "RDB CPU usage $RDBCPUUSAGE"
 
 wait
 

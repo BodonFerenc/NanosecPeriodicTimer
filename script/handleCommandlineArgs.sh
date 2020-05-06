@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-function log () {
-    (( VERBOSE )) && echo $(date -u +"%d %b %X") "$@"
-}
+source log.sh
 
 VERBOSE=1
 GROUPEDOPT=''      # grouped attribute on sym
