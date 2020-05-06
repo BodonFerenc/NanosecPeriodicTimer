@@ -42,6 +42,7 @@ PUB_PID=$!
 afterStartWork
 
 if [[ $ISLOCAL == true && $OS == Linux ]]; then
+    log "Collecting CPU stat of RDB process (PID: $RDB_PID)"
     perf stat -x " " -p $RDB_PID -e task-clock --log-fd 1 > ${LOGDIR}/perf.txt 2>&1 &
     PERF_PID=$!
     log "Waiting for perf stat (PID: $PERF_PID) and to finish"
