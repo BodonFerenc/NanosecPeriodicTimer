@@ -8,12 +8,12 @@ RDBSCRIPTFULL="${RDBPRECOMMAND} ${QHOME}/${PLATFORM}/q ${RDBSCRIPT} $GROUPEDOPT 
 if [[ $RDBHOST == 0.0.0.0 || $RDBHOST == localhost ]]; then
     ISLOCAL=true
     log "Starting RDB script in the background..."
-    nohup ${RDBSCRIPTFULL} > ${LOGDIR}/rdb.txt 2>&1 &
+    ${RDBSCRIPTFULL} > ${LOGDIR}/rdb.txt 2>&1 &
     RDB_PID=$!
 else
     ISLOCAL=false
     SCRIPTDIR=$(pwd)
-    nohup ssh -o "StrictHostKeyChecking no" $RDBHOST "cd ${SCRIPTDIR}; nice -n 19 ${RDBSCRIPTFULL}" > ${LOGDIR}/rdb.txt 2>&1 &
+    ssh -o "StrictHostKeyChecking no" $RDBHOST "cd ${SCRIPTDIR}; nice -n 19 ${RDBSCRIPTFULL}" > ${LOGDIR}/rdb.txt 2>&1 &
 fi
 
 # Waiting for the RDB to be responsive
@@ -27,18 +27,18 @@ else
 fi
 rm -f $RDBOUTPUTFILE
 log "Starting RDB stat collector..."
-nohup ${QHOME}/${PLATFORM}/q RDBStatCollector.q -rdb $RDBQADDRESS -output $RDBOUTPUTFILE > ${LOGDIR}/rdbStatCollector.txt 2>&1 &
+${QHOME}/${PLATFORM}/q RDBStatCollector.q -rdb $RDBQADDRESS -output $RDBOUTPUTFILE > ${LOGDIR}/rdbStatCollector.txt 2>&1 &
 
 rm -f $TIMEROUTPUTFILE
 log "Starting publisher with frequency $FREQ for duration $DURATION"
-nohup ${TIMERPRECOMMAND} ../bin/KDBPublishLatencyTester $FREQ $DURATION \
+${TIMERPRECOMMAND} ../bin/KDBPublishLatencyTester $FREQ $DURATION \
     $TIMEROUTPUTFILE $RDBHOST $RDBPORT $FLUSH $TIMERSTATONLY -b $BATCHSIZE -t $BATCHTYPE > ${LOGDIR}/publisher.txt 2>&1 &
 PUB_PID=$!
 
 afterStartWork
 
 if [[ $ISLOCAL == true && $OS == Linux ]]; then
-    nohup perf stat -x " " -p $RDB_PID -e task-clock --log-fd 1 > ${LOGDIR}/perf.txt 2>&1 &
+    perf stat -x " " -p $RDB_PID -e task-clock --log-fd 1 > ${LOGDIR}/perf.txt 2>&1 &
     PERF_PID=$!
     if wait $PERF_PID; then
         log "Waiting for perf stat (PID: $PERF_PID) and to finish"
