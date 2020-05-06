@@ -13,7 +13,6 @@ if [[ $RDBHOST == 0.0.0.0 || $RDBHOST == localhost ]]; then
     ISLOCAL=true
     log "Starting RDB script in the background..."
     ${RDBSCRIPTFULL} > ${LOGDIR}/rdb.txt 2>&1 &
-    RDB_PID=$!
 else
     if [[ -z $(dig +short $RDBHOST) ]]; then
         log "Invalid RDB address!"
@@ -23,6 +22,7 @@ else
     SCRIPTDIR=$(pwd)
     ssh -o "StrictHostKeyChecking no" $RDBHOST "cd ${SCRIPTDIR}; RDBSCRIPTFULL=\"${RDBSCRIPTFULL}\" LOGDIR=${LOGDIR} ./startRemoteRDB.sh" > ${LOGDIR}/rdb.txt 2>&1 &
 fi
+RDB_PID=$!
 
 # Waiting for the RDB to be responsive
 while ! nc -z $RDBHOST $RDBPORT; do sleep 0.1; done
@@ -50,8 +50,8 @@ source rdbcpu.sh
 if [[ $ISLOCAL == true ]]; then
     getRDBCPUUsage $RDB_PID $LOGDIR
 else
-    log "Waiting for RDB to become unresponsive"
-    while nc -z $RDBHOST $RDBPORT > /dev/null; do sleep 1; done
+    log "Waiting for the remote RDB script to return"
+    wait $RDB_PID
     scp $RDBHOST:${SCRIPTDIR}/${LOGDIR}/perf.txt $LOGDIR
 fi
 
