@@ -1,4 +1,3 @@
-VERBOSE=1
 source log.sh
 
 function getRDBCPUUsage {
@@ -14,6 +13,7 @@ function getRDBCPUUsage {
         log "Waiting for RDB to finish"
         if wait $RDB_PID; then
             $(kill -s SIGINT $PERF_PID) || ( log "perf stat failed, returning 0% CPU usage" && echo ",,,,,0,CPUs utilized" > ${LOGDIR}/perf.txt )  # mocking a dummy perf.txt
+            sync
             return 0
         else
             log "RDB died abnormally."
