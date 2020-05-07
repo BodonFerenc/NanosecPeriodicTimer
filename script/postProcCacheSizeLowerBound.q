@@ -10,5 +10,5 @@ res: t lj `frequency xkey select frequency,
     medLatencyAtMinBatchSize: medLatency from
     t where isStable, batchsize=(min; batchsize) fby frequency;
 
-output 0:","0:flip -2#flip t lj res;
+output 0:","0:flip -2#flip res;
 exit 0;
