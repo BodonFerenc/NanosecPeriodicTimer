@@ -97,11 +97,11 @@ while (( FREQ < ENDFREQ  && BATCHSIZE < MAXBATCHSIZE )) ; do
     declare -i ISSTABLEFLAG=${stat[-1]}
 
 	if (( ! ISSTABLEFLAG )); then
-        BATCHSIZERAW=$(echo "1 + $BATCHSIZE * 1.05" | bc -l)
+        BATCHSIZERAW=$(echo "1 + $BATCHSIZE * 1.1" | bc -l)
         BATCHSIZE=${BATCHSIZERAW%%.*}
 		echo "batch size increased"
 	else
-        FREQRAW=$(echo "1 + $FREQ * 1.05" | bc -l)
+        FREQRAW=$(echo "1 + $FREQ * 1.1" | bc -l)
         FREQ=${FREQRAW%%.*}
 		echo "frequency increased"
 	fi
