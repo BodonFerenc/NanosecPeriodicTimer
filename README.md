@@ -97,11 +97,11 @@ sym time price size stop ex
 ```
 
 The output CSV contains the following fields:
-   * _realFrequency_: The number of messages sent divided by the timer duration (approx. difference of first and last trigger time).
-   * _sentMessageNr_: The number of messages sent.
-   * _maxTimerLatency_: The maximum of the timer latency, which is the difference of the planned and real trigger time.
-   * _avgTimerLatency_: The average timer latency.
-   * _medTimerLatency_: The median timer latency.
+   * `realFrequency`: The number of messages sent divided by the timer duration (approx. difference of first and last trigger time).
+   * `sentMessageNr`: The number of messages sent.
+   * `maxTimerLatency`: The maximum of the timer latency, which is the difference of the planned and real trigger time.
+   * `avgTimerLatency`: The average timer latency.
+   * `medTimerLatency`: The median timer latency.
 
 If the publisher and the kdb+ process are on the same machine then you can unix sockets. All you need to do is changing the host parameter to `0.0.0.0`. This will result in lower data transfer latencies.
 
@@ -111,10 +111,10 @@ If the publisher and the kdb+ process are on the same machine then you can unix 
 ```
 
 You can observe the latency statistics in file `../out/statistics.csv`. The CSV contains four statistic of the ingest latency, the maximun (_maxLatency_), the minimum (_minLatency_), the average (_avgLatency_) and the median (_medLatency_) and some core statistics: 
-   * _RDBduration_: The difference between the first update's time and the time of publisher disconnect (observed via [.z.pc](https://code.kx.com/q/ref/dotz/#zpc-close))
-   * _recMessageNr_: Number of message received.
-   * _recRowNr_: Number of rows received. This number differs from _recMessageNr_ if publisher sends batch updates.
-   * _medKobjCreation_: This metric is interesting for batch updates and shows the median of the time differences of the first and the last rows of each batch. You can learn how long it takes to create the K objects in the publisher.
+   * `RDBduration`: The difference between the first update's time and the time of publisher disconnect (observed via [.z.pc](https://code.kx.com/q/ref/dotz/#zpc-close))
+   * `recMessageNr`: Number of message received.
+   * `recRowNr`: Number of rows received. This number differs from _recMessageNr_ if publisher sends batch updates.
+   * `medKobjCreation`: This metric is interesting for batch updates and shows the median of the time differences of the first and the last rows of each batch. You can learn how long it takes to create the K objects in the publisher.
 
 If you would like to see all statistics in a single view then you can simply merge publisher's and RDB's output by Linux command [paste](https://en.wikipedia.org/wiki/Paste_(Unix))
 
