@@ -1,5 +1,6 @@
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
+#include <random>
 #include "KDBSymGenerator.hpp"
 
 const std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -14,10 +15,14 @@ KDBSymGenerator::KDBSymGenerator(unsigned long size) {
                 for (auto d : alphabet)
                     symUniverse[i++] = {a,b,c,d,'\0'};
 
-    srand(time(nullptr));
+    std::uniform_int_distribution<> dis(0, SYMNR-1);
+    std::random_device rd;  //Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd());
+
+
     symList.reserve(size);
     for (i = 0; i < size; ++i) {
-        symList.push_back(symUniverse[rand() % SYMNR].data());
+        symList.push_back(symUniverse[dis(gen)].data());
     }
 
     sym_it = symList.begin();

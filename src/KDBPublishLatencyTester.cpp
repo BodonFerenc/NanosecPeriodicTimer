@@ -1,6 +1,5 @@
 #include <string>
 #include <iostream>
-#include <stdlib.h>
 #include <unistd.h> // for getopt
 #include <chrono>
 #include <sstream>
@@ -74,15 +73,15 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    const unsigned long freq = atol(argv[1]);                         // frequency
-    const chrono::nanoseconds wait(BILLION / freq);          // wait time between ticks
+    const unsigned long freq = stoul(argv[1]);                         // frequency
+    const chrono::nanoseconds wait(BILLION / freq);                    // wait time between ticks
     cout << "Wait time is set to\t\t" << wait.count() << " nanosec" << endl;
-    const unsigned int dur = atoi(argv[2]);                          // duration is second
+    const unsigned int dur = stoi(argv[2]);                            // duration is second
     const unsigned long maxrun = dur * freq;
     cout << "Nr of expected ticks\t\t" << maxrun << endl;
     auto outputfile = argv[3];
     auto host = argv[4];
-    auto port = atoi(argv[5]);
+    auto port = stoi(argv[5]);
 
 
     auto flush=false;
@@ -108,7 +107,7 @@ int main(int argc, char* argv[])
         }
         break;
       case 'b':
-        batchsize = atoi(optarg);
+        batchsize = stoi(optarg);
         break;
       case '?':
         if (optopt == 't')
