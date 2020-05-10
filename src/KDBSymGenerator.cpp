@@ -1,6 +1,6 @@
 #include <string>
-#include <cstdlib>
 #include <random>
+#include <algorithm>
 #include "KDBSymGenerator.hpp"
 
 const std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -20,10 +20,8 @@ KDBSymGenerator::KDBSymGenerator(unsigned long size) {
     std::mt19937 gen(rd());
 
 
-    symList.reserve(size);
-    for (i = 0; i < size; ++i) {
-        symList.push_back(symUniverse[dis(gen)].data());
-    }
+    symList.resize(size);
+    std::generate(symList.begin(), symList.end(), [&]() {return symUniverse[dis(gen)].data();});
 
     sym_it = symList.begin();
 }
