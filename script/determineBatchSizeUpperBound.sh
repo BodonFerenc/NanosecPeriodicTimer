@@ -106,13 +106,11 @@ done
 
 echo "generating summary file $OUTPUTDIR/summary.csv"
 cat $OUTPUTDIR/statistics_* | sort -n | uniq > $OUTPUTDIR/summaryTemp.csv
-q postProcBatchSizeUpperBound.q $OUTPUTDIR/summaryTemp.csv $OUTPUTDIR/largestBatchSize.csv
-
-paste -d, $OUTPUTDIR/summaryTemp.csv $OUTPUTDIR/largestBatchSize.csv > $OUTPUTDIR/summary.csv
+q postProcBatchSizeUpperBound.q $OUTPUTDIR/summaryTemp.csv $OUTPUTDIR/summary.csv
 
 if [[ $NOCLEAN -ne 1 ]]; then
     echo "Cleaning up temporal files..."
-    rm ${OUTPUTDIR}/statistics_*.csv $OUTPUTDIR/summaryTemp.csv $OUTPUTDIR/largestBatchSize.csv
+    rm ${OUTPUTDIR}/statistics_*.csv $OUTPUTDIR/summaryTemp.csv
 fi
 
 
