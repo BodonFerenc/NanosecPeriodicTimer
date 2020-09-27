@@ -2,18 +2,24 @@
 
 This small repository contains C++ files that demonstrate the two ways of creating a single threaded periodic timer. We can use this timer e.g. to benchmark kdb+ ingestion latencies and throughput. The first approach is based on sleep the second is based constantly checking the time to see when to trigger.
 
-To build the binary do
+## Install
+You need to have `cmake` and a c++ compiler with `c++14` support installed. To build the binary do
+
 ```
-$ make
+$ cmake -S . -B build
+$ cmake --build build
 ```
 
-and to run the executable
+The binaries are built in directory `bin`.
+
+## Running the executables
+Command
 
 ```
 $ ./bin/PeriodicTimerDemo bytimerjumpforward 200000 30 ../out/timer.csv
 ```
 
-which will run a time check based periodic timer for 30 seconds. The frequency of triggers is 20000, i.e. 20000 events per second and the planned and actual trigger times are saved in file `../out/timer.csv`. Pass `bysleep` as first parameter for a sleep based timer.
+runs a time check based periodic timer for 30 seconds. The frequency of triggers is 20000, i.e. 20000 events per second and the planned and actual trigger times are saved in file `../out/timer.csv`. Pass `bysleep` as first parameter for a sleep based timer.
 
 The program will output a few useful information, e.g the planned delays between triggers and the average of actual and planned delays. You can get a full distribution of the delays, .e.g by a simple q process:
 
@@ -110,7 +116,7 @@ If the publisher and the kdb+ process are on the same machine then you can unix 
 ./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv 0.0.0.0 5003 -s
 ```
 
-You can observe the latency statistics in file `../out/statistics.csv`. The CSV contains four statistic of the ingest latency, the maximun (_maxLatency_), the minimum (_minLatency_), the average (_avgLatency_) and the median (_medLatency_) and some core statistics: 
+You can observe the latency statistics in file `../out/statistics.csv`. The CSV contains four statistic of the ingest latency, the maximun (_maxLatency_), the minimum (_minLatency_), the average (_avgLatency_) and the median (_medLatency_) and some core statistics:
    * `RDBduration`: The difference between the first update's time and the time of publisher disconnect (observed via [.z.pc](https://code.kx.com/q/ref/dotz/#zpc-close))
    * `recMessageNr`: Number of message received.
    * `recRowNr`: Number of rows received. This number differs from _recMessageNr_ if publisher sends batch updates.
@@ -136,7 +142,7 @@ You dont need to start processes manually and merge the outputs, bash script `me
 
 Use `--rdbhost localhost` if you would like to use TCP/IP connection and `--flush` to [flush output buffer](https://code.kx.com/q/basics/ipc/#block-queue-flush) after each send message. This starts the timer with `-f` command line parameter.
 
-Script `measureKdbLatency.sh` also supports **remote kdb+ process via TCP**. If you pass an IP address via the `--rdbhost` parameter then the script will start the RDB on remote host via ssh. You probably want to use `~/.ssh/config` to provide the user name and private key location for the remote server. 
+Script `measureKdbLatency.sh` also supports **remote kdb+ process via TCP**. If you pass an IP address via the `--rdbhost` parameter then the script will start the RDB on remote host via ssh. You probably want to use `~/.ssh/config` to provide the user name and private key location for the remote server.
 
 The C++ publisher and the bash scripts handle batch update. Use parameter `batchsize` to specify batch size. You can decide if each trigger should generate a batch of rows (`--batchtype batch`) or each trigger should only generate a single row, that the publisher caches and if the size of the cache reaches a limit then it sends the batch to the kdb+ process. This option requires command line paramter `--batchtype cache`. The bash script passes batch parameters to the C++ publisher via `-b` and `-t` command line parameters, e.g. `-t cache -b 100`.
 

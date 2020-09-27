@@ -6,7 +6,7 @@
 
 KDBTradePublisher::KDBTradePublisher(unsigned long triggerNr, std::string host, int port) :
     KDBPublisher{triggerNr, host, port}, symGenerator{triggerNr} {
-    tableName = (ks((S) "tradeTP"));
+    tableName = ks((S) "tradeTP");
 }
 
 bool KDBTradePublisher::run(const TIME& expected, const TIME& real) {
