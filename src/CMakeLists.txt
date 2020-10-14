@@ -31,7 +31,9 @@ file(DOWNLOAD "https://github.com/KxSystems/kdb/raw/master/${OSFLAG}/c.o" "${CMA
 set_target_properties(KDBPublishLatencyTester PROPERTIES
     COMPILE_FLAGS -DKXVER=3
 )
+target_link_libraries(KDBPublishLatencyTester pthread)  # required by Ubuntu 18.04
 
 set_target_properties(PeriodicKDBPublisher PROPERTIES
     COMPILE_FLAGS -DKXVER=3
 )
+target_link_libraries(PeriodicKDBPublisher pthread)  # required by Ubuntu 18.04
