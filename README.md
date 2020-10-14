@@ -6,8 +6,10 @@ This small repository contains C++ files that demonstrate the two ways of creati
 You need to have `cmake` and a c++ compiler with `c++14` support installed. To build the binary do
 
 ```
-$ cmake -S . -B build
-$ cmake --build build
+$ mkdir build
+$ cd build
+$ cmake ..
+$ cmake --build .
 ```
 
 The binaries are built in directory `bin`.
