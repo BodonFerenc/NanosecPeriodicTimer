@@ -136,7 +136,7 @@ If the RDB is on a remote host and there is no shared filesystem (e.g. NFS) betw
 q RDBStatCollector.q -rdb 72.7.9.248 -output ../out/statistics.csv
 ```
 
-You dont need to start processes manually and merge the outputs, bash script `measureKdbLatency.sh` does it for you. It starts an RDB, RDB statistics fetcher and a publisher for you and even measures RDB CPU usage rate.
+You don't need to start processes manually and merge the outputs, bash script `measureKdbLatency.sh` does it for you. It starts an RDB, RDB statistics fetcher and a publisher for you and even measures RDB CPU usage rate.
 
 ```
 ./measureKdbLatency.sh --freq 10000 --dur 20 --output ../out/statistics.csv --rdbhost localhost
@@ -146,7 +146,7 @@ Use `--rdbhost localhost` if you would like to use TCP/IP connection and `--flus
 
 Script `measureKdbLatency.sh` also supports **remote kdb+ process via TCP**. If you pass an IP address via the `--rdbhost` parameter then the script will start the RDB on remote host via ssh. You probably want to use `~/.ssh/config` to provide the user name and private key location for the remote server.
 
-The C++ publisher and the bash scripts handle batch update. Use parameter `batchsize` to specify batch size. You can decide if each trigger should generate a batch of rows (`--batchtype batch`) or each trigger should only generate a single row, that the publisher caches and if the size of the cache reaches a limit then it sends the batch to the kdb+ process. This option requires command line paramter `--batchtype cache`. The bash script passes batch parameters to the C++ publisher via `-b` and `-t` command line parameters, e.g. `-t cache -b 100`.
+The C++ publisher and the bash scripts handle batch update. Use parameter `batchsize` to specify batch size. You can decide if each trigger should generate a batch of rows (`--batchtype batch`) or each trigger should only generate a single row, that the publisher caches and if the size of the cache reaches a limit then it sends the batch to the kdb+ process. This option requires command line parameter `--batchtype cache`. The bash script passes batch parameters to the C++ publisher via `-b` and `-t` command line parameters, e.g. `-t cache -b 100`.
 
 You might want to figure out the maximal frequency of updates your kdb+ process can ingest. You can manually run `measureKdbLatency.sh` with various parameters or use `./measureMultipleKdbLatency.sh` that does this for you and create a summary table.
 
