@@ -18,12 +18,16 @@
 
 template<class P, bool FLUSH>
 class KDBBatchPublisherCSVLoggerTask: public KDBPublisherCSVLoggerTask<P, FLUSH> {
-    private:  
-        unsigned int batchSize;      
+    private:
+        unsigned int batchSize;
+        K row;
 
-    public: 
-        KDBBatchPublisherCSVLoggerTask(unsigned long triggerNr, std::string filename, std::string host, int port, unsigned int batchsize) : 
-            KDBPublisherCSVLoggerTask<P, FLUSH>{triggerNr, filename, host, port}, batchSize{batchsize} {}
+    public:
+        KDBBatchPublisherCSVLoggerTask(unsigned long triggerNr, std::string filename, std::string host, int port, unsigned int batchsize) :
+            KDBPublisherCSVLoggerTask<P, FLUSH>{triggerNr, filename, host, port}, batchSize{batchsize} {
+                row = knk(7, ktn(KS, batchSize), ktn(KJ, batchSize), ktn(KC, batchSize), ktn(KI, batchSize),
+                    ktn(KF, batchSize), ktn(KJ, batchSize), ktn(KP, batchSize));
+            }
         bool run(const TIME&, const TIME&);
 };
 
@@ -35,14 +39,11 @@ bool inline KDBBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME& expected, 
 
     const unsigned long realTriggerTime = DURNANO((real - kdb_start).time_since_epoch());
 
-    K row = knk(7, ktn(KS, batchSize), ktn(KJ, batchSize), ktn(KC, batchSize), ktn(KI, batchSize), 
-        ktn(KF, batchSize), ktn(KJ, batchSize), ktn(KP, batchSize));
-
-    ++KDBPublisherCSVLoggerTask<P, FLUSH>::symGenerator.sym_it; 
+    ++KDBPublisherCSVLoggerTask<P, FLUSH>::symGenerator.sym_it;
 
     --batchSize;        // not an elegant solution!
     for(decltype(batchSize) batchSq = 0; batchSq < batchSize; ++batchSq) {
-        kS(kK(row)[0])[batchSq]= sym;        
+        kS(kK(row)[0])[batchSq]= sym;
         kJ(kK(row)[1])[batchSq]= sq++;
         kC(kK(row)[2])[batchSq]= KDBPublisherCSVLoggerTask<P, FLUSH>::stop;
         kI(kK(row)[3])[batchSq]= KDBPublisherCSVLoggerTask<P, FLUSH>::size;
@@ -51,7 +52,7 @@ bool inline KDBBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME& expected, 
         kJ(kK(row)[6])[batchSq]= realTriggerTime;
     }
 
-    kS(kK(row)[0])[batchSize]= sym;        
+    kS(kK(row)[0])[batchSize]= sym;
     kJ(kK(row)[1])[batchSize]= sq++;
     kC(kK(row)[2])[batchSize]= KDBPublisherCSVLoggerTask<P, FLUSH>::stop;
     kI(kK(row)[3])[batchSize]= KDBPublisherCSVLoggerTask<P, FLUSH>::size;
@@ -61,7 +62,7 @@ bool inline KDBBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME& expected, 
 
     ++batchSize;
 
-    KDBPublisherCSVLoggerTask<P, FLUSH>::kdbpublisher.sendUpdate(row);
+    KDBPublisherCSVLoggerTask<P, FLUSH>::kdbpublisher.sendUpdate(r1(row));
 
     return P::run(expected, real);
 }

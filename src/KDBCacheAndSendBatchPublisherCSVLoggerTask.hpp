@@ -18,24 +18,19 @@
 
 template<class P, bool FLUSH>
 class KDBCacheAndSendBatchPublisherCSVLoggerTask: public KDBPublisherCSVLoggerTask<P, FLUSH> {
-    private:  
-        unsigned int batchSize; 
+    private:
+        unsigned int batchSize;
         K row;
-        void initRow();     
 
-    public: 
-        KDBCacheAndSendBatchPublisherCSVLoggerTask(unsigned long triggerNr, std::string filename, std::string host, int port, unsigned int batchsize): 
+
+    public:
+        KDBCacheAndSendBatchPublisherCSVLoggerTask(unsigned long triggerNr, std::string filename, std::string host, int port, unsigned int batchsize):
             KDBPublisherCSVLoggerTask<P, FLUSH>{triggerNr, filename, host, port}, batchSize{batchsize} {
-            initRow();
+        row = knk(7, ktn(KS, batchSize), ktn(KJ, batchSize), ktn(KC, batchSize), ktn(KI, batchSize),
+                ktn(KF, batchSize), ktn(KJ, batchSize), ktn(KP, batchSize));
         }
         bool run(const TIME&, const TIME&);
 };
-
-template<class P, bool FLUSH>
-void inline KDBCacheAndSendBatchPublisherCSVLoggerTask<P, FLUSH>::initRow() {
-    row = knk(7, ktn(KS, batchSize), ktn(KJ, batchSize), ktn(KC, batchSize), ktn(KI, batchSize), 
-        ktn(KF, batchSize), ktn(KJ, batchSize), ktn(KP, batchSize)); 
-}
 
 template<class P, bool FLUSH>
 bool inline KDBCacheAndSendBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME& expected, const TIME& real) {
@@ -45,7 +40,7 @@ bool inline KDBCacheAndSendBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME
 
     auto sym = *KDBPublisherCSVLoggerTask<P, FLUSH>::symGenerator.sym_it;
 
-    kS(kK(row)[0])[batchSq]= sym;        
+    kS(kK(row)[0])[batchSq]= sym;
     kJ(kK(row)[1])[batchSq]= sq;
     kC(kK(row)[2])[batchSq]= KDBPublisherCSVLoggerTask<P, FLUSH>::stop;
     kI(kK(row)[3])[batchSq]= KDBPublisherCSVLoggerTask<P, FLUSH>::size;
@@ -56,9 +51,8 @@ bool inline KDBCacheAndSendBatchPublisherCSVLoggerTask<P, FLUSH>::run(const TIME
     ++batchSq;
 
     if (batchSq == batchSize) {
-        KDBPublisherCSVLoggerTask<P, FLUSH>::kdbpublisher.sendUpdate(row);    
-        initRow();
-        ++KDBPublisherCSVLoggerTask<P, FLUSH>::symGenerator.sym_it; 
+        KDBPublisherCSVLoggerTask<P, FLUSH>::kdbpublisher.sendUpdate(r1(row));
+        ++KDBPublisherCSVLoggerTask<P, FLUSH>::symGenerator.sym_it;
         ++batchnr;
         batchSq=0;
     }
