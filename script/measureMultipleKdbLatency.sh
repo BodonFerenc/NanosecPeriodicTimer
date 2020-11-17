@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu -o pipefail
+set -euo pipefail
 
 GROUPEDOPT=''      # grouped attribute on sym
 NOCLEAN=0
@@ -32,11 +32,11 @@ function args()
             ;;
         --flush)
             FLUSHOPT='--flush'
-            ;;                        
+            ;;
         --rdbhost)
             shift;
             RDBHOSTOPT="--rdbhost $1"
-            ;;            
+            ;;
         --freq)
             shift;
             FREQS=$(echo $1 | tr "," " ")
@@ -52,15 +52,15 @@ function args()
         --output)
             shift;
             OUTPUT=$1
-            ;;            
+            ;;
         --batchsize)
             shift;
             BATCHSIZES=$(echo $1 | tr "," " ")
-           ;;       
+           ;;
        --batchtype)
             shift;
             BATCHTYPE=$1
-           ;;                
+           ;;
         --)
             shift
             break
