@@ -5,7 +5,7 @@ This small repository contains C++ files that demonstrate the two ways of creati
 ## Install
 You need to have `cmake` and a c++ compiler with `c++14` support installed. To build the binary do
 
-```
+```bash
 $ mkdir build
 $ cd build
 $ cmake ..
@@ -14,20 +14,33 @@ $ cmake --build .
 
 The binaries are built in directory `bin`.
 
+If you don't want to bother with building the binary, then you can grab a docker image that comes with `gcc` an `cmake`.
+
+```bash
+$ docker pull ferencbodon/kdb_ingest_tester
+```
+
 ## Running the executables
 Command
 
-```
-$ ./bin/PeriodicTimerDemo bytimerjumpforward 200000 30 ../out/timer.csv
+```bash
+$ mkdir -p out
+$ ./bin/PeriodicTimerDemo bytimerjumpforward 200000 30 out/timer.csv
 ```
 
-runs a time check based periodic timer for 30 seconds. The frequency of triggers is 20000, i.e. 20000 events per second and the planned and actual trigger times are saved in file `../out/timer.csv`. Pass `bysleep` as first parameter for a sleep based timer.
+or with docker
+
+```bash
+$ docker run -v "$(pwd)/out:/tmp" --rm -it kdb_ingest_tester PeriodicTimerDemo bytimerjumpforward 200000 30 /tmp/timer.csv
+```
+
+runs a time check based periodic timer for 30 seconds. The frequency of triggers is 20000, i.e. 20000 events per second and the planned and actual trigger times are saved in file `out/timer.csv`. Pass `bysleep` as first parameter for a sleep based timer.
 
 The program will output a few useful information, e.g the planned delays between triggers and the average of actual and planned delays. You can get a full distribution of the delays, .e.g by a simple q process:
 
 ```
 $ q
-q) t: ("JJJ";enlist",") 0:hsym `$"../out/timer.csv"
+q) t: ("JJJ";enlist",") 0:hsym `$"out/timer.csv"
 q)select median_latency: med latency, avg_latency: avg latency, max_latency: max latency from t
 median_latency avg_latency max_latency
 --------------------------------------
@@ -45,22 +58,22 @@ latency| nr      rate
 
 The q script `generatePublisherLatencyStats.q` also generates some useful statistics (like median of the latencies) in a CSV file specified by its second parameter.
 
-```
-$ q script/generatePublisherLatencyStats.q ../out/timer.csv ../out/timerStatistics.csv
+```bash
+$ q script/generatePublisherLatencyStats.q out/timer.csv out/timerStatistics.csv
 ```
 
 ## Clock aspects
-It is recommended to have a CPU with constant, invariant TSC (time-stamp counter) tha also support from RDTSCP instructions. This allows fast retrievel of the time. The Linux server I worked on, function [chrono::steady_clock::now](https://en.cppreference.com/w/cpp/chrono/steady_clock/now) executes in 26 nanosec. Run binary `bin/gettimeMeter` to measure execution time of getting the time.
+It is recommended to have a CPU with constant, invariant TSC (time-stamp counter) that also support from RDTSCP instructions. This allows fast retrieval of the time. The Linux server I worked on, function [chrono::steady_clock::now](https://en.cppreference.com/w/cpp/chrono/steady_clock/now) executes in 26 nanoseconds. Run binary `bin/gettimeMeter` to measure execution time of getting the time.
 
 You can display clock support this via Linux command
 
-```
+```bash
 $ cat /proc/cpuinfo | grep -i tsc
 flags : ... tsc  rdtscp constant_tsc nonstop_tsc ...
 ```
 If you CPU does not support constant TSC (that keeps all TSC’s synchronized across all cores) then you need to bind the application to a CPU by `taskset` or `numactl`
 
-```
+```bash
 $ taskset -c 0 ...
 ```
 
@@ -73,7 +86,7 @@ Class [KDBTradePublisher](https://github.com/BodonFerenc/NanosecPeriodicTimer/bl
 
 To run do the following after command `make`
 
-```
+```bash
 # In Terminal 1:
 $ cd script
 $ q rdb_light.q -p 5003
@@ -91,7 +104,7 @@ Now switch back to `Terminal 1` and check the content of table trade or see how 
 ## Measuring kdb+ ingest latency
 The script can also be used to measure how long it takes from a trigger event, through a trade data publish till it arrives into a kdb+ process that inserts the data into its local table. Script `rdb_latency.q` differs from `rdb_light` in storing a timestamp for each update. This timestamp can be compared to the real trigger time sent by the timer to obtain _ingest latency_.
 
-```
+```bash
 # In Terminal 1:
 $ cd script
 $ q rdb_latency.q -output ../out/statistics.csv -p 5003
@@ -113,12 +126,12 @@ The output CSV contains the following fields:
 
 If the publisher and the kdb+ process are on the same machine then you can unix sockets. All you need to do is changing the host parameter to `0.0.0.0`. This will result in lower data transfer latencies.
 
-```
+```bash
 # In Terminal 2:
 ./bin/KDBPublishLatencyTester 10000 20 ../out/timerStat.csv 0.0.0.0 5003 -s
 ```
 
-You can observe the latency statistics in file `../out/statistics.csv`. The CSV contains four statistic of the ingest latency, the maximun (_maxLatency_), the minimum (_minLatency_), the average (_avgLatency_) and the median (_medLatency_) and some core statistics:
+You can observe the latency statistics in file `../out/statistics.csv`. The CSV contains four statistic of the ingest latency, the maximum (_maxLatency_), the minimum (_minLatency_), the average (_avgLatency_) and the median (_medLatency_) and some core statistics:
    * `RDBduration`: The difference between the first update's time and the time of publisher disconnect (observed via [.z.pc](https://code.kx.com/q/ref/dotz/#zpc-close))
    * `recMessageNr`: Number of message received.
    * `recRowNr`: Number of rows received. This number differs from _recMessageNr_ if publisher sends batch updates.
@@ -126,20 +139,20 @@ You can observe the latency statistics in file `../out/statistics.csv`. The CSV 
 
 If you would like to see all statistics in a single view then you can simply merge publisher's and RDB's output by Linux command [paste](https://en.wikipedia.org/wiki/Paste_(Unix))
 
-```
-paste -d, ../out/timerStat.csv ../out/statistics.csv
+```bash
+$ paste -d, ../out/timerStat.csv ../out/statistics.csv
 ```
 
 If the RDB is on a remote host and there is no shared filesystem (e.g. NFS) between the hosts then you can use kdb+ script `RDBStatCollector.q` on the publisher's host to fetch statistics from the RDB.
 
-```
-q RDBStatCollector.q -rdb 72.7.9.248 -output ../out/statistics.csv
+```bash
+$ q RDBStatCollector.q -rdb 72.7.9.248 -output ../out/statistics.csv
 ```
 
 You don't need to start processes manually and merge the outputs, bash script `measureKdbLatency.sh` does it for you. It starts an RDB, RDB statistics fetcher and a publisher for you and even measures RDB CPU usage rate.
 
-```
-./measureKdbLatency.sh --freq 10000 --dur 20 --output ../out/statistics.csv --rdbhost localhost
+```bash
+$ ./measureKdbLatency.sh --freq 10000 --dur 20 --output ../out/statistics.csv --rdbhost localhost
 ```
 
 Use `--rdbhost localhost` if you would like to use TCP/IP connection and `--flush` to [flush output buffer](https://code.kx.com/q/basics/ipc/#block-queue-flush) after each send message. This starts the timer with `-f` command line parameter.
@@ -150,7 +163,7 @@ The C++ publisher and the bash scripts handle batch update. Use parameter `batch
 
 You might want to figure out the maximal frequency of updates your kdb+ process can ingest. You can manually run `measureKdbLatency.sh` with various parameters or use `./measureMultipleKdbLatency.sh` that does this for you and create a summary table.
 
-```
+```bash
 ./measureMultipleKdbLatency.sh --freq 10000,50000,100000 --dur 60,180 --outputdir ../out
 ```
 
