@@ -17,8 +17,10 @@ The binaries are built in directory `bin`.
 If you don't want to bother with building the binary, then you can grab a docker image that comes with `gcc` an `cmake`.
 
 ```bash
-$ docker pull ferencbodon/kdb_ingest_tester
+$ docker pull ferencbodon/kdb_ingest_tester:1
 ```
+
+You need [sudo](https://en.wikipedia.org/wiki/Sudo) if you run docker commands on Linux.
 
 ## Running the executables
 Command
@@ -31,7 +33,7 @@ $ ./bin/PeriodicTimerDemo bytimerjumpforward 200000 30 out/timer.csv
 or with docker
 
 ```bash
-$ docker run -v "$(pwd)/out:/tmp" --rm -it kdb_ingest_tester PeriodicTimerDemo bytimerjumpforward 200000 30 /tmp/timer.csv
+$ docker run -v "$(pwd)/out:/tmp" --rm -it ferencbodon/kdb_ingest_tester:1 PeriodicTimerDemo bytimerjumpforward 200000 30 /tmp/timer.csv
 ```
 
 runs a time check based periodic timer for 30 seconds. The frequency of triggers is 20000, i.e. 20000 events per second and the planned and actual trigger times are saved in file `out/timer.csv`. Pass `bysleep` as first parameter for a sleep based timer.
@@ -97,6 +99,18 @@ sym time price size stop ex
 
 # In Terminal 2:
 ./bin/PeriodicKDBPublisher 10000 20 localhost 5003
+```
+
+If you are on Mac or Windows and have the C++ publisher in a docker container, then you can use magic hostname `host.docker.internal` as per
+
+```bash
+$ docker run --rm -it ferencbodon/kdb_ingest_tester:1 PeriodicKDBPublisher 10000 20 host.docker.internal 5003
+```
+
+On Linux, you need switch `--net=host`
+
+```bash
+$ sudo docker run --net=host --rm -it ferencbodon/kdb_ingest_tester:1 PeriodicKDBPublisher 10000 20 localhost 5003
 ```
 
 Now switch back to `Terminal 1` and check the content of table trade or see how its size grows by executing command `count tradeTP` in the q interpreter.
