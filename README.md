@@ -1,4 +1,17 @@
-# High precision, high frequency periodic timer demo
+# kdb+ ingest tester with a high precision, high frequency periodic timer
+
+<!-- TOC -->
+
+- [kdb+ ingest tester with a high precision, high frequency periodic timer](#kdb-ingest-tester-with-a-high-precision-high-frequency-periodic-timer)
+    - [Install](#install)
+    - [Running the executables](#running-the-executables)
+    - [Clock aspects](#clock-aspects)
+    - [kdb+ trade table publisher](#kdb-trade-table-publisher)
+    - [Measuring kdb+ ingest latency](#measuring-kdb-ingest-latency)
+        - [prerequisite](#prerequisite)
+
+<!-- /TOC -->
+
 
 This small repository contains C++ files that demonstrate the two ways of creating a single threaded periodic timer. We can use this timer e.g. to benchmark kdb+ ingestion latencies and throughput. The first approach is based on sleep the second is based constantly checking the time to see when to trigger.
 
