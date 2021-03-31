@@ -123,7 +123,7 @@ $ docker run --rm -it ferencbodon/kdb_ingest_tester:1 PeriodicKDBPublisher 10000
 On Linux, you need switch `--net=host`
 
 ```bash
-$ sudo docker run --net=host --rm -it ferencbodon/kdb_ingest_tester:1 PeriodicKDBPublisher 10000 20 localhost 5003
+$ docker run --net=host --rm -it ferencbodon/kdb_ingest_tester:1 PeriodicKDBPublisher 10000 20 localhost 5003
 ```
 
 Now switch back to `Terminal 1` and check the content of table trade or see how its size grows by executing command `count tradeTP` in the q interpreter.
