@@ -33,7 +33,7 @@ If you don't want to bother with building the binary, then you can grab a docker
 $ docker pull ferencbodon/kdb_ingest_tester:1
 ```
 
-You need [sudo](https://en.wikipedia.org/wiki/Sudo) if you run docker commands on Linux.
+You need [sudo](https://en.wikipedia.org/wiki/Sudo) if you run docker commands on Linux. If you are tired of typing `sudo` then you can [add yourself to the group `docker`](https://docs.docker.com/engine/install/linux-postinstall/).
 
 ## Running the executables
 Command
