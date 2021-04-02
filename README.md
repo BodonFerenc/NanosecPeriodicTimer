@@ -114,7 +114,7 @@ sym time price size stop ex
 The docker image also contains q script `rdb_light.q` but it does not contain either the q interpreter or the license file. You need to mount your `QHOME` to `/q`
 
 ```bash
-docker run -v "$QHOME:/q" --rm --env QHOME=/q -it -p 5003:5003 kdb_ingest_tester /bin/bash -c "cd script; sleep 0.1; rlwrap q rdb_light.q -p 5003"
+docker run -v "$QHOME:/q" --rm --env QHOME=/q -it -p 5003:5003 ferencbodon/kdb_ingest_tester:1 /bin/bash -c "cd script; sleep 0.1; rlwrap q rdb_light.q -p 5003"
 ```
 
 The `sleep 0.1` is needed by [rlwrap](https://github.com/hanslub42/rlwrap) due to a [docker race condition issue](https://github.com/moby/moby/issues/28009).
