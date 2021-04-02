@@ -51,7 +51,7 @@ $ docker run -v "$(pwd)/out:/tmp" --rm -it ferencbodon/kdb_ingest_tester:1 Perio
 
 runs a time check based periodic timer for 30 seconds. The frequency of triggers is 20000, i.e. 20000 events per second and the planned and actual trigger times are saved in file `out/timer.csv`. Pass `bysleep` as first parameter for a sleep based timer.
 
-The program will output a few useful information, e.g the planned delays between triggers and the average of actual and planned delays. You can get a full distribution of the delays, .e.g by a simple q process:
+The program will output a few useful information, e.g the planned delays between triggers and the average of actual and planned delays. You can get a full distribution of the delays, .e.g by a simple q/kdb+ process (located in directory `$QHOME` as per the [installation guide](https://code.kx.com/q/learn/install/)):
 
 ```
 $ q
@@ -97,9 +97,9 @@ The program is using clock CLOCK_MONOTONIC and you get similar results with CLOC
 Read this [excellent article](http://btorpey.github.io/blog/2014/02/18/clock-sources-in-linux/) for more details on clock support by the Linux kernel.
 
 ## kdb+ trade table publisher
-Class [KDBTradePublisher](https://github.com/BodonFerenc/NanosecPeriodicTimer/blob/master/src/KDBTradePublisher.cpp) sends single row updates of table [trade](https://github.com/BodonFerenc/NanosecPeriodicTimer/blob/master/q/schema.q) to a [kdb+ process](https://github.com/BodonFerenc/NanosecPeriodicTimer/blob/master/q/rdb_light.q) when the timer triggers. [kdb+ needs to be installed](https://code.kx.com/q/learn/).
+Class [KDBTradePublisher](https://github.com/BodonFerenc/NanosecPeriodicTimer/blob/master/src/KDBTradePublisher.cpp) sends single row updates of table [trade](https://github.com/BodonFerenc/NanosecPeriodicTimer/blob/master/q/schema.q) to a [kdb+ process](https://github.com/BodonFerenc/NanosecPeriodicTimer/blob/master/q/rdb_light.q) when the timer triggers.
 
-To run do the following after command `make`
+To run do the following after command `make` to start the q process
 
 ```bash
 # In Terminal 1:
@@ -109,7 +109,19 @@ $ q rdb_light.q -p 5003
 q) tradeTP
 sym time price size stop ex
 ---------------------------
+```
 
+The docker image also contains q script `rdb_light.q` but it does not contain either the q interpreter or the license file. You need to mount your `QHOME` to `/q`
+
+```bash
+docker run -v "$QHOME:/q" --rm --env QHOME=/q -it -p 5003:5003 kdb_ingest_tester /bin/bash -c "cd script; sleep 0.1; rlwrap q rdb_light.q -p 5003"
+```
+
+The `sleep 0.1` is needed by [rlwrap](https://github.com/hanslub42/rlwrap) due to a [docker race condition issue](https://github.com/moby/moby/issues/28009).
+
+Now start the publisher
+
+```bash
 # In Terminal 2:
 ./bin/PeriodicKDBPublisher 10000 20 localhost 5003
 ```
