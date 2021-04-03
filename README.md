@@ -46,7 +46,7 @@ $ ./bin/PeriodicTimerDemo bytimerjumpforward 200000 30 out/timer.csv
 or with docker
 
 ```bash
-$ docker run -v "$(pwd)/out:/tmp" --rm -it ferencbodon/kdb_ingest_tester:1 PeriodicTimerDemo bytimerjumpforward 200000 30 /tmp/timer.csv
+$ docker run -v "$(pwd)/out:/tmp" --rm -it ferencbodon/kdb_ingest_tester:1 ./bin/PeriodicTimerDemo bytimerjumpforward 200000 30 /tmp/timer.csv
 ```
 
 runs a time check based periodic timer for 30 seconds. The frequency of triggers is 20000, i.e. 20000 events per second and the planned and actual trigger times are saved in file `out/timer.csv`. Pass `bysleep` as first parameter for a sleep based timer.
@@ -194,6 +194,12 @@ You don't need to start processes manually and merge the outputs, bash script `m
 $ ./measureKdbLatency.sh --freq 10000 --dur 20 --output ../out/statistics.csv --rdbhost localhost
 ```
 
+or by docker
+
+```bash
+$ docker run -v "$(pwd)/out:/tmp" -v "$QHOME:/q" --rm --env QHOME=/q -it ferencbodon/kdb_ingest_tester:1 /bin/bash -c "cd script; ./measureKdbLatency.sh --freq 10000 --dur 20 --output /tmp/statistics.csv --rdbhost localhost"
+```
+
 Use `--rdbhost localhost` if you would like to use TCP/IP connection and `--flush` to [flush output buffer](https://code.kx.com/q/basics/ipc/#block-queue-flush) after each send message. This starts the timer with `-f` command line parameter.
 
 Script `measureKdbLatency.sh` also supports **remote kdb+ process via TCP**. If you pass an IP address via the `--rdbhost` parameter then the script will start the RDB on remote host via ssh. You probably want to use `~/.ssh/config` to provide the user name and private key location for the remote server.
@@ -211,5 +217,8 @@ The file that collects all statistics will be placed at `../out/summary.csv`.
 
 ### prerequisite
 The following packages are required by script `measureKdbLatency.sh`
-   * numactl:. CentOS install: `sudo yum install numactl`
+   * numactl: CentOS install: `sudo yum install numactl`
+   * netcat: `sudo yum install netcat`
    * perf tools: `sudo yum install perf gawk`
+
+See `Dockerfile` to install these packages on Debian Linux.
