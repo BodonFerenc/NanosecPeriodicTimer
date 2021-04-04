@@ -18,3 +18,6 @@ if (MSVC)
 else()
     add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
+
+enable_testing()
+add_test(NAME TESTTIMERONLY COMMAND PeriodicTimerDemo bytimerjumpforward 2000 5 timer.csv)
