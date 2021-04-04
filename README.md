@@ -1,41 +1,10 @@
 # kdb+ ingest tester with a high precision, high frequency periodic timer
 
-<!-- TOC -->
-
-- [kdb+ ingest tester with a high precision, high frequency periodic timer](#kdb-ingest-tester-with-a-high-precision-high-frequency-periodic-timer)
-    - [Install](#install)
-    - [Running the executables](#running-the-executables)
-    - [Clock aspects](#clock-aspects)
-    - [kdb+ trade table publisher](#kdb-trade-table-publisher)
-    - [Measuring kdb+ ingest latency](#measuring-kdb-ingest-latency)
-        - [prerequisite](#prerequisite)
-
-<!-- /TOC -->
-
-
 This small repository contains C++ files that demonstrate the two ways of creating a single threaded periodic timer. We can use this timer e.g. to benchmark kdb+ ingestion latencies and throughput. The first approach is based on sleep the second is based constantly checking the time to see when to trigger.
 
-## Install
-You need to have `cmake` and a c++ compiler with `c++14` support installed. To build the binary do
-
-```bash
-$ mkdir build
-$ cd build
-$ cmake ..
-$ cmake --build .
-```
-
-The binaries are built in directory `bin`.
-
-If you don't want to bother with building the binary, then you can grab a docker image that comes with `gcc` an `cmake`.
-
-```bash
-$ docker pull ferencbodon/kdb_ingest_tester:1
-```
-
-You need [sudo](https://en.wikipedia.org/wiki/Sudo) if you run docker commands on Linux. If you are tired of typing `sudo` then you can [add yourself to the group `docker`](https://docs.docker.com/engine/install/linux-postinstall/).
 
 ## Running the executables
+
 Command
 
 ```bash
